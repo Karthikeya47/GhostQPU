@@ -6,6 +6,42 @@ A dishonest reseller can take your job, simulate it from IBM's **public calibrat
 
 We built both sides: the **Forger** (the attack, using the exact calibration that was live when the job ran) and the **Detector**. Vocabulary is in [CONTEXT.md](CONTEXT.md), scope in [PLAN.md](PLAN.md).
 
+**Q-Hack India 2026** · Team **lwyrup** (lead: Neelagiri Karthikeya) · Track: Quantum Security & Cryptography
+
+## For reviewers
+
+| What | Where |
+|---|---|
+| Presentation | [docs/GhostQPU_QHack_India26.pptx](docs/GhostQPU_QHack_India26.pptx) |
+| Demo video (2:23) | [demo/GhostQPU_demo.mp4](demo/GhostQPU_demo.mp4) |
+| Plain-language explainer | [docs/GhostQPU_explained.pdf](docs/GhostQPU_explained.pdf) |
+| Real IBM hardware runs + forged twins | [data/runs/](data/runs/) |
+| Code | [ghostqpu/](ghostqpu/) (library + CLI), [app.py](app.py) (dashboard), [tests/](tests/) |
+
+Run the dashboard on the included real-hardware data (no IBM account needed):
+
+```sh
+python -m venv .venv
+.venv/Scripts/python -m pip install -r requirements.txt   # macOS / Linux: .venv/bin/python
+.venv/Scripts/python -m streamlit run app.py
+```
+
+### Repository layout
+
+```
+ghostqpu/
+  snapshot.py    calibration snapshot: capture, save, rebuild into a noisy simulator
+  canaries.py    builds a Batch: hidden canary circuits shuffled among workload circuits
+  execution.py   submit to / collect from IBM hardware, and the Forger (Aer + calibration)
+  runs.py        a Run: shot records + batch + calibration, saved to disk
+  signature.py   12 canary features per time chunk of a Run
+  detector.py    logistic regression, held-out evaluation, verdicts
+  cli.py         add-account | accounts | submit | collect | evaluate | null-test
+app.py           Streamlit dashboard (Verify a job, Evidence, Detector)
+data/runs/       2 genuine ibm_marrakesh runs and their forged twins
+tests/           24 tests, no QPU time needed
+```
+
 ## Results so far (Oct 10, 2026)
 
 Two real jobs on IBM **ibm_marrakesh** (34 circuits x 1000 shots, 11 QPU seconds each), each with a forged twin from the calibration that was live when it ran.
@@ -18,7 +54,7 @@ Two real jobs on IBM **ibm_marrakesh** (34 circuits x 1000 shots, 11 QPU seconds
 
 Detector, each job held out from training: **AUC 1.00**, all 4 jobs correct (genuine scores 0.02 and 0.06, forged 0.96 and 0.98). Both jobs share one calibration cycle, so cross-day results are still to come.
 
-Demo video: [demo/GhostQPU_demo.mp4](demo/GhostQPU_demo.mp4). New to quantum computing? Start with the plain-language explainer: [docs/GhostQPU_explained.pdf](docs/GhostQPU_explained.pdf).
+Slides: [docs/GhostQPU_QHack_India26.pptx](docs/GhostQPU_QHack_India26.pptx). Demo video: [demo/GhostQPU_demo.mp4](demo/GhostQPU_demo.mp4). New to quantum computing? Start with the plain-language explainer: [docs/GhostQPU_explained.pdf](docs/GhostQPU_explained.pdf).
 
 ## Setup
 
