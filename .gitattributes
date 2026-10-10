@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.qpy binary
+*.npz binary
+*.mp4 binary
+*.pdf binary

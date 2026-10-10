@@ -1,0 +1,11 @@
+{
+ "run_id": "ibm_marrakesh_20261010T061458_12894",
+ "origin": "genuine",
+ "backend": "ibm_marrakesh",
+ "account": "acct1",
+ "shots": 1000,
+ "submitted_at": "2026-10-10T06:14:58.354837+00:00",
+ "job_id": "db4tfp4vf2bc73cv3v1g",
+ "started_at": "2026-10-10T06:15:02.234380+00:00",
+ "qpu_seconds": 11
+}

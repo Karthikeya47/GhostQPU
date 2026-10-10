@@ -1,0 +1,13 @@
+{
+ "run_id": "ibm_marrakesh_20261010T061841_13117_forged",
+ "origin": "forged",
+ "backend": "ibm_marrakesh",
+ "account": "acct1",
+ "shots": 1000,
+ "submitted_at": "2026-10-10T06:18:41.641040+00:00",
+ "job_id": "db4thh2mb58s7389n1v0",
+ "started_at": "2026-10-10T06:18:45.349170+00:00",
+ "qpu_seconds": 0.0,
+ "twin_of": "ibm_marrakesh_20261010T061841_13117",
+ "forged_at": "2026-10-10T06:19:27.148826+00:00"
+}

@@ -1,0 +1,89 @@
+# GhostQPU
+
+Detects quantum cloud jobs that never touched a quantum computer.
+
+A dishonest reseller can take your job, simulate it from IBM's **public calibration data**, and bill you for QPU time. GhostQPU hides small **canary** circuits in your batch. Real hardware has effects that a calibration-based simulator leaves out (coherent over-rotation, neighbor crosstalk, context-dependent readout, drift over time). A small classifier on those effects says Genuine or Forged.
+
+We built both sides: the **Forger** (the attack, using the exact calibration that was live when the job ran) and the **Detector**. Vocabulary is in [CONTEXT.md](CONTEXT.md), scope in [PLAN.md](PLAN.md).
+
+## Results so far (Oct 10, 2026)
+
+Two real jobs on IBM **ibm_marrakesh** (34 circuits x 1000 shots, 11 QPU seconds each), each with a forged twin from the calibration that was live when it ran.
+
+| Canary | Real hardware | Forger |
+|---|---|---|
+| Error after 128 X gates | 32% | 4% |
+| Idle-qubit shift from neighbor (16 us) | 7.8% | 0.4% |
+| Readout error | 1.1 to 1.4% | 0.3 to 0.5% |
+
+Detector, each job held out from training: **AUC 1.00**, all 4 jobs correct (genuine scores 0.02 and 0.06, forged 0.96 and 0.98). Both jobs share one calibration cycle, so cross-day results are still to come.
+
+Demo video: [demo/GhostQPU_demo.mp4](demo/GhostQPU_demo.mp4). New to quantum computing? Start with the plain-language explainer: [docs/GhostQPU_explained.pdf](docs/GhostQPU_explained.pdf).
+
+## Setup
+
+```sh
+python -m venv .venv
+.venv/Scripts/python -m pip install -r requirements.txt   # Windows
+# .venv/bin/python -m pip install -r requirements.txt     # macOS / Linux
+```
+
+The commands below use `python` for the venv's interpreter.
+
+## Hardware day
+
+1. Save each IBM account (the API key is read hidden; get it from quantum.cloud.ibm.com):
+
+   ```sh
+   python -m ghostqpu add-account alice
+   python -m ghostqpu accounts          # backends + remaining QPU time per account
+   ```
+
+2. Submit a batch (34 circuits: 30 hidden canaries + 4 workload circuits). Start with fewer shots to measure the cost:
+
+   ```sh
+   python -m ghostqpu submit --account alice --backend ibm_kingston --shots 1000
+   ```
+
+3. When the job finishes, collect it. This saves the Genuine run, fetches the calibration that was valid when the job **started**, and forges its Twin right away:
+
+   ```sh
+   python -m ghostqpu collect           # prints QPU seconds used
+   ```
+
+4. You need at least **two** Genuine runs before the Detector can be evaluated. Runs from different calibration cycles (different days) make the result stronger, and the evaluation then holds out whole cycles.
+
+   ```sh
+   python -m ghostqpu evaluate
+   ```
+
+## Demo
+
+```sh
+python -m streamlit run app.py
+```
+
+- **Verify a job**: pick an anonymized job and get a verdict (Genuine, Forged or Inconclusive). Every score comes from a Detector that never saw that job or its twin.
+- **Evidence**: canary curves from hardware vs the Forger, for the same circuits and calibration.
+- **Detector**: held-out AUC, job accuracy, and which features drive the decision.
+
+`?data=stand_in` in the URL opens the null test view.
+
+## The null test
+
+```sh
+python -m ghostqpu null-test
+```
+
+This runs the whole pipeline with a simulator on **both** sides. The Detector must fail here (AUC near 0.5). If it succeeded, it would be detecting a formatting artifact instead of physics. Current result: AUC 0.40, PASS.
+
+## If the Detector can't separate them
+
+That is a result too: "public calibration data is enough to fake a quantum computer." The Evidence tab shows how close the forgery gets.
+
+## Development
+
+```sh
+python -m pytest        # about 1 minute, no QPU time
+python -m ruff check .
+```
