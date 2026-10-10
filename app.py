@@ -196,10 +196,13 @@ with detector:
         chart = alt.Chart(weights).mark_bar(cornerRadiusEnd=4, size=14).encode(
             y=alt.Y("feature:N", sort=None, title=None, axis=alt.Axis(labelLimit=260, labelColor=INK_SECONDARY)),
             x=alt.X("weight:Q", title="standardized weight", axis=alt.Axis(tickCount=6)),
-            color=alt.Color("points to:N", scale=ORIGIN_COLORS, title=None),
+            color=alt.Color("points to:N", scale=ORIGIN_COLORS, title="A higher value points to"),
             tooltip=["feature", alt.Tooltip("weight:Q", format="+.3f"), "points to"],
         ).properties(height=alt.Step(26))  # fixed row height; Vega notes it drops "fit-y", which is intended
         st.altair_chart(style(chart), width="stretch")
+        if (weights["points to"] == "Genuine").all():
+            st.caption("Every bar points to Genuine: each effect is larger on real hardware than in the Forger, "
+                       "so a job that lacks them looks forged.")
         per_run = report.predictions.groupby("run_id").agg(
             origin=("origin", "first"), cycle=("cycle", "first"), forged_score=("forged_score", "mean"))
         st.dataframe(per_run.style.format({"forged_score": "{:.2f}"}), width="stretch")
