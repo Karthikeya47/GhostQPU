@@ -13,7 +13,7 @@ We built both sides: the **Forger** (the attack, using the exact calibration tha
 | What | Where |
 |---|---|
 | Presentation | [docs/GhostQPU_QHack_India26.pptx](docs/GhostQPU_QHack_India26.pptx) |
-| Demo video (2:23) | [demo/GhostQPU_demo.mp4](demo/GhostQPU_demo.mp4) |
+| Demo video | [Google Drive](https://drive.google.com/drive/folders/1M0DklU9nP6OGHuq1RZSj4r4Gzi0MHY0b) (silent captioned cut: [demo/GhostQPU_demo.mp4](demo/GhostQPU_demo.mp4)) |
 | Plain-language explainer | [docs/GhostQPU_explained.pdf](docs/GhostQPU_explained.pdf) |
 | Real IBM hardware runs + forged twins | [data/runs/](data/runs/) |
 | Code | [ghostqpu/](ghostqpu/) (library + CLI), [app.py](app.py) (dashboard), [tests/](tests/) |
@@ -54,7 +54,7 @@ Two real jobs on IBM **ibm_marrakesh** (34 circuits x 1000 shots, 11 QPU seconds
 
 Detector, each job held out from training: **AUC 1.00**, all 4 jobs correct (genuine scores 0.02 and 0.06, forged 0.96 and 0.98). Both jobs share one calibration cycle, so cross-day results are still to come.
 
-Slides: [docs/GhostQPU_QHack_India26.pptx](docs/GhostQPU_QHack_India26.pptx). Demo video: [demo/GhostQPU_demo.mp4](demo/GhostQPU_demo.mp4). New to quantum computing? Start with the plain-language explainer: [docs/GhostQPU_explained.pdf](docs/GhostQPU_explained.pdf).
+Slides: [docs/GhostQPU_QHack_India26.pptx](docs/GhostQPU_QHack_India26.pptx). Demo video: [Google Drive](https://drive.google.com/drive/folders/1M0DklU9nP6OGHuq1RZSj4r4Gzi0MHY0b). New to quantum computing? Start with the plain-language explainer: [docs/GhostQPU_explained.pdf](docs/GhostQPU_explained.pdf).
 
 ## Setup
 
