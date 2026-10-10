@@ -162,7 +162,7 @@ with evidence:
             st.caption("|Change in the idle qubit| when its neighbor flips 0 to 1. Gate-local models say 0.")
             data = tidy("spectator")
             chart = alt.Chart(data).mark_line(strokeWidth=2, point=alt.OverlayMarkDef(size=64, filled=True)).encode(
-                x=alt.X("delay_us:Q", title="idle time (us)"), y=alt.Y("shift:Q", title="shift in P(1)"), color=color,
+                x=alt.X("delay_us:Q", title="idle time (µs)"), y=alt.Y("shift:Q", title="shift in P(1)"), color=color,
                 tooltip=["origin", "delay_us", alt.Tooltip("shift:Q", format=".3f")],
             ).properties(height=300)
             st.altair_chart(style(chart), width="stretch")
