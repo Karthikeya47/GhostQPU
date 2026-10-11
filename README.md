@@ -12,13 +12,14 @@ We built both sides: the **Forger** (the attack, using the exact calibration tha
 
 | What | Where |
 |---|---|
+| Live dashboard | [Streamlit Cloud](https://ghostqpu-xk84u6gxdnv2bb26lvakuj.streamlit.app/?data=hardware) (real IBM hardware data, nothing to install) |
 | Presentation | [docs/GhostQPU_QHack_India26.pptx](docs/GhostQPU_QHack_India26.pptx) |
 | Demo video | [Google Drive](https://drive.google.com/drive/folders/1M0DklU9nP6OGHuq1RZSj4r4Gzi0MHY0b) (silent captioned cut: [demo/GhostQPU_demo.mp4](demo/GhostQPU_demo.mp4)) |
 | Plain-language explainer | [docs/GhostQPU_explained.pdf](docs/GhostQPU_explained.pdf) |
 | Real IBM hardware runs + forged twins | [data/runs/](data/runs/) |
 | Code | [ghostqpu/](ghostqpu/) (library + CLI), [app.py](app.py) (dashboard), [tests/](tests/) |
 
-Run the dashboard on the included real-hardware data (no IBM account needed):
+Or run the dashboard locally on the included real-hardware data (no IBM account needed):
 
 ```sh
 python -m venv .venv
@@ -94,6 +95,8 @@ The commands below use `python` for the venv's interpreter.
    ```
 
 ## Demo
+
+Live on [Streamlit Cloud](https://ghostqpu-xk84u6gxdnv2bb26lvakuj.streamlit.app/?data=hardware), or locally:
 
 ```sh
 python -m streamlit run app.py
