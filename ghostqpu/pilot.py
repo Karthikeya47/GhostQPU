@@ -10,8 +10,9 @@ the neighbor as control, on every placement in parallel. N is even, so the ideal
 
 For every (placement, family, control) the hardware curve is compared with the stock Forger's
 curve under the execution-time calibration, and fitted as
-    hardware - stock = (1 - 2 stock) sin^2(N theta / 2) + k N
-theta is the coherent turn per repeat the Forger misses; k absorbs a mismatch in incoherent error.
+    hardware - stock = a + k N + (1 - 2 stock) sin^2(N theta / 2)
+theta is the coherent turn per repeat the Forger misses. a absorbs a readout mismatch with the
+published calibration and k a mismatch in incoherent error per repeat.
 """
 
 from __future__ import annotations
@@ -30,6 +31,7 @@ PILOT_REPEATS = (0, 2, 4, 8, 16, 32, 64, 128)
 FAMILIES = ("cnot", "idle")
 REF_SHOTS = 200_000  # the stock curve is near exact, so only the hardware's shot noise is left
 THETA_GRID = np.linspace(0.0, 0.1, 5001)  # rad per repeat
+DETECTION_Z = 3.2  # pre-registered: about 0.05 two-sided over 4 placements, Bonferroni
 
 
 def build_pilot(snapshot: CalibrationSnapshot, seed: int, n_placements: int = 4) -> Batch:
@@ -101,15 +103,12 @@ def analyze(run: Run, ref_shots: int = REF_SHOTS) -> pd.DataFrame:
 
 
 def _fit_theta(n, delta, stock, se) -> dict[str, float]:
-    # Profile likelihood: for each theta on the grid, the best linear k is closed form.
+    # Profile likelihood: for each theta on the grid, the best offset a and slope k are closed form.
     w = 1 / se**2
-    chi2 = np.empty(len(THETA_GRID))
-    slopes = np.empty(len(THETA_GRID))
-    for j, theta in enumerate(THETA_GRID):
-        r = delta - (1 - 2 * stock) * np.sin(n * theta / 2) ** 2
-        k = (w * n * r).sum() / (w * n * n).sum()
-        slopes[j] = k
-        chi2[j] = (w * (r - k * n) ** 2).sum()
+    x = np.stack([np.ones_like(n), n], axis=1)
+    residual = delta - (1 - 2 * stock) * np.sin(np.outer(THETA_GRID, n) / 2) ** 2  # (grid, len(n))
+    coef = residual @ (w[:, None] * x) @ np.linalg.inv(x.T @ (w[:, None] * x))  # (grid, [a, k])
+    chi2 = (w * (residual - coef @ x.T) ** 2).sum(axis=1)
     best = int(np.argmin(chi2))
     inside = THETA_GRID[chi2 <= chi2[best] + 1]
     return {
@@ -117,8 +116,9 @@ def _fit_theta(n, delta, stock, se) -> dict[str, float]:
         "theta_lo": float(inside.min()),
         "theta_hi": float(inside.max()),
         "z": float(np.sqrt(max(chi2[0] - chi2[best], 0.0))),
-        "slope": float(slopes[best]),
-        "chi2_per_dof": float(chi2[best] / (len(n) - 2)),
+        "offset": float(coef[best, 0]),
+        "slope": float(coef[best, 1]),
+        "chi2_per_dof": float(chi2[best] / (len(n) - 3)),
     }
 
 

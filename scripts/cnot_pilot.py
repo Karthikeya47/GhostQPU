@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from ghostqpu.pilot import analyze, build_pilot, curves
+from ghostqpu.pilot import DETECTION_Z, analyze, build_pilot, curves
 from ghostqpu.runs import GENUINE, load_runs
 
 ROOT = Path("data/pilot")
@@ -26,7 +26,6 @@ RUNS = ROOT / "runs"
 # Billed 11 s for the 34 x 1000-shot Batch, whose rep delay plus circuit time is 8.70 s.
 BILLED_PER_MODELED = 11 / 8.70
 REP_DELAY_S = 250e-6
-DETECTION_Z = 3.2  # about 0.05 two-sided over 4 placements, Bonferroni
 
 
 def cmd_check(args) -> None:

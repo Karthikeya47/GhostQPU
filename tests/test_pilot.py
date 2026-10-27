@@ -5,7 +5,7 @@ from qiskit_aer.noise import NoiseModel
 from qiskit_ibm_runtime.fake_provider import FakeFez
 
 from ghostqpu.execution import _memory_to_bits
-from ghostqpu.pilot import analyze, build_pilot
+from ghostqpu.pilot import DETECTION_Z, analyze, build_pilot
 from ghostqpu.runs import GENUINE, Run
 from ghostqpu.snapshot import CalibrationSnapshot
 
@@ -54,11 +54,34 @@ def test_cnot_and_idle_circuits_differ_only_in_the_cz(batch):
 def test_analysis_recovers_a_planted_conditional_phase(snapshot, batch):
     report = analyze(_fake_hardware(snapshot, batch, conditional_phase=0.02))
     control_one = report.query("family == 'cnot' and control == 1")
-    assert (control_one["z"] > 5).all()
+    assert (control_one["z"] > DETECTION_Z).all()
     assert np.allclose(control_one["theta"], 0.02, atol=0.004)
-    assert (report.query("family == 'idle'")["z"] < 3.2).all()
+    assert (report.query("family == 'idle'")["z"] < DETECTION_Z).all()
 
 
 def test_analysis_stays_quiet_when_hardware_matches_the_stock_model(snapshot, batch):
     report = analyze(_fake_hardware(snapshot, batch, conditional_phase=0.0))
-    assert (report["z"] < 3.2).all()
+    assert (report["z"] < DETECTION_Z).all()
+
+
+
+def _with_readout_offset(run: Run, p_flip: float) -> Run:
+    # Real readout rarely matches the published calibration; that shifts every N equally.
+    rng = np.random.default_rng(3)
+    for bits in run.shots:
+        target = bits[:, 0::2]
+        target |= ((target == 0) & (rng.random(target.shape) < p_flip)).astype(np.uint8)
+        bits[:, 0::2] = target
+    return run
+
+
+def test_a_readout_offset_is_not_mistaken_for_a_coherent_error(snapshot, batch):
+    report = analyze(_with_readout_offset(_fake_hardware(snapshot, batch, conditional_phase=0.0), 0.03))
+    assert (report["z"] < DETECTION_Z).all()
+
+
+def test_a_readout_offset_does_not_hide_a_coherent_error(snapshot, batch):
+    report = analyze(_with_readout_offset(_fake_hardware(snapshot, batch, conditional_phase=0.02), 0.03))
+    control_one = report.query("family == 'cnot' and control == 1")
+    assert (control_one["z"] > DETECTION_Z).all()
+    assert np.allclose(control_one["theta"], 0.02, atol=0.004)
