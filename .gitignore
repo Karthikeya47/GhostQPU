@@ -9,3 +9,6 @@ __pycache__/
 data/stand_in/
 # Working copies of submitted jobs; collected results live in data/runs/
 data/pending/
+# Pilot jobs awaiting collect
+data/pilot/pending/
+.DS_Store

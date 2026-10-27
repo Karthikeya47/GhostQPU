@@ -31,7 +31,8 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--shots", type=int, default=2000)
     p.add_argument("--seed", type=int, default=None)
 
-    sub.add_parser("collect", help="fetch finished jobs, save Genuine Runs and forge their Twins")
+    p = sub.add_parser("collect", help="fetch finished jobs, save Genuine Runs and forge their Twins")
+    p.add_argument("--into", type=Path, default=RUNS, help="where to save the Runs (default data/runs)")
 
     p = sub.add_parser("evaluate", help="train and evaluate the Detector on saved Runs")
     p.add_argument("--chunks", type=int, default=8)
@@ -88,7 +89,7 @@ def cmd_submit(args) -> None:
     from qiskit_ibm_runtime import QiskitRuntimeService
 
     from ghostqpu.canaries import build_batch
-    from ghostqpu.execution import save_submission, submit
+    from ghostqpu.execution import manifest, save_submission, submit
     from ghostqpu.snapshot import CalibrationSnapshot
 
     backend = QiskitRuntimeService(name=args.account).backend(args.backend)
@@ -103,6 +104,7 @@ def cmd_submit(args) -> None:
         "account": args.account,
         "shots": args.shots,
         "submitted_at": now.isoformat(),
+        "manifest": manifest(backend),
     }
     folder = save_submission(PENDING, job, batch, snapshot, submission)
     print(f"submitted job {job.job_id()} ({len(batch.circuits)} circuits x {args.shots} shots)")
@@ -129,8 +131,8 @@ def cmd_collect(args) -> None:
             continue
         backend = service.backend(submission["backend"])
         run = collect(job, backend, batch, submission)
-        run.save(RUNS)
-        forge_twin(run).save(RUNS)
+        run.save(args.into)
+        forge_twin(run).save(args.into)
         COLLECTED.mkdir(parents=True, exist_ok=True)
         shutil.move(str(folder), str(COLLECTED / folder.name))
         print(f"{run.run_id}: collected, {run.info['qpu_seconds']} QPU seconds, Twin forged")

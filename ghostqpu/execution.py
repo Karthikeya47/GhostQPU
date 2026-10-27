@@ -7,7 +7,10 @@ swap in. Local stand-in Runs let us exercise everything without spending QPU tim
 from __future__ import annotations
 
 import json
+import platform
+import subprocess
 from datetime import UTC, datetime
+from importlib.metadata import version
 from pathlib import Path
 
 import numpy as np
@@ -16,14 +19,28 @@ from qiskit_aer import AerSimulator
 from qiskit_aer.noise import NoiseModel
 from qiskit_ibm_runtime.executor_sampler import Sampler
 
-from ghostqpu.canaries import Batch
+from ghostqpu.canaries import CANARY_OPTIMIZATION_LEVEL, WORKLOAD_OPTIMIZATION_LEVEL, Batch
 from ghostqpu.runs import FORGED, GENUINE, Run
 from ghostqpu.snapshot import CalibrationSnapshot
+
+PACKAGES = ("qiskit", "qiskit-ibm-runtime", "qiskit-aer", "numpy", "scikit-learn")
+REPO = Path(__file__).resolve().parent.parent
 
 
 def submit(backend: BackendV2, batch: Batch, shots: int):
     """Send `batch` to `backend` with every error-suppression trick turned off."""
     return _sampler(backend).run(batch.circuits, shots=shots)
+
+
+def manifest(backend: BackendV2) -> dict:
+    """What produced a Run: code and library versions plus the exact execution settings."""
+    return {
+        "git": _git_state(),
+        "python": platform.python_version(),
+        "packages": {name: version(name) for name in PACKAGES},
+        "sampler_options": _sampler(backend).options.model_dump(mode="json"),
+        "transpile": {"canaries": CANARY_OPTIMIZATION_LEVEL, "workloads": WORKLOAD_OPTIMIZATION_LEVEL},
+    }
 
 
 def collect(job, backend: BackendV2, batch: Batch, submission: dict) -> Run:
@@ -33,7 +50,10 @@ def collect(job, backend: BackendV2, batch: Batch, submission: dict) -> Run:
     if _is_ibm(backend):
         started = _started_at(job)
         snapshot = CalibrationSnapshot.capture(backend, at=started)
-        info.update(started_at=started.isoformat(), qpu_seconds=job.usage(), job_id=job.job_id())
+        metrics = job.metrics()
+        # created -> running is queue time, running -> finished is wall-clock; usage is what IBM bills.
+        info.update(started_at=started.isoformat(), qpu_seconds=job.usage(), job_id=job.job_id(),
+                    timestamps=metrics.get("timestamps"), usage=metrics.get("usage"))
     else:
         snapshot = CalibrationSnapshot.capture(backend)
         info.update(started_at=datetime.now(UTC).isoformat(), qpu_seconds=None)
@@ -119,6 +139,17 @@ def _started_at(job) -> datetime:
     if not stamp:
         return datetime.now(UTC)
     return datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+
+
+def _git_state() -> dict:
+    def git(*args: str) -> str:
+        return subprocess.run(["git", *args], cwd=REPO, capture_output=True, text=True, check=True).stdout.strip()
+
+    try:
+        changed = git("status", "--porcelain").splitlines()
+        return {"commit": git("rev-parse", "HEAD"), "dirty": bool(changed), "changed": changed}
+    except (OSError, subprocess.CalledProcessError):
+        return {"commit": None, "dirty": None, "changed": []}
 
 
 def _is_ibm(backend: BackendV2) -> bool:

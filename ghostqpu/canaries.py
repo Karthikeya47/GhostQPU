@@ -20,6 +20,9 @@ COHERENT_REPEATS = (0, 4, 8, 16, 32, 64, 128)
 SPECTATOR_DELAYS_US = (0, 2, 4, 8, 12, 16)
 MAX_READOUT_ERROR = 0.05
 MAX_CZ_ERROR = 0.02
+# Canaries must run exactly as written; Workloads get the light optimization a customer would use.
+CANARY_OPTIMIZATION_LEVEL = 0
+WORKLOAD_OPTIMIZATION_LEVEL = 1
 
 
 @dataclass(frozen=True)
@@ -77,10 +80,11 @@ def build_batch(snapshot: CalibrationSnapshot, seed: int, n_placements: int = 4)
     layout = [q for pair in placements for q in pair]
 
     logical, specs = _canary_circuits(len(placements))
-    circuits = transpile(logical, backend, initial_layout=layout, optimization_level=0)
+    circuits = transpile(logical, backend, initial_layout=layout, optimization_level=CANARY_OPTIMIZATION_LEVEL)
 
     for name, qc in _workload_circuits(seed):
-        circuits.append(transpile(qc, backend, optimization_level=1, seed_transpiler=seed))
+        circuits.append(transpile(qc, backend, optimization_level=WORKLOAD_OPTIMIZATION_LEVEL,
+                                  seed_transpiler=seed))
         specs.append(CircuitSpec("workload", name))
 
     order = np.random.default_rng(seed).permutation(len(circuits))

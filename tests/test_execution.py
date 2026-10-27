@@ -5,7 +5,7 @@ import pytest
 from qiskit_ibm_runtime.fake_provider import FakeFez
 
 from ghostqpu.canaries import Batch, build_batch
-from ghostqpu.execution import collect, forge_twin, stand_in_run, submit
+from ghostqpu.execution import collect, forge_twin, manifest, stand_in_run, submit
 from ghostqpu.runs import FORGED, GENUINE, load_runs
 from ghostqpu.snapshot import CalibrationSnapshot
 
@@ -78,3 +78,18 @@ def test_runs_round_trip_through_disk(tmp_path, runs):
 
 def test_load_runs_on_missing_folder_is_empty(tmp_path):
     assert load_runs(tmp_path / "nope") == []
+
+
+def test_manifest_records_code_versions_and_sampler_settings():
+    # A cross-day study is only comparable if every Run says what produced it.
+    import qiskit
+    import qiskit_ibm_runtime
+
+    record = manifest(FakeFez())
+    assert len(record["git"]["commit"]) == 40 and isinstance(record["git"]["dirty"], bool)
+    assert record["packages"]["qiskit"] == qiskit.__version__
+    assert record["packages"]["qiskit-ibm-runtime"] == qiskit_ibm_runtime.__version__
+    options = record["sampler_options"]
+    assert options["dynamical_decoupling"]["enable"] is False
+    assert options["twirling"]["enable_gates"] is False and options["twirling"]["enable_measure"] is False
+    assert record["transpile"] == {"canaries": 0, "workloads": 1}
