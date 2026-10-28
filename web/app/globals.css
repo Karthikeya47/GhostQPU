@@ -1,0 +1,108 @@
+:root {
+  /* Cryostat: cold graphite, gold-plated stages, frost. Genuine/Forged match the repo's chart colors. */
+  --ink: #0b0e14;
+  --panel: #121722;
+  --line: #232b3a;
+  --gold: #c9a24a;
+  --gold-dim: #7d6630;
+  --frost: #e4eaf0;
+  --mute: #8791a3;
+  --genuine: #2a78d6;
+  --genuine-hi: #5aa0f2;
+  --forged: #eb6834;
+  --good: #3cc47c;
+  --gutter: clamp(16px, 5vw, 72px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  background: var(--ink);
+  color: var(--frost);
+  font-family: var(--f-sans), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a { color: var(--gold); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
+
+.mono { font-family: var(--f-mono), monospace; }
+.display { font-family: var(--f-display), sans-serif; text-transform: uppercase; letter-spacing: 0.01em; }
+
+.section { padding: clamp(72px, 12vh, 140px) var(--gutter); position: relative; }
+.wrap { max-width: 1240px; margin: 0 auto; }
+
+.stage {
+  font-family: var(--f-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.stage::before { content: ""; width: 28px; height: 1px; background: var(--gold); }
+
+h2.title {
+  font-family: var(--f-display), sans-serif;
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: clamp(40px, 6.4vw, 92px);
+  line-height: 0.92;
+  max-width: 14ch;
+}
+.lede { color: var(--mute); max-width: 62ch; margin-top: 20px; font-size: 18px; }
+.lede b { color: var(--frost); font-weight: 500; }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 28px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 24px; }
+
+.card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent), var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px;
+  position: relative;
+  min-width: 0;
+}
+.card h3 { font-family: var(--f-display), sans-serif; text-transform: uppercase; font-weight: 800; font-size: 26px; letter-spacing: 0.02em; }
+.card .cap { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 28px 0; }
+.tab {
+  font: 500 13px var(--f-mono), monospace;
+  background: transparent;
+  color: var(--mute);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.tab:hover { color: var(--frost); border-color: var(--mute); }
+.tab[aria-pressed="true"] { color: var(--ink); background: var(--gold); border-color: var(--gold); }
+
+.legend { display: flex; gap: 18px; font: 12px var(--f-mono), monospace; color: var(--mute); flex-wrap: wrap; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+
+.big { font-family: var(--f-display), sans-serif; font-weight: 900; font-size: clamp(56px, 8vw, 112px); line-height: 0.9; }
+.unit { font: 12px var(--f-mono), monospace; color: var(--mute); text-transform: uppercase; letter-spacing: 0.12em; }
+
+.canvas3d { width: 100%; height: clamp(360px, 60vh, 620px); border-radius: 14px; border: 1px solid var(--line); background: radial-gradient(ellipse at 50% 40%, #151c2a, var(--ink) 70%); cursor: grab; touch-action: pan-y; }
+
+table.data { width: 100%; border-collapse: collapse; font: 13px var(--f-mono), monospace; }
+table.data th, table.data td { text-align: right; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.data th:first-child, table.data td:first-child { text-align: left; }
+table.data th { color: var(--mute); font-weight: 400; }
+.scrollx { overflow-x: auto; }
+
+svg text { font-family: var(--f-mono), monospace; }
+.hero3d { width: 100%; height: 100%; touch-action: pan-y; }
+.grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 24px; }

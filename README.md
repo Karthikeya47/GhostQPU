@@ -126,3 +126,12 @@ That is a result too: "public calibration data is enough to fake a quantum compu
 python -m pytest        # about 1 minute, no QPU time
 python -m ruff check .
 ```
+
+## Web frontend
+
+A 3D, animated Next.js site in [web/](web/) shows the same data: the real ibm_marrakesh lattice, Canary curves, per-placement ribbons, shot records, held-out Verdicts and the research-branch stress tests.
+
+```sh
+PYTHONPATH=. python scripts/export_web_data.py   # regenerate web/public/data.json from data/runs and data/fresh
+cd web && npm install && npm run dev             # http://localhost:3000
+```
