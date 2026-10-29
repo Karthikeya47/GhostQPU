@@ -132,7 +132,7 @@ export function ChipScene({ chip, placements }: { chip: Chip; placements: [numbe
     const aspect = size.width / size.height;
     const d = wide ? 14 : Math.min(30, 13 / Math.max(aspect, 0.45));
     camera.position.set(0, d * 0.7, d * 0.72);
-    camera.lookAt(0, wide ? 0.6 : -1.2, 0);
+    camera.lookAt(0, wide ? 0.6 : -3.2, 0);
   }, [camera, size, wide]);
 
   useFrame(({ clock, pointer }) => {
