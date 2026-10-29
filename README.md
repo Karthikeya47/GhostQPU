@@ -71,6 +71,8 @@ The Detector above was frozen and never retrained. Three new jobs, each from a n
 
 On ibm_marrakesh qubits 107-108, after 32 repeated CNOTs the target reads wrong **73%** of the time; the calibration-matched Forger predicts **10%**. Control circuits show the error comes from the CZ pulse itself (a coherent phase, z = 40), not from the conditional phase we hypothesized, and that it varies strongly between qubit pairs. Details: [docs/research/cnot-pilot-hardware.md](docs/research/cnot-pilot-hardware.md).
 
+Related work and what is new: [docs/research/prior-work.md](docs/research/prior-work.md).
+
 Slides: [docs/GhostQPU_QHack_India26.pptx](docs/GhostQPU_QHack_India26.pptx). Demo video: [Google Drive](https://drive.google.com/drive/folders/1M0DklU9nP6OGHuq1RZSj4r4Gzi0MHY0b). New to quantum computing? Start with the plain-language explainer: [docs/GhostQPU_explained.pdf](docs/GhostQPU_explained.pdf).
 
 ## Setup
