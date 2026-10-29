@@ -43,7 +43,7 @@ export function jobLabel(id: string) {
   const base = id.replace("_forged", "");
   // Run ids are <backend>_<YYYYMMDD>T<time>_<seed>; A, B and J1 are the names the research notes use.
   const [, ymd, seed] = base.match(/_(\d{8})T\d+_(\d+)$/) ?? [];
-  const name = ({ "12894": "Job A", "13117": "Job B", "77679": "Job J1" } as Record<string, string>)[seed] ?? `Job ${seed ?? base}`;
+  const name = ({ "12894": "Job A", "13117": "Job B", "77679": "Job J1", "85181": "Job J2" } as Record<string, string>)[seed] ?? `Job ${seed ?? base}`;
   if (!ymd) return name;
   const when = new Date(`${ymd.slice(0, 4)}-${ymd.slice(4, 6)}-${ymd.slice(6)}T00:00:00Z`);
   return `${name} · ${when.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}`;

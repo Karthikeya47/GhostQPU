@@ -53,7 +53,18 @@ Two real jobs on IBM **ibm_marrakesh** (34 circuits x 1000 shots, 11 QPU seconds
 | Idle-qubit shift from neighbor (16 us) | 7.8% | 0.4% |
 | Readout error | 1.1 to 1.4% | 0.3 to 0.5% |
 
-Detector, each job held out from training: **AUC 1.00**, all 4 jobs correct (genuine scores 0.02 and 0.06, forged 0.96 and 0.98). Both jobs share one calibration cycle, so cross-day results are still to come.
+Detector, each job held out from training: **AUC 1.00**, all 4 jobs correct (genuine scores 0.02 and 0.06, forged 0.96 and 0.98). Both jobs share one calibration cycle.
+
+### Cross-day check with the frozen Detector (Oct 27 and 29)
+
+The Detector above was frozen and never retrained. Two new jobs from two new calibration cycles, on new qubit placements:
+
+| Job | Calibration cycle | Genuine score | Forged Twin score |
+|---|---|---|---|
+| J1 | 2026-10-27 12:06 | 0.18 (Genuine) | 0.99 (Forged) |
+| J2 | 2026-10-29 20:01 | 0.00 (Genuine) | 0.99 (Forged) |
+
+4 of 4 correct across 3 calibration cycles in total. With 0 errors in 2 new-cycle Genuine jobs the 95% upper bound on the false-positive rate is still 0.78, so more cycles are needed. Details: [J1](docs/research/fresh-hardware-j1.md), [J2](docs/research/fresh-hardware-j2.md).
 
 Slides: [docs/GhostQPU_QHack_India26.pptx](docs/GhostQPU_QHack_India26.pptx). Demo video: [Google Drive](https://drive.google.com/drive/folders/1M0DklU9nP6OGHuq1RZSj4r4Gzi0MHY0b). New to quantum computing? Start with the plain-language explainer: [docs/GhostQPU_explained.pdf](docs/GhostQPU_explained.pdf).
 
