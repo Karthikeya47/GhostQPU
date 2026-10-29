@@ -12,6 +12,7 @@ from pathlib import Path
 import numpy as np
 
 from ghostqpu.detector import dataset, evaluate, features_of, train
+from ghostqpu.pilot import analyze, curves
 from ghostqpu.runs import load_runs
 from ghostqpu.signature import _p1_targets, canary_curves
 
@@ -92,6 +93,8 @@ def main() -> None:
     fresh_scores = fresh_df[["run_id", "origin", "cycle", "chunk"]].assign(
         forged_score=model.predict_proba(fresh_df[features_of(fresh_df)])[:, 1])
 
+    # The page's hero chip is drawn as ibm_marrakesh, so it shows the newest Genuine marrakesh Run.
+    hero = [r for r in dev + fresh if r.origin == "genuine" and r.batch.backend_name == "ibm_marrakesh"][-1]
     all_df = dataset(dev + fresh, CHUNKS)
     feats = features_of(all_df)
     out = {
@@ -106,8 +109,15 @@ def main() -> None:
             "weights": [[k, float(v)] for k, v in report.weights.items()],
         },
         "fresh_scores": fresh_scores.to_dict(orient="records"),
-        "chips": {"dev": chip(dev[0].snapshot), "fresh": chip(fresh[0].snapshot)},
+        "hero_id": hero.run_id,
+        "chips": {"dev": chip(dev[0].snapshot), "fresh": chip(hero.snapshot)},
     }
+    # CNOT pilot Runs: hardware vs the stock Forger's near-exact curve, and the fitted coherent turn per repeat.
+    out["pilot"] = [
+        {"id": r.run_id, "cycle": r.snapshot.cycle, "qpu_seconds": r.info.get("qpu_seconds"),
+         "curves": curves(r).to_dict(orient="records"), "fits": analyze(r).to_dict(orient="records")}
+        for r in load_runs(Path("data/pilot/runs"))
+    ]
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, separators=(",", ":"), default=float))
     print(f"wrote {OUT} ({OUT.stat().st_size // 1024} KB), AUC {report.auc:.2f}")

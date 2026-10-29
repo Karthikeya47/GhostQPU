@@ -25,6 +25,8 @@ export type Chunk = { run_id: string; origin: Origin; chunk: number; forged_scor
 export type Data = {
   runs: Run[];
   fresh_ids: string[];
+  hero_id: string;
+  pilot: { id: string; cycle: string; qpu_seconds: number; curves: { placement: string; family: string; control: number; n: number; hardware: number; stock: number; se: number }[]; fits: { placement: string; family: string; control: number; theta: number; z: number; chi2_per_dof: number }[] }[];
   features: string[];
   signatures: (Record<string, number> & { run_id: string; origin: Origin; chunk: number })[];
   report: { split: string; auc: number; run_accuracy: number; n_pairs: number; predictions: Chunk[]; weights: [string, number][] };
@@ -43,10 +45,12 @@ export function jobLabel(id: string) {
   const base = id.replace("_forged", "");
   // Run ids are <backend>_<YYYYMMDD>T<time>_<seed>; A, B and J1 are the names the research notes use.
   const [, ymd, seed] = base.match(/_(\d{8})T\d+_(\d+)$/) ?? [];
-  const name = ({ "12894": "Job A", "13117": "Job B", "77679": "Job J1", "85181": "Job J2" } as Record<string, string>)[seed] ?? `Job ${seed ?? base}`;
-  if (!ymd) return name;
+  const name = ({ "12894": "Job A", "13117": "Job B", "77679": "Job J1", "85181": "Job J2", "86034": "Job F1" } as Record<string, string>)[seed] ?? `Job ${seed ?? base}`;
+  const backend = base.match(/^ibm_([a-z]+)_/)?.[1];
+  const tag = backend && backend !== "marrakesh" ? ` · ${backend}` : "";
+  if (!ymd) return name + tag;
   const when = new Date(`${ymd.slice(0, 4)}-${ymd.slice(4, 6)}-${ymd.slice(6)}T00:00:00Z`);
-  return `${name} · ${when.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}`;
+  return `${name} · ${when.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}${tag}`;
 }
 
 export const FEATURE_LABELS: Record<string, string> = {

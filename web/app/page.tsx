@@ -5,14 +5,14 @@ import { useMemo, useState } from "react";
 import { GroupedBars, LineChart, ScoreBars, WeightBars } from "@/components/charts";
 import { ShotRaster } from "@/components/ShotRaster";
 import { COLORS, D, FEATURE_LABELS, genuineRuns, jobLabel, mean, runById, scoreOf, twinOf } from "@/lib/data";
-import { CNOT_N, CNOT_SIM, IDEAL_TVD, J1, NULL_TEST_AUC, STRONGER_FORGER, WORKLOAD_TVD } from "@/lib/research";
+import { IDEAL_TVD, J1, NULL_TEST_AUC, STRONGER_FORGER, WORKLOAD_TVD } from "@/lib/research";
 
 const Scene = dynamic(() => import("@/components/three").then((m) => m.Scene), { ssr: false });
 const ChipScene = dynamic(() => import("@/components/three").then((m) => m.ChipScene), { ssr: false });
 const CoherentScene = dynamic(() => import("@/components/three").then((m) => m.CoherentScene), { ssr: false });
 const SignatureScene = dynamic(() => import("@/components/three").then((m) => m.SignatureScene), { ssr: false });
 
-const fresh = runById(D.fresh_ids.find((id) => !id.endsWith("_forged"))!);
+const fresh = runById(D.hero_id);
 const J1_ID = "ibm_marrakesh_20261027T050804_77679";
 const pct = (v: number, d = 1) => `${(v * 100).toFixed(d)}%`;
 
@@ -364,7 +364,7 @@ function Verdict() {
                 {truth && (
                   <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} style={{ marginTop: 12, color: "var(--mute)", fontSize: 15 }}>
                     <b style={{ color: origin === "genuine" ? COLORS.genuine : COLORS.forged }}>
-                      {origin === "genuine" ? "Executed on IBM ibm_marrakesh." : "Forged by the calibration-matched simulator."}
+                      {origin === "genuine" ? `Executed on IBM ${runById(pick).info.backend ?? "ibm_marrakesh"}.` : "Forged by the calibration-matched simulator."}
                     </b>{" "}
                     {jobLabel(pick)}{isFresh ? ", new calibration cycle" : ""}. <span className="mono" style={{ fontSize: 12 }}>{pick}</span>
                   </motion.p>
@@ -508,20 +508,7 @@ function StressTest() {
           </motion.div>
         </div>
 
-        <motion.div className="card" {...rise} style={{ marginTop: 28 }}>
-          <h3>Next Canary: repeated CNOT</h3>
-          <p className="cap">
-            Local simulation only. If the real CZ carries a coherent conditional-phase error ε that the noise model lacks, P(target wrong) after
-            CNOT<sup>N</sup> grows far faster than the stock Forger predicts. The ε values are hypotheses to test on hardware, not measurements.
-          </p>
-          <div className="legend">
-            <span><i style={{ background: COLORS.forged }} />stock Forger</span>
-            <span><i style={{ background: "#c9a24a" }} />ε = 0.02 rad</span>
-            <span><i style={{ background: COLORS.genuine }} />ε = 0.05 rad</span>
-          </div>
-          <LineChart label="Simulated CNOT canary error growth" xTicks={[0, 16, 32, 48, 64]} xLabel="CNOT repeats (N)" yLabel="P(target wrong)" yMax={0.9}
-            series={CNOT_SIM.map((s, i) => ({ name: s.name, color: [COLORS.forged, "#c9a24a", COLORS.genuine][i], dashed: i > 0, pts: CNOT_N.map((n, k) => [n, s.values[k]] as [number, number]) }))} />
-        </motion.div>
+        {D.pilot.length ? <PilotCard /> : null}
 
         <motion.div {...rise} style={{ marginTop: 56, color: "var(--mute)", maxWidth: "72ch", fontSize: 15 }}>
           <div className="stage">Limits, stated plainly</div>
@@ -534,6 +521,64 @@ function StressTest() {
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function PilotCard() {
+  const run = D.pilot[D.pilot.length - 1];
+  const placements = [...new Set(run.curves.map((c) => c.placement))];
+  // Open on the pair with the strongest CZ-linked signal; the reader can step through the rest.
+  const strongest = [...run.fits].filter((f) => f.family === "cnot").sort((a, b) => b.z - a.z)[0].placement;
+  const [pl, setPl] = useState(strongest);
+  const pts = (family: string, control: number, key: "hardware" | "stock") =>
+    run.curves.filter((c) => c.placement === pl && c.family === family && c.control === control)
+      .sort((a, b) => a.n - b.n).map((c) => [c.n, c[key]] as [number, number]);
+  const at = (n: number, key: "hardware" | "stock") => run.curves.find((c) => c.placement === pl && c.family === "cnot" && c.control === 1 && c.n === n)?.[key] ?? 0;
+  const fit = (family: string, control: number) => run.fits.find((f) => f.placement === pl && f.family === family && f.control === control)!;
+  return (
+    <motion.div className="card" {...rise} style={{ marginTop: 28 }}>
+      <div className="stage" style={{ marginBottom: 8 }}>New on hardware · {run.qpu_seconds} QPU seconds</div>
+      <h3>The next Canary: repeated CNOT</h3>
+      <p className="cap">
+        CNOT<sup>N</sup> with N even, so the ideal target reads 0. On this pair, after 32 repeats real hardware reads wrong{" "}
+        <b style={{ color: COLORS.genuine }}>{pct(at(32, "hardware"), 0)}</b> of the time; the Forger expects{" "}
+        <b style={{ color: COLORS.forged }}>{pct(at(32, "stock"), 0)}</b>. The control rows rule out the obvious explanations: with the
+        control in 0 the gap stays, so it is not the conditional phase we hypothesized, and the idle rows (same single-qubit gates, CZ swapped for an
+        equal-length wait) show it comes from the CZ pulse itself. Strength varies a lot by qubit pair.
+      </p>
+      <div className="tabs" role="group" aria-label="Qubit pair">
+        {placements.map((p) => <button key={p} className="tab" aria-pressed={p === pl} onClick={() => setPl(p)}>Q{p}</button>)}
+      </div>
+      <div className="legend">
+        <span><i style={{ background: COLORS.genuine }} />hardware, control 1</span>
+        <span><i style={{ background: COLORS.forged }} />Forger, control 1</span>
+        <span><i style={{ background: COLORS.gold }} />hardware, control 0</span>
+        <span><i style={{ background: "#8791a3" }} />hardware, CZ replaced by idle</span>
+      </div>
+      <LineChart key={pl} label={`CNOT canary on qubits ${pl}: P(target wrong) vs repeats`} xTicks={[0, 32, 64, 96, 128]} xLabel="CNOT repeats (N)"
+        yLabel="P(target wrong)" yMax={1}
+        series={[
+          { name: "hardware c=1", color: COLORS.genuine, pts: pts("cnot", 1, "hardware") },
+          { name: "Forger c=1", color: COLORS.forged, pts: pts("cnot", 1, "stock") },
+          { name: "hardware c=0", color: COLORS.gold, dashed: true, pts: pts("cnot", 0, "hardware") },
+          { name: "hardware idle", color: "#8791a3", dashed: true, pts: pts("idle", 1, "hardware") },
+        ]} />
+      <div className="scrollx" style={{ marginTop: 16 }}>
+        <table className="data">
+          <thead><tr><th>circuit</th><th>coherent turn the Forger misses (rad per repeat)</th><th>z vs none</th></tr></thead>
+          <tbody>
+            {[["cnot", 1], ["cnot", 0], ["idle", 1], ["idle", 0]].map(([f, c]) => {
+              const r = fit(f as string, c as number);
+              return <tr key={`${f}${c}`}><td>{f} · control {c}</td><td>{r.theta.toFixed(3)}</td><td style={{ color: r.z > 3.2 ? "var(--frost)" : "var(--mute)" }}>{r.z.toFixed(1)}</td></tr>;
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p className="cap" style={{ marginTop: 12 }}>
+        One job, one calibration cycle, same qubits as job J2. The fit&apos;s χ² per degree of freedom reaches about 5 on some curves, so the
+        intervals are optimistic. z above 3.2 is the pre-registered detection threshold.
+      </p>
+    </motion.div>
   );
 }
 

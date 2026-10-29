@@ -55,16 +55,21 @@ Two real jobs on IBM **ibm_marrakesh** (34 circuits x 1000 shots, 11 QPU seconds
 
 Detector, each job held out from training: **AUC 1.00**, all 4 jobs correct (genuine scores 0.02 and 0.06, forged 0.96 and 0.98). Both jobs share one calibration cycle.
 
-### Cross-day check with the frozen Detector (Oct 27 and 29)
+### Cross-day and cross-backend check with the frozen Detector (Oct 27 and 29)
 
-The Detector above was frozen and never retrained. Two new jobs from two new calibration cycles, on new qubit placements:
+The Detector above was frozen and never retrained. Three new jobs, each from a new calibration cycle and new qubit placements, one on a second backend:
 
-| Job | Calibration cycle | Genuine score | Forged Twin score |
-|---|---|---|---|
-| J1 | 2026-10-27 12:06 | 0.18 (Genuine) | 0.99 (Forged) |
-| J2 | 2026-10-29 20:01 | 0.00 (Genuine) | 0.99 (Forged) |
+| Job | Backend | Calibration cycle | Genuine score | Forged Twin score |
+|---|---|---|---|---|
+| J1 | ibm_marrakesh | 2026-10-27 12:06 | 0.18 (Genuine) | 0.99 (Forged) |
+| J2 | ibm_marrakesh | 2026-10-29 20:01 | 0.00 (Genuine) | 0.99 (Forged) |
+| F1 | **ibm_fez** | 2026-10-29 19:59 | 0.02 (Genuine) | 0.99 (Forged) |
 
-4 of 4 correct across 3 calibration cycles in total. With 0 errors in 2 new-cycle Genuine jobs the 95% upper bound on the false-positive rate is still 0.78, so more cycles are needed. Details: [J1](docs/research/fresh-hardware-j1.md), [J2](docs/research/fresh-hardware-j2.md).
+6 of 6 correct, on a backend the Detector never saw. With 0 errors in 3 Genuine jobs the 95% upper bound on the false-positive rate is 0.63, so more cycles are needed. Details: [J1](docs/research/fresh-hardware-j1.md), [J2](docs/research/fresh-hardware-j2.md), [ibm_fez](docs/research/cross-backend-fez.md).
+
+### Next Canary: repeated CNOT, now on hardware
+
+On ibm_marrakesh qubits 107-108, after 32 repeated CNOTs the target reads wrong **73%** of the time; the calibration-matched Forger predicts **10%**. Control circuits show the error comes from the CZ pulse itself (a coherent phase, z = 40), not from the conditional phase we hypothesized, and that it varies strongly between qubit pairs. Details: [docs/research/cnot-pilot-hardware.md](docs/research/cnot-pilot-hardware.md).
 
 Slides: [docs/GhostQPU_QHack_India26.pptx](docs/GhostQPU_QHack_India26.pptx). Demo video: [Google Drive](https://drive.google.com/drive/folders/1M0DklU9nP6OGHuq1RZSj4r4Gzi0MHY0b). New to quantum computing? Start with the plain-language explainer: [docs/GhostQPU_explained.pdf](docs/GhostQPU_explained.pdf).
 

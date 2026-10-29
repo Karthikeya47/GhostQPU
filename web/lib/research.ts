@@ -24,14 +24,6 @@ export const IDEAL_TVD = [
   { label: "B random4_1", real: 0.053, stock: 0.043, v2: 0.06 },
 ];
 
-// handoff.md: local simulation of the proposed CNOT^N canary, P(target wrong). Hypothetical epsilons, not measured.
-export const CNOT_N = [0, 2, 4, 8, 16, 32, 64];
-export const CNOT_SIM = [
-  { name: "Stock Forger", values: [0.006, 0.011, 0.015, 0.023, 0.04, 0.07, 0.122] },
-  { name: "ε = 0.02 rad", values: [0.007, 0.011, 0.016, 0.028, 0.062, 0.153, 0.391] },
-  { name: "ε = 0.05 rad", values: [0.006, 0.013, 0.024, 0.061, 0.181, 0.51, 0.873] },
-];
-
 // handoff.md: Detector trained on Genuine + stock Twins, then shown the stronger Forger (forger.py).
 export const STRONGER_FORGER = {
   stockTwins: 0.97,
