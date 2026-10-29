@@ -28,7 +28,8 @@ def main(argv: list[str] | None = None) -> None:
     p = sub.add_parser("submit", help="send a Batch with hidden Canaries to an IBM backend")
     p.add_argument("--account", required=True)
     p.add_argument("--backend", required=True)
-    p.add_argument("--shots", type=int, default=2000)
+    # 1000 matches every Run the frozen Detector was trained on (scripts/score_fresh.py warns otherwise).
+    p.add_argument("--shots", type=int, default=1000)
     p.add_argument("--seed", type=int, default=None)
 
     p = sub.add_parser("collect", help="fetch finished jobs, save Genuine Runs and forge their Twins")

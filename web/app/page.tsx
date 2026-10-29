@@ -13,6 +13,7 @@ const CoherentScene = dynamic(() => import("@/components/three").then((m) => m.C
 const SignatureScene = dynamic(() => import("@/components/three").then((m) => m.SignatureScene), { ssr: false });
 
 const fresh = runById(D.fresh_ids.find((id) => !id.endsWith("_forged"))!);
+const J1_ID = "ibm_marrakesh_20261027T050804_77679";
 const pct = (v: number, d = 1) => `${(v * 100).toFixed(d)}%`;
 
 const rise = { initial: { opacity: 0, y: 40 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-10%" }, transition: { duration: 0.8, ease: [0.2, 0.8, 0.2, 1] as const } };
@@ -335,7 +336,7 @@ function Verdict() {
           <h2 className="title">Pick a job. Get a Verdict.</h2>
           <p className="lede">
             A logistic regression on 12 Signature features, scored on 8 time-ordered chunks per job. Every score below comes from a Detector that
-            never saw that job or its Twin. The two 27 Oct jobs come from a new calibration cycle and were scored by the frozen Detector.
+            never saw that job or its Twin. Jobs collected after 10 Oct come from new calibration cycles and were scored by the frozen Detector.
           </p>
         </motion.div>
         <div className="tabs" role="group" aria-label="Job">
@@ -425,7 +426,7 @@ function SignatureSpace() {
           <h2 className="title">Two clouds that never touch.</h2>
           <p className="lede">
             All {D.signatures.length} time chunks of all {D.runs.length} Runs, placed by three of their Signature features. Spheres are the 10 Oct
-            development runs; wireframe diamonds are the 27 Oct job from a new calibration cycle. Hover a point, drag to orbit.
+            development runs; wireframe diamonds are jobs from later calibration cycles. Hover a point, drag to orbit.
           </p>
         </motion.div>
         <div style={{ marginTop: 28 }}>
@@ -525,14 +526,25 @@ function StressTest() {
         <motion.div {...rise} style={{ marginTop: 56, color: "var(--mute)", maxWidth: "72ch", fontSize: 15 }}>
           <div className="stage">Limits, stated plainly</div>
           <p>
-            Three Genuine jobs on one backend, two calibration cycles. With zero errors in one new-cycle job, the 95% upper bound on the false-positive
-            rate is still 0.95. The new-cycle Genuine score rose from about 0.01 to {scoreOf(D.fresh_scores, fresh.id).toFixed(2)}, mostly because the
-            coherent features weakened on the new qubits. J1 waited {J1.queue} in the queue, ran for {J1.wall}, and billed {J1.billed} QPU seconds.
+            {genuineRuns.length} Genuine jobs on {new Set(D.runs.map((r) => r.info.backend ?? "ibm_marrakesh")).size} backend(s),{" "}
+            {new Set(genuineRuns.map((r) => r.cycle)).size} calibration cycles. {freshLimit()} J1&apos;s Genuine score rose from about 0.01 in sample
+            to {scoreOf(D.fresh_scores, J1_ID).toFixed(2)}, mostly because the coherent features weakened on the new qubits. J1 waited {J1.queue} in
+            the queue, ran for {J1.wall}, and billed {J1.billed} QPU seconds.
           </p>
         </motion.div>
       </div>
     </section>
   );
+}
+
+function freshLimit() {
+  const ids = D.fresh_ids.filter((id) => runById(id).origin === "genuine");
+  const wrong = ids.filter((id) => scoreOf(D.fresh_scores, id) > 0.5).length;
+  const n = ids.length;
+  // One-sided 95% Clopper-Pearson bound for 0 errors in n runs is 1 - 0.05^(1/n).
+  return wrong
+    ? `The frozen Detector called ${wrong} of ${n} new-cycle Genuine jobs Forged.`
+    : `With zero errors in ${n} new-cycle Genuine job${n > 1 ? "s" : ""}, the 95% upper bound on the false-positive rate is still ${(1 - 0.05 ** (1 / n)).toFixed(2)}.`;
 }
 
 function Footer() {

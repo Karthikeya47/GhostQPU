@@ -10,7 +10,7 @@ export type Run = {
   origin: Origin;
   cycle: string;
   placements: [number, number][];
-  info: { shots: number; qpu_seconds?: number; job_id?: string; started_at?: string; twin_of?: string; timestamps?: Record<string, string> };
+  info: { shots: number; backend?: string; qpu_seconds?: number; job_id?: string; started_at?: string; twin_of?: string; timestamps?: Record<string, string> };
   circuits: Circuit[];
   curves: {
     coherent: { variant: string; n: number; p1: number }[];
@@ -41,9 +41,12 @@ export const COLORS = { genuine: "#2a78d6", forged: "#eb6834", gold: "#c9a24a" }
 
 export function jobLabel(id: string) {
   const base = id.replace("_forged", "");
-  const name = base.endsWith("12894") ? "Job A" : base.endsWith("13117") ? "Job B" : "Job J1";
-  const when = base.includes("20261010") ? "10 Oct" : "27 Oct";
-  return `${name} · ${when}`;
+  // Run ids are <backend>_<YYYYMMDD>T<time>_<seed>; A, B and J1 are the names the research notes use.
+  const [, ymd, seed] = base.match(/_(\d{8})T\d+_(\d+)$/) ?? [];
+  const name = ({ "12894": "Job A", "13117": "Job B", "77679": "Job J1" } as Record<string, string>)[seed] ?? `Job ${seed ?? base}`;
+  if (!ymd) return name;
+  const when = new Date(`${ymd.slice(0, 4)}-${ymd.slice(4, 6)}-${ymd.slice(6)}T00:00:00Z`);
+  return `${name} · ${when.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}`;
 }
 
 export const FEATURE_LABELS: Record<string, string> = {
