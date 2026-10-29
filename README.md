@@ -65,8 +65,12 @@ The Detector above was frozen and never retrained. Three new jobs, each from a n
 | J2 | ibm_marrakesh | 2026-10-29 20:01 | 0.00 (Genuine) | 0.99 (Forged) |
 | F1 | **ibm_fez** | 2026-10-29 19:59 | 0.02 (Genuine) | 0.99 (Forged) |
 | K1 | **ibm_kingston** | 2026-10-29 20:38 | 0.00 (Genuine) | 0.99 (Forged) |
+| K2 | ibm_kingston, same qubits | 2026-10-29 21:18 | 0.00 (Genuine) | 0.99 (Forged) |
+| F2 | ibm_fez, same qubits | 2026-10-29 21:22 | 0.00 (Genuine) | 0.99 (Forged) |
 
-8 of 8 correct, on two backends the Detector never saw. Each backend was caught by a different effect: fez mainly by neighbor crosstalk, kingston by coherent over-rotation (90% error after 128 X gates vs 3% for the Forger). With 0 errors in 4 Genuine jobs the 95% upper bound on the false-positive rate is 0.53, so more cycles are needed. Details: [J1](docs/research/fresh-hardware-j1.md), [J2](docs/research/fresh-hardware-j2.md), [ibm_fez](docs/research/cross-backend-fez.md), [ibm_kingston](docs/research/cross-backend-kingston.md).
+12 of 12 correct over 6 calibration cycles, on two backends the Detector never saw. Each backend was caught by a different effect: fez mainly by neighbor crosstalk, kingston by coherent over-rotation (90% error after 128 X gates vs 3% for the Forger). Kingston's over-rotation survived a recalibration on the same qubits; fez's crosstalk stayed stable while its over-rotation doubled ([details](docs/research/recalibration-persistence.md)). With 0 errors in 6 Genuine jobs the 95% upper bound on the false-positive rate is 0.39, so more cycles are needed.
+
+Pooling every Run and holding out one whole calibration cycle at a time (`evaluate()` on data/runs + data/fresh), the Detector scores AUC 1.00 with all 16 jobs correct (7 cycles, 3 backends). Details: [J1](docs/research/fresh-hardware-j1.md), [J2](docs/research/fresh-hardware-j2.md), [ibm_fez](docs/research/cross-backend-fez.md), [ibm_kingston](docs/research/cross-backend-kingston.md).
 
 ### Next Canary: repeated CNOT, now on hardware
 

@@ -1,0 +1,280 @@
+{
+ "backend_name": "ibm_kingston",
+ "seed": 1,
+ "placements": [
+  [
+   148,
+   149
+  ],
+  [
+   11,
+   10
+  ],
+  [
+   50,
+   49
+  ],
+  [
+   93,
+   79
+  ]
+ ],
+ "specs": [
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 1,
+    "n": 4
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 1,
+    "n": 16
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 0,
+    "n": 128
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 0,
+    "n": 2
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 0,
+    "n": 8
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 1,
+    "n": 32
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 1,
+    "n": 8
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 0,
+    "n": 2
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 0,
+    "n": 128
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 0,
+    "n": 32
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 0,
+    "n": 0
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 1,
+    "n": 64
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 0,
+    "n": 16
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 1,
+    "n": 0
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 1,
+    "n": 128
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 0,
+    "n": 4
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 1,
+    "n": 2
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 1,
+    "n": 16
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 1,
+    "n": 4
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 0,
+    "n": 16
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 0,
+    "n": 32
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 1,
+    "n": 0
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 0,
+    "n": 0
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 1,
+    "n": 2
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 1,
+    "n": 64
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 0,
+    "n": 4
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 0,
+    "n": 64
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 1,
+    "n": 32
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 1,
+    "n": 8
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "cnot",
+   "params": {
+    "control": 0,
+    "n": 64
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 0,
+    "n": 8
+   }
+  },
+  {
+   "role": "pilot",
+   "family": "idle",
+   "params": {
+    "control": 1,
+    "n": 128
+   }
+  }
+ ]
+}

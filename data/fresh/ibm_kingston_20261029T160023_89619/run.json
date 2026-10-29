@@ -1,0 +1,91 @@
+{
+ "run_id": "ibm_kingston_20261029T160023_89619",
+ "origin": "genuine",
+ "backend": "ibm_kingston",
+ "account": "main",
+ "shots": 1000,
+ "submitted_at": "2026-10-29T16:00:23.030339+00:00",
+ "manifest": {
+  "git": {
+   "commit": "c4c8fa8840e7db0768289216788cc3b855ab42e8",
+   "dirty": false,
+   "changed": []
+  },
+  "python": "3.14.6",
+  "packages": {
+   "qiskit": "2.5.2",
+   "qiskit-ibm-runtime": "0.50.0",
+   "qiskit-aer": "0.17.2",
+   "numpy": "2.5.3",
+   "scikit-learn": "1.9.1"
+  },
+  "sampler_options": {
+   "default_shots": 4096,
+   "dynamical_decoupling": {
+    "enable": false,
+    "sequence_type": "XX",
+    "extra_slack_distribution": "middle",
+    "scheduling_method": "alap",
+    "skip_reset_qubits": false
+   },
+   "execution": {
+    "init_qubits": true,
+    "rep_delay": null,
+    "scheduler_timing": false,
+    "stretch_values": false,
+    "meas_type": "classified"
+   },
+   "twirling": {
+    "enable_gates": false,
+    "enable_measure": false,
+    "group": "pauli",
+    "num_randomizations": "auto",
+    "shots_per_randomization": "auto",
+    "strategy": "active-accum"
+   },
+   "max_execution_time": null,
+   "simulator": {
+    "angle_decimals": 5,
+    "layer_noise_model": null,
+    "seed_simulator": null,
+    "warn_absent": true
+   },
+   "experimental": {},
+   "environment": {
+    "log_level": "WARNING",
+    "job_tags": [],
+    "private": false,
+    "max_execution_time": null,
+    "image": null
+   }
+  },
+  "transpile": {
+   "canaries": 0,
+   "workloads": 1
+  }
+ },
+ "job_id": "dbhmr5mne4hc73bd7jcg",
+ "started_at": "2026-10-29T16:00:25.251127+00:00",
+ "qpu_seconds": 11,
+ "timestamps": {
+  "created": "2026-10-29T16:00:22.800472Z",
+  "finished": "2026-10-29T16:00:42.386921Z",
+  "running": "2026-10-29T16:00:25.251127Z"
+ },
+ "usage": {
+  "qpu_charge_time_seconds": 11,
+  "value": 0.179202,
+  "unit": "resource_units",
+  "status": "complete",
+  "details": [
+   {
+    "value": 0.179202,
+    "unit": "resource_units",
+    "metric": {
+     "id": "caffe3ca-729c-5750-8777-df63bbf8bfd9",
+     "value": 11
+    }
+   }
+  ]
+ }
+}

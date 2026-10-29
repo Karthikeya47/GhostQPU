@@ -29,7 +29,8 @@ marrakesh and 0.08 on fez. The spectator shift (max 0.070) is the weakest of the
 - Correct pair of Verdicts on a third Backend the Detector never saw.
 - Each Backend was caught by a different effect: marrakesh by a mix, fez mainly by spectator crosstalk, kingston mainly
   by coherent over-rotation. A multi-family Canary set is what makes one frozen Detector work across all three.
-- An over-rotation that is the same size on every qubit looks like a device-wide pulse amplitude miscalibration for
-  this cycle. It is a hypothesis, not tested: a second kingston cycle would show whether it persists.
+- An over-rotation that is the same size on every qubit looked like a device-wide pulse miscalibration for this
+  cycle. **Update:** a repeat on the same qubits after recalibration (K2) shows the same over-rotation, so that
+  hypothesis is not supported; see [recalibration-persistence.md](recalibration-persistence.md).
 - Frozen Detector totals so far: 0/4 Genuine Runs called Forged and 0/4 Twins called Genuine, over 4 calibration
   cycles on 3 Backends. One-sided 95% upper bound on each error rate: 0.53.

@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import { GroupedBars, LineChart, ScoreBars, WeightBars } from "@/components/charts";
 import { ShotRaster } from "@/components/ShotRaster";
-import { COLORS, D, FEATURE_LABELS, genuineRuns, jobLabel, mean, runById, scoreOf, twinOf } from "@/lib/data";
+import { COLORS, D, FEATURE_LABELS, genuineRuns, jobLabel, mean, type Pilot, runById, scoreOf, twinOf } from "@/lib/data";
 import { IDEAL_TVD, J1, NULL_TEST_AUC, STRONGER_FORGER, WORKLOAD_TVD } from "@/lib/research";
 
 const Scene = dynamic(() => import("@/components/three").then((m) => m.Scene), { ssr: false });
@@ -394,6 +394,8 @@ function Verdict() {
           ))}
         </div>
 
+        <ByCycle />
+
         <motion.div className="card" {...rise} style={{ marginTop: 56 }}>
           <h3>What the Detector looks at</h3>
           <p className="cap">Standardized weights of a model fit on the development runs. Blue means a larger value points to Genuine: each effect is stronger on real hardware, so a job that lacks them looks forged.</p>
@@ -524,28 +526,71 @@ function StressTest() {
   );
 }
 
+function ByCycle() {
+  const B = D.by_cycle;
+  const pairs = genuineRuns.map((g) => ({ g, s: B.runs.find((r) => r.run_id === g.id), t: B.runs.find((r) => r.run_id === `${g.id}_forged`) }));
+  return (
+    <motion.div className="card" {...rise} style={{ marginTop: 56 }}>
+      <h3>Hold out a whole calibration cycle</h3>
+      <p className="cap">
+        Every job below is scored by a Detector trained on all the other {B.n_cycles - 1} calibration cycles, never on its own, across all three
+        machines. AUC {B.auc.toFixed(2)}, {pct(B.run_accuracy, 0)} of jobs correct.
+      </p>
+      <div className="scrollx">
+        <table className="data">
+          <thead><tr><th>job</th><th>machine</th><th>calibration cycle</th><th>Genuine scored</th><th>its Twin scored</th></tr></thead>
+          <tbody>
+            {pairs.map(({ g, s, t }) => (
+              <tr key={g.id}>
+                <td>{jobLabel(g.id).split(" · ")[0]}</td>
+                <td>{(s?.backend ?? "").replace("ibm_", "")}</td>
+                <td>{g.cycle.slice(0, 16).replace("T", " ")}</td>
+                <td style={{ color: COLORS.genuine }}>{s ? s.forged_score.toFixed(2) : "n/a"}</td>
+                <td style={{ color: COLORS.forged }}>{t ? t.forged_score.toFixed(2) : "n/a"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="cap" style={{ marginTop: 12 }}>Scores are the probability of Forged. Below 0.5 is a Genuine Verdict.</p>
+    </motion.div>
+  );
+}
+
 function PilotCard() {
-  const run = D.pilot[D.pilot.length - 1];
+  const machine = (id: string) => id.match(/^pilot_ibm_([a-z]+)_/)?.[1] ?? id;
+  const detected = (r: Pilot) => new Set(r.fits.filter((f) => f.family === "cnot" && f.z > 3.2).map((f) => f.placement)).size;
+  const [pi, setPi] = useState(() => D.pilot.reduce((b, r, i) => (detected(r) >= detected(D.pilot[b]) && machine(r.id) === "marrakesh" ? i : b), 0));
+  const total = D.pilot.reduce((a, r) => a + detected(r), 0);
+  const pairs = D.pilot.reduce((a, r) => a + new Set(r.curves.map((c) => c.placement)).size, 0);
+  return (
+    <motion.div className="card" {...rise} style={{ marginTop: 28 }}>
+      <div className="stage" style={{ marginBottom: 8 }}>New on hardware · {D.pilot.length} jobs · {D.pilot.reduce((a, r) => a + (r.qpu_seconds ?? 0), 0)} QPU seconds</div>
+      <h3>The next Canary: repeated CNOT</h3>
+      <p className="cap">
+        CNOT<sup>N</sup> with N even, so the ideal target reads 0. A coherent error tied to the CZ pulse, which the Forger does not model, passes the
+        pre-registered threshold on <b>{total} of {pairs}</b> qubit pairs across {D.pilot.length} machines. The control rows separate the causes:
+        control 0 isolates a local phase on the target, control 1 adds any conditional phase, and the idle rows swap the CZ for an equal-length wait.
+      </p>
+      <div className="tabs" role="group" aria-label="Machine">
+        {D.pilot.map((r, i) => <button key={r.id} className="tab" aria-pressed={i === pi} onClick={() => setPi(i)}>{machine(r.id)} · {detected(r)}/4 pairs</button>)}
+      </div>
+      <PilotBody key={pi} run={D.pilot[pi]} />
+    </motion.div>
+  );
+}
+
+function PilotBody({ run }: { run: Pilot }) {
   const placements = [...new Set(run.curves.map((c) => c.placement))];
   // Open on the pair with the strongest CZ-linked signal; the reader can step through the rest.
-  const strongest = [...run.fits].filter((f) => f.family === "cnot").sort((a, b) => b.z - a.z)[0].placement;
-  const [pl, setPl] = useState(strongest);
+  const top = [...run.fits].filter((f) => f.family === "cnot").sort((a, b) => b.z - a.z)[0];
+  const [pl, setPl] = useState(top.placement);
   const pts = (family: string, control: number, key: "hardware" | "stock") =>
     run.curves.filter((c) => c.placement === pl && c.family === family && c.control === control)
       .sort((a, b) => a.n - b.n).map((c) => [c.n, c[key]] as [number, number]);
-  const at = (n: number, key: "hardware" | "stock") => run.curves.find((c) => c.placement === pl && c.family === "cnot" && c.control === 1 && c.n === n)?.[key] ?? 0;
   const fit = (family: string, control: number) => run.fits.find((f) => f.placement === pl && f.family === family && f.control === control)!;
   return (
-    <motion.div className="card" {...rise} style={{ marginTop: 28 }}>
-      <div className="stage" style={{ marginBottom: 8 }}>New on hardware · {run.qpu_seconds} QPU seconds</div>
-      <h3>The next Canary: repeated CNOT</h3>
-      <p className="cap">
-        CNOT<sup>N</sup> with N even, so the ideal target reads 0. On this pair, after 32 repeats real hardware reads wrong{" "}
-        <b style={{ color: COLORS.genuine }}>{pct(at(32, "hardware"), 0)}</b> of the time; the Forger expects{" "}
-        <b style={{ color: COLORS.forged }}>{pct(at(32, "stock"), 0)}</b>. The control rows rule out the obvious explanations: with the
-        control in 0 the gap stays, so it is not the conditional phase we hypothesized, and the idle rows (same single-qubit gates, CZ swapped for an
-        equal-length wait) show it comes from the CZ pulse itself. Strength varies a lot by qubit pair.
-      </p>
+    <>
       <div className="tabs" role="group" aria-label="Qubit pair">
         {placements.map((p) => <button key={p} className="tab" aria-pressed={p === pl} onClick={() => setPl(p)}>Q{p}</button>)}
       </div>
@@ -575,10 +620,10 @@ function PilotCard() {
         </table>
       </div>
       <p className="cap" style={{ marginTop: 12 }}>
-        One job, one calibration cycle, same qubits as job J2. The fit&apos;s χ² per degree of freedom reaches about 5 on some curves, so the
-        intervals are optimistic. z above 3.2 is the pre-registered detection threshold.
+        One job per machine, in calibration cycle {run.cycle.slice(0, 16).replace("T", " ")}. The fit&apos;s χ² per degree of freedom is well above 1
+        on several curves, so the intervals are optimistic. z above 3.2 is the pre-registered detection threshold.
       </p>
-    </motion.div>
+    </>
   );
 }
 
