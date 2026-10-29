@@ -41,6 +41,13 @@ def test_genuine_and_forged_runs_have_identical_shape(runs):
         assert g.shape[0] == 300
 
 
+def test_twin_is_reproducible_bit_for_bit(runs):
+    genuine, forged = runs
+    again = forge_twin(genuine)
+    assert forged.info["seed_simulator"] == again.info["seed_simulator"] != genuine.info["seed_simulator"]
+    assert all(np.array_equal(a, b) for a, b in zip(forged.shots, again.shots, strict=True))
+
+
 def test_bit_columns_mean_the_same_qubits_in_both_origins(runs):
     for run in runs:
         _assert_readout_columns_follow_preparation(run)

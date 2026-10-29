@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import platform
 import subprocess
+import zlib
 from datetime import UTC, datetime
 from importlib.metadata import version
 from pathlib import Path
@@ -74,8 +75,9 @@ def forge_twin(run: Run) -> Run:
         origin=FORGED,
         batch=run.batch,
         snapshot=run.snapshot,
-        shots=_simulate(run.snapshot.simulator_backend(), run.batch, run.info["shots"]),
-        info={**run.info, "twin_of": run.run_id, "qpu_seconds": 0.0, "forged_at": _now()},
+        shots=_simulate(run.snapshot.simulator_backend(), run.batch, run.info["shots"], _seed(f"{run.run_id}_forged")),
+        info={**run.info, "twin_of": run.run_id, "qpu_seconds": 0.0, "forged_at": _now(),
+              "seed_simulator": _seed(f"{run.run_id}_forged")},
     )
 
 
@@ -86,8 +88,9 @@ def stand_in_run(backend: BackendV2, batch: Batch, shots: int, run_id: str, **in
         origin=GENUINE,
         batch=batch,
         snapshot=CalibrationSnapshot.capture(backend),
-        shots=_simulate(backend, batch, shots),
+        shots=_simulate(backend, batch, shots, _seed(run_id)),
         info={"backend": backend.name, "shots": shots, "stand_in": True, "qpu_seconds": None,
+              "seed_simulator": _seed(run_id),
               "submitted_at": _now(), "started_at": _now(), **info},
     )
 
@@ -106,9 +109,14 @@ def load_submission(folder: Path) -> tuple[Batch, dict]:
     return Batch.load(folder), json.loads((folder / "submission.json").read_text())
 
 
-def _simulate(backend: BackendV2, batch: Batch, shots: int) -> list[np.ndarray]:
+def _seed(run_id: str) -> int:
+    # Seeded by Run id so every Twin can be regenerated bit for bit, and a stand-in never shares its Twin's seed.
+    return zlib.crc32(run_id.encode())
+
+
+def _simulate(backend: BackendV2, batch: Batch, shots: int, seed: int) -> list[np.ndarray]:
     sim = AerSimulator(noise_model=NoiseModel.from_backend(backend))
-    result = sim.run(batch.circuits, shots=shots, memory=True).result()
+    result = sim.run(batch.circuits, shots=shots, memory=True, seed_simulator=seed).result()
     return [_memory_to_bits(result.get_memory(i)) for i in range(len(batch.circuits))]
 
 
