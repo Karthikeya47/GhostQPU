@@ -64,8 +64,9 @@ The Detector above was frozen and never retrained. Three new jobs, each from a n
 | J1 | ibm_marrakesh | 2026-10-27 12:06 | 0.18 (Genuine) | 0.99 (Forged) |
 | J2 | ibm_marrakesh | 2026-10-29 20:01 | 0.00 (Genuine) | 0.99 (Forged) |
 | F1 | **ibm_fez** | 2026-10-29 19:59 | 0.02 (Genuine) | 0.99 (Forged) |
+| K1 | **ibm_kingston** | 2026-10-29 20:38 | 0.00 (Genuine) | 0.99 (Forged) |
 
-6 of 6 correct, on a backend the Detector never saw. With 0 errors in 3 Genuine jobs the 95% upper bound on the false-positive rate is 0.63, so more cycles are needed. Details: [J1](docs/research/fresh-hardware-j1.md), [J2](docs/research/fresh-hardware-j2.md), [ibm_fez](docs/research/cross-backend-fez.md).
+8 of 8 correct, on two backends the Detector never saw. Each backend was caught by a different effect: fez mainly by neighbor crosstalk, kingston by coherent over-rotation (90% error after 128 X gates vs 3% for the Forger). With 0 errors in 4 Genuine jobs the 95% upper bound on the false-positive rate is 0.53, so more cycles are needed. Details: [J1](docs/research/fresh-hardware-j1.md), [J2](docs/research/fresh-hardware-j2.md), [ibm_fez](docs/research/cross-backend-fez.md), [ibm_kingston](docs/research/cross-backend-kingston.md).
 
 ### Next Canary: repeated CNOT, now on hardware
 
