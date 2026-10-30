@@ -3,7 +3,9 @@
 </p>
 
 <p align="center">
-  <b>Q-Hack India 2026</b> · Team <b>lwyrup</b> (lead: Neelagiri Karthikeya) · Quantum Security &amp; Cryptography
+  <b>Q-Hack India 2026</b> · Team <b>lwyrup</b> · Quantum Security &amp; Cryptography
+  <br>
+  Neelagiri Karthikeya (lead) · L Mohit Jain · Tanvi Jain · Aditi Gorti
   <br>
   <a href="#run-it">Run the demo</a> · <a href="docs/PRESENTATION.md">Presenter notes</a> · <a href="https://drive.google.com/drive/folders/1M0DklU9nP6OGHuq1RZSj4r4Gzi0MHY0b">Demo video</a> · <a href="#results">Results</a> · <a href="docs/research/">Research notes</a>
 </p>
@@ -15,12 +17,12 @@ We built both sides: the **Forger** (the attack, simulating each job from the ex
 ## Proof
 
 <p align="center">
-  <img src="assets/readme/proof.svg" width="100%" alt="24 of 24 later jobs called correctly by a Detector frozen on 10 October; 3 IBM machines and 9 calibration cycles; 1.5 QPU seconds of Canaries still catches all 28 jobs.">
+  <img src="assets/readme/proof.svg" width="100%" alt="30 of 30 later jobs called correctly by a Detector frozen on 10 October; 3 IBM machines and 12 calibration cycles; 1.5 QPU seconds of Canaries still catches all 34 jobs.">
 </p>
 
-- **Frozen and blind.** Trained once on two jobs from 10 October, never retrained, then scored every later job: **24 of 24 correct** (12 real jobs and their forged copies) over 9 calibration cycles, including **ibm_fez and ibm_kingston, which it had never seen**.
-- **Forward in time.** Trained only on earlier days and scored on the next: **24 of 24**, AUC 1.00.
-- **Cheap.** **1.5 QPU seconds** of Canaries (19 circuits x 250 shots) still calls all 28 jobs correctly, 85% less than our current Batches use. No single Canary family manages it alone.
+- **Frozen and blind.** Trained once on two jobs from 10 October, never retrained, then scored every later job: **30 of 30 correct** (15 real jobs and their forged copies) over 12 calibration cycles, including **ibm_fez and ibm_kingston, which it had never seen**.
+- **Forward in time.** Trained only on earlier days and scored on the next: **30 of 30**, AUC 1.00.
+- **Cheap.** **1.5 QPU seconds** of Canary time (19 circuits x 250 shots) still calls all 34 jobs correctly, 85% less than our current Batches use, and no single Canary family manages it alone. **Checked on hardware:** 6 of 6 real 250-shot jobs called right; IBM bills about 2 s of fixed overhead per job on top, so each billed 4 to 5 s.
 - **It detects physics, not formatting.** With a simulator on both sides, the same pipeline scores AUC **0.52**, chance level, as it must.
 - **Real hardware, real data.** Every Run, Twin and calibration snapshot is committed in [data/](data/).
 
@@ -126,12 +128,15 @@ Detector, each job held out from training: **AUC 1.00**, all 4 jobs correct (Gen
 | J4 | ibm_marrakesh, repeat of J3 (same cycle, same qubits) | 2026-10-30 21:03 | 0.43 (Genuine, inside the Inconclusive band) | 0.99 (Forged) |
 | F4 | ibm_fez, repeat of F3 | 2026-10-30 21:05 | 0.00 (Genuine) | 0.99 (Forged) |
 | K4 | ibm_kingston, repeat of K3 | 2026-10-30 21:01 | 0.02 (Genuine) | 0.99 (Forged) |
+| J5 | ibm_marrakesh, J3's qubits after a recalibration | 2026-10-30 22:05 | 0.00 (Genuine) | 0.99 (Forged) |
+| K5 | ibm_kingston, new qubits | 2026-10-30 22:06 | 0.00 (Genuine) | 0.99 (Forged) |
+| F5 | ibm_fez, same qubits as F3 | 2026-10-30 22:32 | 0.00 (Genuine) | 0.99 (Forged) |
 
-24 of 24 correct: 12 Genuine jobs and their Twins over 9 calibration cycles, including two backends the Detector never saw.
+30 of 30 correct: 15 Genuine jobs and their Twins over 12 calibration cycles, including two backends the Detector never saw.
 
 - **Each machine is caught by a different effect:** fez mainly by neighbor crosstalk, kingston by coherent over-rotation (90% error after 128 X gates vs 3% for the Forger). Kingston's over-rotation survived a recalibration on the same qubits; fez's crosstalk stayed stable while its over-rotation doubled ([details](docs/research/recalibration-persistence.md)).
-- **Closest calls:** J3 (0.36) and J4 (0.43). Two separate jobs in the same cycle agreeing shows the thin margin belongs to that cycle and those qubits, not to shot noise ([details](docs/research/cross-day-2026-10-30.md)).
-- **With every cycle held out in turn** (`evaluate()` on data/runs + data/fresh): AUC 1.00, all 28 jobs correct over 10 cycles; J3 and J4 move to a clear Genuine (0.29 and 0.34).
+- **Closest calls:** J3 (0.36) and J4 (0.43). Two separate jobs in the same cycle agreeing shows the thin margin belongs to that cycle and those qubits, not to shot noise. J5 confirms it: the same qubits one recalibration later score a clear 0.00 ([details](docs/research/cross-day-2026-10-30.md)).
+- **With every cycle held out in turn** (`evaluate()` on data/runs + data/fresh): AUC 1.00, all 34 jobs correct over 13 cycles. J3 scores 0.33; J4 scores 0.39, still correct but inside the Inconclusive band.
 - **Cost and forward in time:** [docs/research/cost-and-forward.md](docs/research/cost-and-forward.md).
 - Earlier notes: [J1](docs/research/fresh-hardware-j1.md), [J2](docs/research/fresh-hardware-j2.md), [ibm_fez](docs/research/cross-backend-fez.md), [ibm_kingston](docs/research/cross-backend-kingston.md).
 
@@ -141,10 +146,21 @@ On ibm_marrakesh qubits 107-108, after 32 repeated CNOTs the target reads wrong 
 
 ## Limits
 
-- **Small sample.** With 0 errors in 12 Genuine jobs the 95% upper bound on the false-positive rate is 0.22, and the J3/J4, F3/F4 and K3/K4 pairs share a cycle, so they are not fully independent. More cycles are needed.
+- **Small sample.** With 0 errors in 15 Genuine jobs the 95% upper bound on the false-positive rate is 0.18 per job, or 0.22 counting each of the 12 calibration cycles once (the J3/J4, F3/F4 and K3/K4 pairs share a cycle). More cycles are needed.
 - **A Forger with hardware access can do better.** Our stronger Forger ([ghostqpu/forger.py](ghostqpu/forger.py)) fits over-rotation, crosstalk and readout from one real probe job and fooled the original Detector. It needs real QPU access to do so, and it does not generalize to the customer's own circuits ([details](docs/research/workload-generalization.md)).
 - **If the Detector cannot separate them,** that is a result too: "public calibration data is enough to fake a quantum computer."
 - Related work and what is new: [docs/research/prior-work.md](docs/research/prior-work.md).
+
+## Team
+
+Team **lwyrup**, Q-Hack India 2026, Quantum Security & Cryptography track.
+
+| Name | Role |
+|---|---|
+| Neelagiri Karthikeya | Team lead |
+| L Mohit Jain | Team member |
+| Tanvi Jain | Team member |
+| Aditi Gorti | Team member |
 
 <details>
 <summary><b>Repository layout and development</b></summary>
@@ -165,6 +181,7 @@ web/             Next.js site (reads web/public/data.json and cost.json)
 data/runs/       2 Genuine ibm_marrakesh runs and their Twins (the frozen Detector's training set)
 data/fresh/      later runs on marrakesh, fez and kingston, scored blind
 data/pilot/runs/ CNOT pilot runs
+data/short/      real 250-shot runs that test the cost result (kept out of the frozen set)
 docs/            presenter notes and research notes
 assets/readme/   README images (SVG)
 tests/           pytest suite, no QPU time needed

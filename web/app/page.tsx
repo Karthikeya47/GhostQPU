@@ -83,12 +83,11 @@ export default function Page() {
           </div>
           <motion.div className="progress" animate={{ width: `${((ch + 1) / CHAPTERS.length) * 100}%` }} transition={{ type: "spring", stiffness: 120, damping: 22 }} />
         </nav>
-        <AnimatePresence mode="wait">
-          <motion.main key={ch} className="chapter" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
-            transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}>
-            {body}
-          </motion.main>
-        </AnimatePresence>
+        {/* Enter animation only: an exit animation can stall in a hidden tab and leave the old chapter on screen. */}
+        <motion.main key={ch} className="chapter" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}>
+          {body}
+        </motion.main>
         <div className="pager">
           {ch > 0 ? <button onClick={() => go(ch - 1)}>← {CHAPTERS[ch - 1].title}</button> : <span />}
           <span className="hint">← → to move between chapters</span>
@@ -787,6 +786,7 @@ function Footer() {
         <div>
           <div className="display" style={{ fontSize: 48, fontWeight: 900 }}>GhostQPU</div>
           <div style={{ color: "var(--mute)", fontSize: 14 }}>Q-Hack India 2026 · Team lwyrup · Quantum Security &amp; Cryptography</div>
+          <div style={{ color: "var(--frost)", fontSize: 14, marginTop: 6 }}>Neelagiri Karthikeya (lead) · L Mohit Jain · Tanvi Jain · Aditi Gorti</div>
         </div>
         <nav style={{ display: "grid", gap: 8 }}>
           {links.map(([l, h]) => <a key={h} href={h} target="_blank" rel="noreferrer">{l} ↗</a>)}

@@ -48,11 +48,11 @@ About 6 minutes, one chapter of the site at a time. Arrow keys move between chap
 ### 5. The verdict (`#verdict`), 60 s
 
 - "We froze the Detector after training on two jobs from 10 October and never retrained it."
-- "On every job since, on three IBM machines, it is 24 of 24: 12 real jobs and their forged copies, over 9 calibration
-  cycles, on two machines it had never seen."
-- Cost card: "Verification is cheap: 1.5 QPU seconds of Canaries still catches all 28 jobs, 85% less than we spend
-  today."
-- Forward in time: "Trained only on earlier days, it scores the next day 24 of 24."
+- "On every job since, on three IBM machines, it is 30 of 30: 15 real jobs and their forged copies, over 12
+  calibration cycles, on two machines it had never seen."
+- Cost card: "Verification is cheap: 1.5 QPU seconds of Canary time still catches all 34 jobs, 85% less than we spend
+  today. We checked it on hardware last night: 6 of 6 real 250-shot jobs called right."
+- Forward in time: "Trained only on earlier days, it scores the next day 30 of 30."
 - Day-to-day chart: "Real hardware wanders between calibrations. The Forger's line is flat. That gap is what we detect."
 
 ### 6. Break it (`#break`), 60 s
@@ -68,11 +68,12 @@ About 6 minutes, one chapter of the site at a time. Arrow keys move between chap
 
 | Claim | Number | Source |
 |---|---|---|
-| Frozen Detector on later jobs | 24/24 (12 Genuine + 12 Twins), 9 cycles, 3 machines | `scripts/score_fresh.py` |
-| Error-rate bound with 0 mistakes | 0.22 per job, 0.28 per cycle (95%, one-sided) | same |
-| Each cycle held out, all data | 28/28, AUC 1.00, 10 cycles | `docs/research/cost-and-forward.md` |
-| Forward in time | 24/24, AUC 1.00, worst real job 0.29 | same |
-| Cheapest setting catching all | 1.5 QPU s of Canaries (19 circuits x 250 shots) vs 9.7 s | same |
+| Frozen Detector on later jobs | 30/30 (15 Genuine + 15 Twins), 12 cycles, 3 machines | `scripts/score_fresh.py` |
+| Error-rate bound with 0 mistakes | 0.18 per job, 0.22 per cycle (95%, one-sided) | same |
+| Each cycle held out, all data | 34/34, AUC 1.00, 13 cycles | `docs/research/cost-and-forward.md` |
+| Forward in time | 30/30, AUC 1.00, worst real job 0.29 | same |
+| Cheapest setting catching all | 1.5 QPU s of Canary time (19 circuits x 250 shots) vs 9.7 s | same |
+| Real 250-shot jobs on hardware | 6/6 called right; billed 4 to 5 s each incl. about 2 s IBM overhead | same |
 | Null test (simulator vs simulator) | AUC 0.52, near chance: PASS | `python -m ghostqpu null-test` |
 | Kingston over-rotation, 128 X gates | about 90% vs 3% for the Forger | `docs/research/cross-backend-kingston.md` |
 | CNOT Canary, marrakesh 107-108, N=32 | 73% vs 10% | `docs/research/cnot-pilot-hardware.md` |
@@ -80,8 +81,8 @@ About 6 minutes, one chapter of the site at a time. Arrow keys move between chap
 
 ## Hard questions
 
-**"Your test set is tiny."** Yes. 12 real jobs in 9 cycles. With zero errors the 95% upper bound on the false-positive
-rate is still 0.22 to 0.28. The value is the method plus a pre-registered frozen test that holds across days and
+**"Your test set is tiny."** Yes. 15 real jobs in 12 cycles. With zero errors the 95% upper bound on the false-positive
+rate is still 0.18 to 0.22. The value is the method plus a pre-registered frozen test that holds across days and
 machines; the next step is one job per machine per day for weeks.
 
 **"Could a smarter Forger beat it?"** Yes, and we show it. Our stronger Forger fits over-rotation, crosstalk and
@@ -101,7 +102,7 @@ different device. We catch a provider swapping in a simulator built from the dev
 calibration-matched fingerprint would not flag. See `docs/research/prior-work.md`.
 
 **"What was the closest call?"** J3 and J4 on marrakesh, 30 October: 0.36 and 0.43 with the frozen Detector, inside our
-inconclusive band. Two separate jobs agreed, so it is the qubits and cycle, not noise. A Detector trained on more cycles
-scores them 0.29 and 0.34.
+inconclusive band. Two separate jobs agreed, so it is that cycle, not noise: after the next recalibration the same qubits
+(J5) score 0.00.
 
 **"How much QPU time did this use?"** 11 seconds per job. The whole study used a few hundred seconds of IBM's free plan.

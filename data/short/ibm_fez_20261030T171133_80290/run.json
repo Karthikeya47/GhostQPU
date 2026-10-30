@@ -1,0 +1,91 @@
+{
+ "run_id": "ibm_fez_20261030T171133_80290",
+ "origin": "genuine",
+ "backend": "ibm_fez",
+ "account": "main",
+ "shots": 250,
+ "submitted_at": "2026-10-30T17:11:33.744226+00:00",
+ "manifest": {
+  "git": {
+   "commit": "89dc44fdd0aa97fabc87c50eb4ba342df74821e4",
+   "dirty": false,
+   "changed": []
+  },
+  "python": "3.14.6",
+  "packages": {
+   "qiskit": "2.5.2",
+   "qiskit-ibm-runtime": "0.50.0",
+   "qiskit-aer": "0.17.2",
+   "numpy": "2.5.3",
+   "scikit-learn": "1.9.1"
+  },
+  "sampler_options": {
+   "default_shots": 4096,
+   "dynamical_decoupling": {
+    "enable": false,
+    "sequence_type": "XX",
+    "extra_slack_distribution": "middle",
+    "scheduling_method": "alap",
+    "skip_reset_qubits": false
+   },
+   "execution": {
+    "init_qubits": true,
+    "rep_delay": null,
+    "scheduler_timing": false,
+    "stretch_values": false,
+    "meas_type": "classified"
+   },
+   "twirling": {
+    "enable_gates": false,
+    "enable_measure": false,
+    "group": "pauli",
+    "num_randomizations": "auto",
+    "shots_per_randomization": "auto",
+    "strategy": "active-accum"
+   },
+   "max_execution_time": null,
+   "simulator": {
+    "angle_decimals": 5,
+    "layer_noise_model": null,
+    "seed_simulator": null,
+    "warn_absent": true
+   },
+   "experimental": {},
+   "environment": {
+    "log_level": "WARNING",
+    "job_tags": [],
+    "private": false,
+    "max_execution_time": null,
+    "image": null
+   }
+  },
+  "transpile": {
+   "canaries": 0,
+   "workloads": 1
+  }
+ },
+ "job_id": "dbicvh8hoj4c73b5up00",
+ "started_at": "2026-10-30T17:11:38.771262+00:00",
+ "qpu_seconds": 4,
+ "timestamps": {
+  "created": "2026-10-30T17:11:33.511772Z",
+  "finished": "2026-10-30T17:12:06.511764Z",
+  "running": "2026-10-30T17:11:38.771262Z"
+ },
+ "usage": {
+  "qpu_charge_time_seconds": 4,
+  "value": 0.066505,
+  "unit": "resource_units",
+  "status": "complete",
+  "details": [
+   {
+    "value": 0.066505,
+    "unit": "resource_units",
+    "metric": {
+     "id": "caffe3ca-729c-5750-8777-df63bbf8bfd9",
+     "value": 4
+    }
+   }
+  ]
+ }
+}

@@ -6,7 +6,8 @@ import { COLORS } from "@/lib/data";
 
 // cost.json is written by scripts/cost_and_forward.py from the committed Runs.
 type Row = { config: string; shots: number; canary_circuits: number; qpu_seconds: number; auc: number; correct: number; jobs: number };
-const C = raw as unknown as { cost: Row[]; forward: { auc: number; correct: number; jobs: number; worst_genuine: number } };
+type Short = { run_id: string; config: string; right: boolean };
+const C = raw as unknown as { cost: Row[]; forward: { auc: number; correct: number; jobs: number; worst_genuine: number }; short?: Short[] };
 
 export function CostCard() {
   const ref = useRef<HTMLDivElement>(null);
@@ -15,6 +16,8 @@ export function CostCard() {
   const full = rows[0];
   const perfect = rows.filter((r) => r.correct === r.jobs);
   const best = perfect[perfect.length - 1];
+  const shortJobs = [...new Set((C.short ?? []).map((r) => r.run_id))];
+  const shortRight = shortJobs.filter((id) => C.short!.filter((r) => r.run_id === id).every((r) => r.right)).length;
   const max = full.qpu_seconds;
   return (
     <div className="grid2" style={{ marginTop: 28, alignItems: "stretch" }}>
@@ -53,6 +56,12 @@ export function CostCard() {
             {best.config}, {best.canary_circuits} circuits × {best.shots} shots, against {full.qpu_seconds}s today
             ({Math.round((1 - best.qpu_seconds / full.qpu_seconds) * 100)}% less). No single family manages it alone.
           </div>
+          {C.short?.length ? (
+            <div style={{ color: "var(--frost)", fontSize: 14, marginTop: 10 }}>
+              Checked on real hardware: {shortRight} of {shortJobs.length} real 250-shot jobs called right, with every Canary setting tested.
+              IBM also bills about 2 s of fixed overhead per job, so a full 250-shot job billed 4 to 5 s.
+            </div>
+          ) : null}
         </div>
         <div style={{ borderTop: "1px solid var(--line)", paddingTop: 18 }}>
           <div className="unit">forward in time: trained only on earlier days</div>

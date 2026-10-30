@@ -77,6 +77,28 @@ def forward(df) -> tuple[dict, list[dict]]:
     return summarize(pred), rows.sort_values(["cycle", "run_id"]).to_dict(orient="records")
 
 
+def real_short(runs) -> list[dict]:
+    """Score real 250-shot jobs with a Detector trained on other cycles' Runs cut to the same shot count."""
+    short = load_runs(Path("data/short"))
+    if not short:
+        return []
+    shots = short[0].info["shots"]
+    train_df = dataset([replace(r, shots=[s[:shots] for s in r.shots]) for r in runs], CHUNKS)
+    test_df = dataset(short, CHUNKS)
+    rows = []
+    for name, prefixes in (CONFIGS[0], CONFIGS[1]):
+        for run_id, test in keep(test_df, prefixes).groupby("run_id"):
+            train_part = keep(train_df, prefixes)
+            model = train(train_part[train_part["cycle"] != test["cycle"].iloc[0]])
+            feats = [c for c in test.columns if c not in ("run_id", "pair", "origin", "cycle", "backend", "chunk")]
+            score = float(model.predict_proba(test[feats])[:, 1].mean())
+            origin = test["origin"].iloc[0]
+            rows.append({"run_id": run_id, "backend": test["backend"].iloc[0], "config": name, "shots": shots,
+                         "origin": origin, "score": score, "right": (score > 0.5) == (origin == FORGED)})
+            print(rows[-1])
+    return rows
+
+
 def main() -> None:
     runs = load_runs(Path("data/runs")) + load_runs(Path("data/fresh"))
     cost = []
@@ -93,6 +115,7 @@ def main() -> None:
             print(row)
     fwd, fwd_runs = forward(dataset(runs, CHUNKS))
     print("forward", fwd)
+    short = real_short(runs)
 
     assert cost[0]["jobs"] == len(runs), "every Run must be scored once"
     lines = ["# How few Canaries are enough, and does it work forward in time? (2026-10-30)", "",
@@ -114,9 +137,18 @@ def main() -> None:
               "| job | backend | cycle | cycles trained on | score |", "|---|---|---|---|---|"]
     for r in fwd_runs:
         lines.append(f"| {r['run_id']} | {r['backend']} | {r['cycle'][:16]} | {r['trained_on']} | {r['score']:.3f} |")
+    if short:
+        lines += ["", "## Real 250-shot jobs (data/short)", "",
+                  "Submitted at 250 shots on hardware, not truncated. Each is scored by a Detector trained on "
+                  "every other Run cut to 250 shots, leaving out all Runs from its own Calibration cycle.", "",
+                  "| job | backend | Canaries | score | Verdict |", "|---|---|---|---|---|"]
+        for r in short:
+            verdict = "Forged" if r["score"] > 0.5 else "Genuine"
+            lines.append(f"| {r['run_id']} | {r['backend']} | {r['config']} | {r['score']:.3f} | "
+                         f"{verdict} ({'right' if r['right'] else 'WRONG'}) |")
     Path("docs/research/cost-and-forward.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    Path("web/public/cost.json").write_text(json.dumps({"cost": cost, "forward": fwd, "forward_runs": fwd_runs},
-                                                        default=float), encoding="utf-8")
+    payload = {"cost": cost, "forward": fwd, "forward_runs": fwd_runs, "short": short}
+    Path("web/public/cost.json").write_text(json.dumps(payload, default=float), encoding="utf-8")
     print("wrote docs/research/cost-and-forward.md and web/public/cost.json", np.round(fwd["auc"], 3))
 
 
