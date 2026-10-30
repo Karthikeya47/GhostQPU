@@ -55,9 +55,9 @@ Two real jobs on IBM **ibm_marrakesh** (34 circuits x 1000 shots, 11 QPU seconds
 
 Detector, each job held out from training: **AUC 1.00**, all 4 jobs correct (genuine scores 0.02 and 0.06, forged 0.96 and 0.98). Both jobs share one calibration cycle.
 
-### Cross-day and cross-backend check with the frozen Detector (Oct 27 and 29)
+### Cross-day and cross-backend check with the frozen Detector (Oct 27, 29 and 30)
 
-The Detector above was frozen and never retrained. Three new jobs, each from a new calibration cycle and new qubit placements, one on a second backend:
+The Detector above was frozen and never retrained. New jobs, each from a new calibration cycle, on ibm_marrakesh and two backends the Detector never saw:
 
 | Job | Backend | Calibration cycle | Genuine score | Forged Twin score |
 |---|---|---|---|---|
@@ -67,13 +67,16 @@ The Detector above was frozen and never retrained. Three new jobs, each from a n
 | K1 | **ibm_kingston** | 2026-10-29 20:38 | 0.00 (Genuine) | 0.99 (Forged) |
 | K2 | ibm_kingston, same qubits | 2026-10-29 21:18 | 0.00 (Genuine) | 0.99 (Forged) |
 | F2 | ibm_fez, same qubits | 2026-10-29 21:22 | 0.00 (Genuine) | 0.99 (Forged) |
-| M3 | ibm_marrakesh | 2026-10-30 21:03 | 0.43 (Genuine, closest call) | 0.99 (Forged) |
-| K3 | ibm_kingston | 2026-10-30 21:01 | 0.02 (Genuine) | 0.99 (Forged) |
-| F3 | ibm_fez | 2026-10-30 21:05 | 0.00 (Genuine) | 0.99 (Forged) |
+| J3 | ibm_marrakesh, new qubits | 2026-10-30 21:03 | 0.36 (Genuine, near the Inconclusive band) | 0.99 (Forged) |
+| F3 | ibm_fez, new qubits | 2026-10-30 21:05 | 0.00 (Genuine) | 0.99 (Forged) |
+| K3 | ibm_kingston, new qubits | 2026-10-30 21:01 | 0.00 (Genuine) | 1.00 (Forged) |
+| J4 | ibm_marrakesh, repeat of J3 (same cycle, same qubits) | 2026-10-30 21:03 | 0.43 (Genuine, inside the Inconclusive band) | 0.99 (Forged) |
+| F4 | ibm_fez, repeat of F3 | 2026-10-30 21:05 | 0.00 (Genuine) | 0.99 (Forged) |
+| K4 | ibm_kingston, repeat of K3 | 2026-10-30 21:01 | 0.02 (Genuine) | 0.99 (Forged) |
 
-18 of 18 correct over 9 calibration cycles and 3 days after training, on two backends the Detector never saw. M3 is inside the inconclusive band ([details](docs/research/cross-day-2026-10-30.md)). Each backend was caught by a different effect: fez mainly by neighbor crosstalk, kingston by coherent over-rotation (90% error after 128 X gates vs 3% for the Forger). Kingston's over-rotation survived a recalibration on the same qubits; fez's crosstalk stayed stable while its over-rotation doubled ([details](docs/research/recalibration-persistence.md)). With 0 errors in 9 Genuine jobs the 95% upper bound on the false-positive rate is 0.28, so more cycles are needed.
+24 of 24 correct: 12 Genuine jobs and their Twins over 9 calibration cycles, including two backends the Detector never saw. Each backend was caught by a different effect: fez mainly by neighbor crosstalk, kingston by coherent over-rotation (90% error after 128 X gates vs 3% for the Forger). Kingston's over-rotation survived a recalibration on the same qubits; fez's crosstalk stayed stable while its over-rotation doubled ([details](docs/research/recalibration-persistence.md)). With 0 errors in 12 Genuine jobs the 95% upper bound on the false-positive rate is 0.22, but the J3/J4, F3/F4 and K3/K4 pairs share a cycle and are not fully independent, so more cycles are still needed. J3 (0.36) and J4 (0.43) are the closest calls so far, and two separate jobs in the same cycle agreeing shows the thin margin belongs to that cycle and those qubits, not to shot noise ([details](docs/research/cross-day-2026-10-30.md)).
 
-Pooling every Run and holding out one whole calibration cycle at a time (`evaluate()` on data/runs + data/fresh), the Detector scores AUC 1.00 with all 22 jobs correct (10 cycles, 3 backends), and M3 moves to a clear Genuine (0.32). Details: [J1](docs/research/fresh-hardware-j1.md), [J2](docs/research/fresh-hardware-j2.md), [ibm_fez](docs/research/cross-backend-fez.md), [ibm_kingston](docs/research/cross-backend-kingston.md).
+Pooling every Run and holding out one whole calibration cycle at a time (`evaluate()` on data/runs + data/fresh), the Detector scores AUC 1.00 with all 28 jobs correct (10 cycles, 3 backends); J3 and J4 move to a clear Genuine (0.29 and 0.34). Details: [J1](docs/research/fresh-hardware-j1.md), [J2](docs/research/fresh-hardware-j2.md), [ibm_fez](docs/research/cross-backend-fez.md), [ibm_kingston](docs/research/cross-backend-kingston.md).
 
 ### Next Canary: repeated CNOT, now on hardware
 
