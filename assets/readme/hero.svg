@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+<title id="title">GhostQPU</title>
+<desc id="desc">Catch quantum jobs that never touched a quantum computer. Chart: after 128 X gates a real ibm_kingston qubit reads wrong 91% of the time; the calibration-matched Forger predicts 2%.</desc>
+<defs><radialGradient id="glow" cx="72%" cy="0%" r="90%"><stop offset="0" stop-color="#16406c"/><stop offset="1" stop-color="#030b17"/></radialGradient></defs>
+<rect width="1200" height="420" rx="24" fill="url(#glow)"/>
+<path d="M930 440 Q935.6 110 863.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.152" stroke-width="1.2"/>
+<path d="M790 440 Q784.4 110 856.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.152" stroke-width="1.2"/>
+<path d="M1000 440 Q1011.2 110 867.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.144" stroke-width="1.2"/>
+<path d="M720 440 Q708.8 110 853.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.144" stroke-width="1.2"/>
+<path d="M1070 440 Q1086.8 110 870.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.136" stroke-width="1.2"/>
+<path d="M650 440 Q633.2 110 849.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.136" stroke-width="1.2"/>
+<path d="M1140 440 Q1162.4 110 874.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.128" stroke-width="1.2"/>
+<path d="M580 440 Q557.5999999999999 110 846.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.128" stroke-width="1.2"/>
+<path d="M1210 440 Q1238.0 110 877.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.120" stroke-width="1.2"/>
+<path d="M510 440 Q482.0 110 842.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.120" stroke-width="1.2"/>
+<path d="M1280 440 Q1313.6 110 881.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.112" stroke-width="1.2"/>
+<path d="M440 440 Q406.4 110 839.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.112" stroke-width="1.2"/>
+<path d="M1350 440 Q1389.2 110 884.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.104" stroke-width="1.2"/>
+<path d="M370 440 Q330.79999999999995 110 835.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.104" stroke-width="1.2"/>
+<path d="M1420 440 Q1464.8000000000002 110 888.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.096" stroke-width="1.2"/>
+<path d="M300 440 Q255.19999999999993 110 832.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.096" stroke-width="1.2"/>
+<path d="M1490 440 Q1540.4 110 891.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.088" stroke-width="1.2"/>
+<path d="M230 440 Q179.5999999999999 110 828.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.088" stroke-width="1.2"/>
+<path d="M1560 440 Q1616.0 110 895.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.080" stroke-width="1.2"/>
+<path d="M160 440 Q104.0 110 825.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.080" stroke-width="1.2"/>
+<path d="M1630 440 Q1691.6 110 898.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.072" stroke-width="1.2"/>
+<path d="M90 440 Q28.399999999999977 110 821.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.072" stroke-width="1.2"/>
+<path d="M1700 440 Q1767.2 110 902.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.064" stroke-width="1.2"/>
+<path d="M20 440 Q-47.200000000000045 110 818.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.064" stroke-width="1.2"/>
+<path d="M1770 440 Q1842.8000000000002 110 905.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.056" stroke-width="1.2"/>
+<path d="M-50 440 Q-122.80000000000007 110 814.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.056" stroke-width="1.2"/>
+<path d="M1840 440 Q1918.4 110 909.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.048" stroke-width="1.2"/>
+<path d="M-120 440 Q-198.4000000000001 110 811.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.048" stroke-width="1.2"/>
+<path d="M1910 440 Q1994.0 110 912.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.040" stroke-width="1.2"/>
+<path d="M-190 440 Q-274.0 110 807.5 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.040" stroke-width="1.2"/>
+<path d="M1980 440 Q2069.6000000000004 110 916.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.032" stroke-width="1.2"/>
+<path d="M-260 440 Q-349.60000000000014 110 804.0 120" fill="none" stroke="#8fd3ff" stroke-opacity="0.032" stroke-width="1.2"/>
+<ellipse cx="860" cy="150" rx="220" ry="50" fill="none" stroke="#8fd3ff" stroke-opacity="0.050" stroke-width="1.2"/>
+<ellipse cx="860" cy="150" rx="390" ry="88" fill="none" stroke="#8fd3ff" stroke-opacity="0.062" stroke-width="1.2"/>
+<ellipse cx="860" cy="150" rx="560" ry="126" fill="none" stroke="#8fd3ff" stroke-opacity="0.074" stroke-width="6"/>
+<ellipse cx="860" cy="150" rx="730" ry="164" fill="none" stroke="#8fd3ff" stroke-opacity="0.086" stroke-width="1.2"/>
+<ellipse cx="860" cy="150" rx="900" ry="202" fill="none" stroke="#8fd3ff" stroke-opacity="0.098" stroke-width="1.2"/>
+<g id="title">
+  <text x="64" y="150" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="78" font-weight="700" fill="#eaf4ff" letter-spacing="-2">GhostQPU</text>
+  <text x="66" y="206" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="30" fill="#eaf4ff">Catch quantum jobs that never</text>
+  <text x="66" y="246" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="30" fill="#eaf4ff">touched a <tspan fill="#8fd3ff" font-weight="600">quantum computer</tspan>.</text>
+  <text x="66" y="308" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" fill="#8aa3c0">Hidden Canary circuits vs a Forger built from</text>
+  <text x="66" y="334" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" fill="#8aa3c0">IBM's public calibration data</text>
+</g>
+<g id="proof-chart">
+  <rect x="610" y="40" width="550" height="360" rx="18" fill="#071a30" stroke="#8fd3ff" stroke-opacity="0.22"/>
+  <text x="640" y="76" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" fill="#8fd3ff">P(error) after N X gates · ibm_kingston</text>
+  <line x1="690" x2="1130" y1="326.0" y2="326.0" stroke="#8fd3ff" stroke-opacity="0.12"/><text x="678" y="332.0" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" fill="#8aa3c0">0.0</text><line x1="690" x2="1130" y1="211.0" y2="211.0" stroke="#8fd3ff" stroke-opacity="0.12"/><text x="678" y="217.0" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" fill="#8aa3c0">0.5</text><line x1="690" x2="1130" y1="96.0" y2="96.0" stroke="#8fd3ff" stroke-opacity="0.12"/><text x="678" y="102.0" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" fill="#8aa3c0">1.0</text>
+  <path d="M690.0,325.8 L703.8,325.3 L717.5,323.5 L745.0,320.2 L800.0,308.5 L910.0,246.0 L1130.0,117.6" fill="none" stroke="#5aa0f2" stroke-width="4" stroke-linejoin="round"/><circle cx="690.0" cy="325.8" r="5" fill="#5aa0f2"/><circle cx="703.8" cy="325.3" r="5" fill="#5aa0f2"/><circle cx="717.5" cy="323.5" r="5" fill="#5aa0f2"/><circle cx="745.0" cy="320.2" r="5" fill="#5aa0f2"/><circle cx="800.0" cy="308.5" r="5" fill="#5aa0f2"/><circle cx="910.0" cy="246.0" r="5" fill="#5aa0f2"/><circle cx="1130.0" cy="117.6" r="5" fill="#5aa0f2"/>
+  <path d="M690.0,325.3 L703.8,325.8 L717.5,325.1 L745.0,324.9 L800.0,323.7 L910.0,323.5 L1130.0,320.5" fill="none" stroke="#eb6834" stroke-width="4" stroke-linejoin="round"/><circle cx="690.0" cy="325.3" r="5" fill="#eb6834"/><circle cx="703.8" cy="325.8" r="5" fill="#eb6834"/><circle cx="717.5" cy="325.1" r="5" fill="#eb6834"/><circle cx="745.0" cy="324.9" r="5" fill="#eb6834"/><circle cx="800.0" cy="323.7" r="5" fill="#eb6834"/><circle cx="910.0" cy="323.5" r="5" fill="#eb6834"/><circle cx="1130.0" cy="320.5" r="5" fill="#eb6834"/>
+  <text x="1122.0" y="101.6" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#5aa0f2">real QPU 91%</text>
+  <text x="1122.0" y="304.5" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#eb6834">Forger 2%</text>
+  <text x="690" y="360" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" fill="#8aa3c0">N = 0</text>
+  <text x="1130" y="360" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" fill="#8aa3c0">128</text>
+</g>
+</svg>
