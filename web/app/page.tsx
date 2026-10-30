@@ -2,14 +2,19 @@
 import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
-import { GroupedBars, LineChart, ScoreBars, WeightBars } from "@/components/charts";
+import { GroupedBars, LineChart, WeightBars } from "@/components/charts";
 import { ShotRaster } from "@/components/ShotRaster";
+import { Wire } from "@/components/Wire";
+import { DayVariance } from "@/components/DayVariance";
+import { ForgerLab } from "@/components/ForgerLab";
+import { JobConsole } from "@/components/JobConsole";
 import { COLORS, D, FEATURE_LABELS, genuineRuns, jobLabel, mean, type Pilot, runById, scoreOf, twinOf } from "@/lib/data";
 import { IDEAL_TVD, J1, NULL_TEST_AUC, STRONGER_FORGER, WORKLOAD_TVD } from "@/lib/research";
 
 const Scene = dynamic(() => import("@/components/three").then((m) => m.Scene), { ssr: false });
 const ChipScene = dynamic(() => import("@/components/three").then((m) => m.ChipScene), { ssr: false });
 const CoherentScene = dynamic(() => import("@/components/three").then((m) => m.CoherentScene), { ssr: false });
+const BlochScene = dynamic(() => import("@/components/three").then((m) => m.BlochScene), { ssr: false });
 const SignatureScene = dynamic(() => import("@/components/three").then((m) => m.SignatureScene), { ssr: false });
 
 const fresh = runById(D.hero_id);
@@ -23,13 +28,16 @@ export default function Page() {
   return (
     <MotionConfig reducedMotion="user">
       <Hero />
+      <RunIt />
       <Threat />
       <BatchSection />
       <Evidence runId={runId} setRunId={setRunId} />
+      <BlochSection />
       <Coherent3D runId={runId} setRunId={setRunId} />
       <Shots runId={runId} />
       <Verdict />
       <SignatureSpace />
+      <BeatIt />
       <StressTest />
       <Footer />
     </MotionConfig>
@@ -67,8 +75,124 @@ function Hero() {
           <span>brightness = T1</span>
           <span>hover a qubit for its calibration</span>
         </motion.div>
+        <motion.a href="#run" className="run-btn" style={{ display: "inline-block", marginTop: 28, textDecoration: "none", pointerEvents: "auto" }}
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.9 }}>
+          ▶ Submit a job and catch the ghost
+        </motion.a>
       </div>
     </header>
+  );
+}
+
+function RunIt() {
+  return (
+    <section className="section" id="run" style={{ paddingTop: 48 }}>
+      <div className="wrap">
+        <motion.div {...rise}>
+          <Wire gate="U">Run it yourself</Wire>
+          <h2 className="title">Submit a job. Catch the ghost.</h2>
+          <p className="lede">
+            Each press replays one of the <b>{D.by_cycle.runs.length} real jobs</b> we ran on IBM quantum computers or forged from their
+            calibration. The shots, Signatures and scores are the recorded ones; only the pacing is staged. Make your call before the Detector does.
+          </p>
+        </motion.div>
+        <motion.div {...rise} style={{ marginTop: 32 }}>
+          <JobConsole />
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function BlochSection() {
+  const machines = [...new Set(genuineRuns.map((r) => r.info.backend ?? "ibm_marrakesh"))].sort();
+  const latest = (m: string) => [...genuineRuns].reverse().find((r) => (r.info.backend ?? "ibm_marrakesh") === m)!;
+  const [machine, setMachine] = useState(machines.includes("ibm_kingston") ? "ibm_kingston" : machines[0]);
+  const [n, setN] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const g = latest(machine);
+  const t = twinOf(g.id);
+  // The placement with the largest error at N = 128 shows the effect most clearly.
+  const pl = g.per_placement.reduce((b, p) => {
+    const at = (x: typeof p) => x.coherent.find((c) => c[0] === 128 && !c[1])?.[2] ?? 0;
+    return at(p) > at(b) ? p : b;
+  });
+  const k = g.per_placement.indexOf(pl);
+  const curve = (r: typeof g) => r.per_placement[k].coherent.filter((c) => !c[1]).sort((a, b) => a[0] - b[0]).map((c) => [c[0], c[2]] as [number, number]);
+  const hw = curve(g);
+  const fz = t ? curve(t) : hw.map(([x]) => [x, 0] as [number, number]);
+  const at = (c: [number, number][]) => {
+    const i = c.findIndex(([x]) => x >= n);
+    if (i <= 0) return c[0][1];
+    return c[i - 1][1] + ((c[i][1] - c[i - 1][1]) * (n - c[i - 1][0])) / (c[i][0] - c[i - 1][0]);
+  };
+  const play = () => {
+    setPlaying(true);
+    setN(0);
+    let v = 0;
+    const id = window.setInterval(() => {
+      v += 2;
+      setN(Math.min(v, 128));
+      if (v >= 128) { window.clearInterval(id); setPlaying(false); }
+    }, 40);
+  };
+  return (
+    <section className="section">
+      <div className="wrap">
+        <motion.div {...rise}>
+          <Wire gate="Xⁿ">One qubit, 128 gates</Wire>
+          <h2 className="title">Watch the qubit drift off the pole.</h2>
+          <p className="lede">
+            An X gate flips a qubit; two flips should bring it home to |0⟩. Real pulses overshoot by a hair, and the overshoot adds up coherently: the
+            <b style={{ color: COLORS.genuine }}> hardware&apos;s state</b> swings away from the pole. The <b style={{ color: COLORS.forged }}>Forger&apos;s</b>{" "}
+            noise model only knows random error, so its state just fades toward the centre. Measured on Q{pl.placement[0]} of {machine}.
+          </p>
+        </motion.div>
+        <div className="grid2" style={{ marginTop: 28, alignItems: "center" }}>
+          <Scene camera={[3.6, 2.2, 4.4]} label="Bloch sphere: hardware state vector rotates away from |0⟩, forger vector shrinks">
+            <BlochScene hardware={hw} forger={fz} n={n} />
+          </Scene>
+          <div className="card">
+            <div className="tabs" role="group" aria-label="Machine" style={{ marginTop: 0 }}>
+              {machines.map((m) => <button key={m} className="tab" aria-pressed={m === machine} onClick={() => { setMachine(m); setN(0); }}>{m.replace("ibm_", "")}</button>)}
+            </div>
+            <label style={{ display: "grid", gap: 8 }}>
+              <span className="mono" style={{ fontSize: 13, color: "var(--mute)" }}>X gates applied: <b style={{ color: "var(--frost)", fontSize: 20 }}>{Math.round(n)}</b></span>
+              <input className="slider" style={{ accentColor: "var(--gold)" }} type="range" min={0} max={128} step={1} value={n} onChange={(e) => setN(+e.target.value)} />
+            </label>
+            <button className="run-btn" style={{ marginLeft: 0, marginTop: 16 }} onClick={play} disabled={playing}>▶ Apply 128 X gates</button>
+            <div className="grid2" style={{ marginTop: 24, gap: 12 }}>
+              <div><div className="unit">hardware P(1)</div><div className="big" style={{ fontSize: 48, color: COLORS.genuine }}>{pct(at(hw), 0)}</div></div>
+              <div><div className="unit">Forger P(1)</div><div className="big" style={{ fontSize: 48, color: COLORS.forged }}>{pct(at(fz), 0)}</div></div>
+            </div>
+            <p className="cap" style={{ marginTop: 12 }}>
+              Measured at N = 0, 4, 8, 16, 32, 64, 128 and interpolated between. Drawn as pure rotation for hardware and pure decay for the Forger, which
+              is what the curve shapes indicate; real states have some of both.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BeatIt() {
+  return (
+    <section className="section">
+      <div className="wrap">
+        <motion.div {...rise}>
+          <Wire gate="U†">Play the Forger</Wire>
+          <h2 className="title">Try to beat the Detector.</h2>
+          <p className="lede">
+            You are the dishonest provider. Your simulator already matches IBM&apos;s published calibration. How much real hardware physics do you have to
+            fake before the frozen Detector waves your job through?
+          </p>
+        </motion.div>
+        <motion.div {...rise} style={{ marginTop: 32 }}>
+          <ForgerLab />
+        </motion.div>
+      </div>
+    </section>
   );
 }
 
@@ -84,7 +208,7 @@ function Threat() {
     <section className="section">
       <div className="wrap">
         <motion.div {...rise}>
-          <div className="stage">The threat</div>
+          <Wire gate="X">The threat</Wire>
           <h2 className="title">Quantum time is resold. Nobody checks it ran.</h2>
           <p className="lede">
             A reseller takes your circuits, runs them through Qiskit Aer with the noise model IBM publishes for the backend, and bills you for
@@ -113,7 +237,7 @@ function BatchSection() {
     <section className="section" style={{ background: "linear-gradient(180deg, transparent, #0e121a 30%, #0e121a 70%, transparent)" }}>
       <div className="wrap">
         <motion.div {...rise}>
-          <div className="stage">Inside one Batch · {jobLabel(fresh.id)}</div>
+          <Wire gate="H">Inside one Batch · {jobLabel(fresh.id)}</Wire>
           <h2 className="title">The Canaries hide in plain sight.</h2>
           <p className="lede">
             Every circuit is compiled to native gates on physical qubits, then shuffled. To the provider all {fresh.circuits.length} look alike.
@@ -199,7 +323,7 @@ function Evidence({ runId, setRunId }: { runId: string; setRunId: (id: string) =
     <section className="section" id="evidence">
       <div className="wrap">
         <motion.div {...rise}>
-          <div className="stage">Evidence</div>
+          <Wire gate="Rx(ε)">Evidence</Wire>
           <h2 className="title">Same circuits. Same calibration. Different physics.</h2>
           <p className="lede">
             Each Genuine Run has a Twin: the Forger&apos;s output for the identical Batch under the calibration live at execution. After 128 X gates
@@ -255,7 +379,7 @@ function Coherent3D({ runId, setRunId }: { runId: string; setRunId: (id: string)
     <section className="section">
       <div className="wrap">
         <motion.div {...rise}>
-          <div className="stage">Per placement, in 3D</div>
+          <Wire gate="⊗4">Per placement, in 3D</Wire>
           <h2 className="title">Four qubit pairs. One verdict.</h2>
           <p className="lede">
             The curve above is an average. Here every placement gets its own ribbon: blue ribbons climb with N on real hardware, orange
@@ -288,7 +412,7 @@ function Shots({ runId }: { runId: string }) {
     <section className="section">
       <div className="wrap">
         <motion.div {...rise}>
-          <div className="stage">Shot record · {jobLabel(runId)}</div>
+          <Wire gate="M">Shot record · {jobLabel(runId)}</Wire>
           <h2 className="title">Read it shot by shot.</h2>
           <p className="lede">
             The first {g.raster.length} shots of the N={g.raster_circuit.n} coherent Canary, in the order the QPU fired them. Each column is one shot;
@@ -315,75 +439,27 @@ function Shots({ runId }: { runId: string }) {
 }
 
 function Verdict() {
-  const jobs = useMemo(() => {
-    const ids = [...new Set([...D.report.predictions, ...D.fresh_scores].map((c) => c.run_id))];
-    // Deterministic shuffle so the job number does not give the answer away.
-    return ids.map((id) => ({ id, k: [...id].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) % 9973, 7) })).sort((a, b) => a.k - b.k).map((j) => j.id);
-  }, []);
-  const [pick, setPick] = useState(jobs[0]);
-  const [truth, setTruth] = useState(false);
-  const isFresh = D.fresh_ids.includes(pick);
-  const chunks = (isFresh ? D.fresh_scores : D.report.predictions).filter((c) => c.run_id === pick).sort((a, b) => a.chunk - b.chunk);
-  const score = mean(chunks.map((c) => c.forged_score));
-  const label = score >= 0.65 ? "Forged" : score <= 0.35 ? "Genuine" : "Inconclusive";
-  const color = label === "Forged" ? COLORS.forged : label === "Genuine" ? "var(--good)" : "var(--mute)";
-  const origin = runById(pick).origin;
+  const fresh_ = [...new Set(D.fresh_scores.map((c) => c.run_id))];
+  const frozenRight = fresh_.filter((id) => (scoreOf(D.fresh_scores, id) > 0.5 ? "forged" : "genuine") === runById(id).origin).length;
+  const cycles = new Set(fresh_.map((id) => runById(id).cycle)).size;
   return (
     <section className="section" style={{ background: "linear-gradient(180deg, transparent, #0e121a 20%, #0e121a 80%, transparent)" }}>
       <div className="wrap">
         <motion.div {...rise}>
-          <div className="stage">The Detector</div>
-          <h2 className="title">Pick a job. Get a Verdict.</h2>
+          <Wire gate="M">The Detector</Wire>
+          <h2 className="title">How sure is the Detector?</h2>
           <p className="lede">
-            A logistic regression on 12 Signature features, scored on 8 time-ordered chunks per job. Every score below comes from a Detector that
-            never saw that job or its Twin. Jobs collected after 10 Oct come from new calibration cycles and were scored by the frozen Detector.
+            A logistic regression on 12 Signature features, scored on 8 time-ordered chunks per job. The frozen version was trained once on two
+            jobs from 10 Oct and never retrained; every later job, on every machine, was scored by it blind.
           </p>
         </motion.div>
-        <div className="tabs" role="group" aria-label="Job">
-          {jobs.map((id, i) => (
-            <button key={id} className="tab" aria-pressed={id === pick} onClick={() => { setPick(id); setTruth(false); }}>
-              Job {String(i + 1).padStart(2, "0")}
-            </button>
-          ))}
-        </div>
-        <div className="grid2" style={{ alignItems: "stretch" }}>
-          <div className="card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 24 }}>
-            <AnimatePresence mode="wait">
-              <motion.div key={pick} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                <div className="unit">Verdict</div>
-                <div className="big display" style={{ color, textShadow: `0 0 40px ${color}55` }}>{label}</div>
-                <div className="mono" style={{ marginTop: 10, color: "var(--mute)" }}>
-                  forged score <span style={{ color: "var(--frost)", fontSize: 22 }}>{score.toFixed(2)}</span>
-                  <span style={{ marginLeft: 12, fontSize: 12 }}>(0.35 to 0.65 is inconclusive)</span>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-            <div>
-              <button className="tab" aria-pressed={truth} onClick={() => setTruth((v) => !v)}>{truth ? "Hide the truth" : "Reveal the truth"}</button>
-              <AnimatePresence>
-                {truth && (
-                  <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} style={{ marginTop: 12, color: "var(--mute)", fontSize: 15 }}>
-                    <b style={{ color: origin === "genuine" ? COLORS.genuine : COLORS.forged }}>
-                      {origin === "genuine" ? `Executed on IBM ${runById(pick).info.backend ?? "ibm_marrakesh"}.` : "Forged by the calibration-matched simulator."}
-                    </b>{" "}
-                    {jobLabel(pick)}{isFresh ? ", new calibration cycle" : ""}. <span className="mono" style={{ fontSize: 12 }}>{pick}</span>
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-          <div className="card">
-            <h3>Score over time</h3>
-            <p className="cap">Probability of Forged for each eighth of the job&apos;s shots.</p>
-            <ScoreBars key={pick} scores={chunks.map((c) => c.forged_score)} color={color} label="Forged score per time chunk" />
-          </div>
-        </div>
+
 
         <div className="grid4" style={{ marginTop: 56 }}>
           {[
             [D.report.auc.toFixed(2), "AUC, held out", `split ${D.report.split}`],
             [pct(D.report.run_accuracy, 0), "job-level accuracy", `${D.report.n_pairs} Genuine/Forged pairs`],
-            [scoreOf(D.fresh_scores, fresh.id).toFixed(2), "new-cycle Genuine score", `frozen Detector ${J1.fingerprint}`],
+            [`${frozenRight}/${fresh_.length}`, "frozen Detector, later jobs", `${cycles} new calibration cycles · fingerprint ${J1.fingerprint}`],
             [NULL_TEST_AUC.toFixed(2), "null test AUC", "simulator on both sides: must be near 0.5, passes"],
           ].map(([v, l, s], i) => (
             <motion.div key={l} {...rise} transition={{ ...rise.transition, delay: i * 0.1 }} style={{ borderTop: "1px solid var(--gold-dim)", paddingTop: 16 }}>
@@ -395,6 +471,10 @@ function Verdict() {
         </div>
 
         <ByCycle />
+
+        <motion.div {...rise} style={{ marginTop: 28 }}>
+          <DayVariance />
+        </motion.div>
 
         <motion.div className="card" {...rise} style={{ marginTop: 56 }}>
           <h3>What the Detector looks at</h3>
@@ -424,7 +504,7 @@ function SignatureSpace() {
     <section className="section">
       <div className="wrap">
         <motion.div {...rise}>
-          <div className="stage">Signature space</div>
+          <Wire gate="Σ">Signature space</Wire>
           <h2 className="title">Two clouds that never touch.</h2>
           <p className="lede">
             All {D.signatures.length} time chunks of all {D.runs.length} Runs, placed by three of their Signature features. Spheres are the 10 Oct
@@ -452,7 +532,7 @@ function StressTest() {
     <section className="section">
       <div className="wrap">
         <motion.div {...rise}>
-          <div className="stage">Stress test · research branch</div>
+          <Wire gate="CZ">Stress test · research branch</Wire>
           <h2 className="title">Then we tried to beat ourselves.</h2>
           <p className="lede">
             A stronger Forger learns over-rotation, detuning and neighbor-dependent readout from one Genuine probe run, and applies them by physical

@@ -67,10 +67,13 @@ The Detector above was frozen and never retrained. Three new jobs, each from a n
 | K1 | **ibm_kingston** | 2026-10-29 20:38 | 0.00 (Genuine) | 0.99 (Forged) |
 | K2 | ibm_kingston, same qubits | 2026-10-29 21:18 | 0.00 (Genuine) | 0.99 (Forged) |
 | F2 | ibm_fez, same qubits | 2026-10-29 21:22 | 0.00 (Genuine) | 0.99 (Forged) |
+| M3 | ibm_marrakesh | 2026-10-30 21:03 | 0.43 (Genuine, closest call) | 0.99 (Forged) |
+| K3 | ibm_kingston | 2026-10-30 21:01 | 0.02 (Genuine) | 0.99 (Forged) |
+| F3 | ibm_fez | 2026-10-30 21:05 | 0.00 (Genuine) | 0.99 (Forged) |
 
-12 of 12 correct over 6 calibration cycles, on two backends the Detector never saw. Each backend was caught by a different effect: fez mainly by neighbor crosstalk, kingston by coherent over-rotation (90% error after 128 X gates vs 3% for the Forger). Kingston's over-rotation survived a recalibration on the same qubits; fez's crosstalk stayed stable while its over-rotation doubled ([details](docs/research/recalibration-persistence.md)). With 0 errors in 6 Genuine jobs the 95% upper bound on the false-positive rate is 0.39, so more cycles are needed.
+18 of 18 correct over 9 calibration cycles and 3 days after training, on two backends the Detector never saw. M3 is inside the inconclusive band ([details](docs/research/cross-day-2026-10-30.md)). Each backend was caught by a different effect: fez mainly by neighbor crosstalk, kingston by coherent over-rotation (90% error after 128 X gates vs 3% for the Forger). Kingston's over-rotation survived a recalibration on the same qubits; fez's crosstalk stayed stable while its over-rotation doubled ([details](docs/research/recalibration-persistence.md)). With 0 errors in 9 Genuine jobs the 95% upper bound on the false-positive rate is 0.28, so more cycles are needed.
 
-Pooling every Run and holding out one whole calibration cycle at a time (`evaluate()` on data/runs + data/fresh), the Detector scores AUC 1.00 with all 16 jobs correct (7 cycles, 3 backends). Details: [J1](docs/research/fresh-hardware-j1.md), [J2](docs/research/fresh-hardware-j2.md), [ibm_fez](docs/research/cross-backend-fez.md), [ibm_kingston](docs/research/cross-backend-kingston.md).
+Pooling every Run and holding out one whole calibration cycle at a time (`evaluate()` on data/runs + data/fresh), the Detector scores AUC 1.00 with all 22 jobs correct (10 cycles, 3 backends), and M3 moves to a clear Genuine (0.32). Details: [J1](docs/research/fresh-hardware-j1.md), [J2](docs/research/fresh-hardware-j2.md), [ibm_fez](docs/research/cross-backend-fez.md), [ibm_kingston](docs/research/cross-backend-kingston.md).
 
 ### Next Canary: repeated CNOT, now on hardware
 
@@ -152,7 +155,7 @@ python -m ruff check .
 
 ## Web frontend
 
-A 3D, animated Next.js site in [web/](web/) shows the same data: the real ibm_marrakesh lattice, Canary curves, per-placement ribbons, shot records, held-out Verdicts and the research-branch stress tests.
+A 3D, animated Next.js site in [web/](web/) shows the same data: the real ibm_marrakesh lattice, a job console that replays any real job end to end, a data-driven Bloch sphere, a "beat the Detector" lab that runs the frozen Detector in the browser, Canary curves, day-to-day variation, held-out Verdicts and the research stress tests.
 
 ```sh
 PYTHONPATH=. python scripts/export_web_data.py   # regenerate web/public/data.json from data/runs and data/fresh

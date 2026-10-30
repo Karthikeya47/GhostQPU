@@ -45,19 +45,20 @@ function Axes({ xs, ys, sx, sy, xLabel, yLabel, xFmt = fmt }: {
 
 export type Series = { name: string; color: string; pts: [number, number][]; dashed?: boolean };
 
-export function LineChart({ series, xLabel, yLabel, xTicks, yMax, label }: {
-  series: Series[]; xLabel: string; yLabel: string; xTicks: number[]; yMax?: number; label: string;
+export function LineChart({ series, xLabel, yLabel, xTicks, yMax, label, xFmt = fmt }: {
+  series: Series[]; xLabel: string; yLabel: string; xTicks: number[]; yMax?: number; label: string; xFmt?: (v: number) => string;
 }) {
   const { ref, seen } = useDraw();
   const [hover, setHover] = useState<{ x: number; y: number; s: string; c: string; px: number; py: number } | null>(null);
   const xMax = Math.max(...xTicks);
   const ys = nice(yMax ?? Math.max(...series.flatMap((s) => s.pts.map((p) => p[1]))) * 1.08);
   const top = ys[ys.length - 1];
-  const sx = (v: number) => P.l + (v / xMax) * iw;
+  const xMin = Math.min(...xTicks);
+  const sx = (v: number) => P.l + ((v - xMin) / (xMax - xMin)) * iw;
   const sy = (v: number) => P.t + ih - (v / top) * ih;
   return (
     <svg ref={ref} viewBox={`0 0 ${W} ${H}`} width="100%" style={{ maxHeight: 440 }} role="img" aria-label={label} onMouseLeave={() => setHover(null)}>
-      <Axes xs={xTicks} ys={ys} sx={sx} sy={sy} xLabel={xLabel} yLabel={yLabel} />
+      <Axes xs={xTicks} ys={ys} sx={sx} sy={sy} xLabel={xLabel} yLabel={yLabel} xFmt={xFmt} />
       {series.map((s, si) => {
         const d = s.pts.map((p, i) => `${i ? "L" : "M"}${sx(p[0])},${sy(p[1])}`).join("");
         return (
@@ -75,7 +76,7 @@ export function LineChart({ series, xLabel, yLabel, xTicks, yMax, label }: {
           </g>
         );
       })}
-      {hover && <Tip {...hover} text={`${hover.s}: ${fmt(hover.x)} → ${hover.y.toFixed(4)}`} />}
+      {hover && <Tip {...hover} text={`${hover.s}: ${xFmt(hover.x)} → ${hover.y.toFixed(3)}`} />}
     </svg>
   );
 }

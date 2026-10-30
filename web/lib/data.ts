@@ -10,7 +10,7 @@ export type Run = {
   origin: Origin;
   cycle: string;
   placements: [number, number][];
-  info: { shots: number; backend?: string; qpu_seconds?: number; job_id?: string; started_at?: string; twin_of?: string; timestamps?: Record<string, string> };
+  info: { shots: number; backend?: string;  qpu_seconds?: number; job_id?: string; started_at?: string; twin_of?: string; timestamps?: Record<string, string> };
   circuits: Circuit[];
   curves: {
     coherent: { variant: string; n: number; p1: number }[];
@@ -26,7 +26,8 @@ export type Data = {
   runs: Run[];
   fresh_ids: string[];
   hero_id: string;
-  by_cycle: { split: string; auc: number; run_accuracy: number; n_cycles: number; runs: { run_id: string; origin: Origin; cycle: string; backend: string; forged_score: number }[] };
+  by_cycle: { split: string; auc: number; run_accuracy: number; n_cycles: number; runs: { run_id: string; origin: Origin; cycle: string; backend: string; forged_score: number }[]; chunks: { run_id: string; chunk: number; forged_score: number }[] };
+  frozen: { features: string[]; mean: number[]; scale: number[]; coef: number[]; intercept: number };
   pilot: { id: string; cycle: string; qpu_seconds: number; curves: { placement: string; family: string; control: number; n: number; hardware: number; stock: number; se: number }[]; fits: { placement: string; family: string; control: number; theta: number; z: number; chi2_per_dof: number }[] }[];
   features: string[];
   signatures: (Record<string, number> & { run_id: string; origin: Origin; chunk: number })[];
@@ -46,7 +47,7 @@ export function jobLabel(id: string) {
   const base = id.replace("_forged", "");
   // Run ids are <backend>_<YYYYMMDD>T<time>_<seed>; A, B and J1 are the names the research notes use.
   const [, ymd, seed] = base.match(/_(\d{8})T\d+_(\d+)$/) ?? [];
-  const name = ({ "12894": "Job A", "13117": "Job B", "77679": "Job J1", "85181": "Job J2", "86034": "Job F1", "88635": "Job K1", "89619": "Job K2", "89673": "Job F2" } as Record<string, string>)[seed] ?? `Job ${seed ?? base}`;
+  const name = ({ "12894": "Job A", "13117": "Job B", "77679": "Job J1", "85181": "Job J2", "86034": "Job F1", "88635": "Job K1", "89619": "Job K2", "89673": "Job F2", "75600": "Job M3", "75616": "Job K3", "75630": "Job F3" } as Record<string, string>)[seed] ?? `Job ${seed ?? base}`;
   const backend = base.match(/^ibm_([a-z]+)_/)?.[1];
   const tag = backend && backend !== "marrakesh" ? ` · ${backend}` : "";
   if (!ymd) return name + tag;

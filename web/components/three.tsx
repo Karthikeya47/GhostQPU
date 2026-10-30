@@ -249,3 +249,58 @@ export function SignatureScene({ points, axes }: {
     </>
   );
 }
+
+const interp = (curve: [number, number][], n: number) => {
+  const i = curve.findIndex(([x]) => x >= n);
+  if (i <= 0) return curve[Math.max(i, 0)]?.[1] ?? 0;
+  const [x0, y0] = curve[i - 1];
+  const [x1, y1] = curve[i];
+  return y0 + ((y1 - y0) * (n - x0)) / (x1 - x0);
+};
+
+function Arrow({ to, color }: { to: THREE.Vector3; color: string }) {
+  const len = to.length();
+  const q = useMemo(() => new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), to.clone().normalize()), [to]);
+  if (len < 1e-3) return null;
+  return (
+    <group quaternion={q}>
+      <mesh position={[0, (len - 0.14) / 2, 0]}><cylinderGeometry args={[0.022, 0.022, len - 0.14, 12]} /><meshBasicMaterial color={color} toneMapped={false} /></mesh>
+      <mesh position={[0, len - 0.07, 0]}><coneGeometry args={[0.06, 0.14, 16]} /><meshBasicMaterial color={color} toneMapped={false} /></mesh>
+    </group>
+  );
+}
+
+/**
+ * Bloch sphere after N X gates. Hardware is drawn as if its error were all coherent rotation, the Forger as if
+ * all incoherent (a shrinking vector): the curve shapes in the data point that way, but this is an illustration.
+ */
+export function BlochScene({ hardware, forger, n }: { hardware: [number, number][]; forger: [number, number][]; n: number }) {
+  const dir = (p: number) => {
+    const d = 2 * Math.asin(Math.sqrt(Math.min(Math.max(p, 0), 1)));
+    return new THREE.Vector3(0, Math.cos(d), Math.sin(d)).multiplyScalar(1.6);
+  };
+  const hw = dir(interp(hardware, n));
+  const fz = new THREE.Vector3(0, 1.6 * (1 - 2 * interp(forger, n)), 0);
+  const trail = useMemo(() => Array.from({ length: 65 }, (_, i) => dir(interp(hardware, (i / 64) * n))), [hardware, n]);
+  const ring = (axis: "x" | "y" | "z") =>
+    Array.from({ length: 65 }, (_, i) => {
+      const t = (i / 64) * Math.PI * 2;
+      const [a, b] = [Math.cos(t) * 1.6, Math.sin(t) * 1.6];
+      return axis === "y" ? new THREE.Vector3(a, 0, b) : axis === "x" ? new THREE.Vector3(0, a, b) : new THREE.Vector3(a, b, 0);
+    });
+  return (
+    <>
+      <OrbitControls enableZoom={false} enablePan={false} autoRotate={!reduced()} autoRotateSpeed={0.4} />
+      <mesh><sphereGeometry args={[1.6, 48, 48]} /><meshBasicMaterial color="#5aa0f2" transparent opacity={0.05} depthWrite={false} /></mesh>
+      {(["x", "y", "z"] as const).map((a) => <Line key={a} points={ring(a)} color="#2b3546" lineWidth={1} />)}
+      <Line points={[new THREE.Vector3(0, -1.9, 0), new THREE.Vector3(0, 1.9, 0)]} color="#3a4456" lineWidth={1} />
+      <Line points={[new THREE.Vector3(-1.9, 0, 0), new THREE.Vector3(1.9, 0, 0)]} color="#3a4456" lineWidth={1} />
+      <Line points={[new THREE.Vector3(0, 0, -1.9), new THREE.Vector3(0, 0, 1.9)]} color="#3a4456" lineWidth={1} />
+      {n > 0 && <Line points={trail} color={GENUINE_HI} lineWidth={2} transparent opacity={0.5} />}
+      <Arrow to={hw} color={GENUINE_HI} />
+      <Arrow to={fz} color={FORGED} />
+      <Html position={[0, 2.15, 0]} center><span className="mono" style={{ color: GOLD, fontSize: 14 }}>|0⟩</span></Html>
+      <Html position={[0, -2.15, 0]} center><span className="mono" style={{ color: GOLD, fontSize: 14 }}>|1⟩</span></Html>
+    </>
+  );
+}

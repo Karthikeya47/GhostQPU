@@ -118,7 +118,12 @@ def main() -> None:
         origin=("origin", "first"), cycle=("cycle", "first"), backend=("backend", "first"),
         forged_score=("forged_score", "mean")).reset_index()
     out["by_cycle"] = {"split": pooled.split, "auc": pooled.auc, "run_accuracy": pooled.run_accuracy,
-                       "n_cycles": int(all_df["cycle"].nunique()), "runs": per_run.to_dict(orient="records")}
+                       "n_cycles": int(all_df["cycle"].nunique()), "runs": per_run.to_dict(orient="records"),
+                       "chunks": pooled.predictions[["run_id", "chunk", "forged_score"]].to_dict(orient="records")}
+    # The frozen Detector's exact parameters, so the page can score edited Signatures live.
+    scaler, logreg = model[0], model[-1]
+    out["frozen"] = {"features": features_of(dev_df), "mean": scaler.mean_.tolist(), "scale": scaler.scale_.tolist(),
+                     "coef": logreg.coef_[0].tolist(), "intercept": float(logreg.intercept_[0])}
     # CNOT pilot Runs: hardware vs the stock Forger's near-exact curve, and the fitted coherent turn per repeat.
     out["pilot"] = [
         {"id": r.run_id, "cycle": r.snapshot.cycle, "qpu_seconds": r.info.get("qpu_seconds"),
