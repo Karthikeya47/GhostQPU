@@ -48,11 +48,11 @@ About 6 minutes, one chapter of the site at a time. Arrow keys move between chap
 ### 5. The verdict (`#verdict`), 60 s
 
 - "We froze the Detector after training on two jobs from 10 October and never retrained it."
-- "On every job since, on three IBM machines, it is 30 of 30: 15 real jobs and their forged copies, over 12
+- "On every job since, on three IBM machines, it is 32 of 32: 16 real jobs and their forged copies, over 13
   calibration cycles, on two machines it had never seen."
-- Cost card: "Verification is cheap: 1.5 QPU seconds of Canary time still catches all 34 jobs, 85% less than we spend
+- Cost card: "Verification is cheap: 1.5 QPU seconds of Canary time still catches all 36 jobs, 85% less than we spend
   today. We checked it on hardware last night: 6 of 6 real 250-shot jobs called right."
-- Forward in time: "Trained only on earlier days, it scores the next day 30 of 30."
+- Forward in time: "Trained only on earlier days, it scores the next day 32 of 32."
 - Day-to-day chart: "Real hardware wanders between calibrations. The Forger's line is flat. That gap is what we detect."
 
 ### 6. Break it (`#break`), 60 s
@@ -68,10 +68,10 @@ About 6 minutes, one chapter of the site at a time. Arrow keys move between chap
 
 | Claim | Number | Source |
 |---|---|---|
-| Frozen Detector on later jobs | 30/30 (15 Genuine + 15 Twins), 12 cycles, 3 machines | `scripts/score_fresh.py` |
-| Error-rate bound with 0 mistakes | 0.18 per job, 0.22 per cycle (95%, one-sided) | same |
-| Each cycle held out, all data | 34/34, AUC 1.00, 13 cycles | `docs/research/cost-and-forward.md` |
-| Forward in time | 30/30, AUC 1.00, worst real job 0.29 | same |
+| Frozen Detector on later jobs | 32/32 (16 Genuine + 16 Twins), 13 cycles, 3 machines | `scripts/score_fresh.py` |
+| Error-rate bound with 0 mistakes | 0.17 per job, 0.21 per cycle (95%, one-sided) | same |
+| Each cycle held out, all data | 36/36, AUC 1.00, 14 cycles | `docs/research/cost-and-forward.md` |
+| Forward in time | 32/32, AUC 1.00, worst real job 0.29 | same |
 | Cheapest setting catching all | 1.5 QPU s of Canary time (19 circuits x 250 shots) vs 9.7 s | same |
 | Real 250-shot jobs on hardware | 6/6 called right; billed 4 to 5 s each incl. about 2 s IBM overhead | same |
 | Null test (simulator vs simulator) | AUC 0.52, near chance: PASS | `python -m ghostqpu null-test` |
@@ -81,8 +81,8 @@ About 6 minutes, one chapter of the site at a time. Arrow keys move between chap
 
 ## Hard questions
 
-**"Your test set is tiny."** Yes. 15 real jobs in 12 cycles. With zero errors the 95% upper bound on the false-positive
-rate is still 0.18 to 0.22. The value is the method plus a pre-registered frozen test that holds across days and
+**"Your test set is tiny."** Yes. 16 real jobs in 13 cycles. With zero errors the 95% upper bound on the false-positive
+rate is still 0.17 to 0.21. The value is the method plus a pre-registered frozen test that holds across days and
 machines; the next step is one job per machine per day for weeks.
 
 **"Could a smarter Forger beat it?"** Yes, and we show it. Our stronger Forger fits over-rotation, crosstalk and

@@ -17,12 +17,12 @@ We built both sides: the **Forger** (the attack, simulating each job from the ex
 ## Proof
 
 <p align="center">
-  <img src="assets/readme/proof.svg" width="100%" alt="30 of 30 later jobs called correctly by a Detector frozen on 10 October; 3 IBM machines and 12 calibration cycles; 1.5 QPU seconds of Canaries still catches all 34 jobs.">
+  <img src="assets/readme/proof.svg" width="100%" alt="32 of 32 later jobs called correctly by a Detector frozen on 10 October; 3 IBM machines and 13 calibration cycles; 1.5 QPU seconds of Canaries still catches all 36 jobs.">
 </p>
 
-- **Frozen and blind.** Trained once on two jobs from 10 October, never retrained, then scored every later job: **30 of 30 correct** (15 real jobs and their forged copies) over 12 calibration cycles, including **ibm_fez and ibm_kingston, which it had never seen**.
-- **Forward in time.** Trained only on earlier days and scored on the next: **30 of 30**, AUC 1.00.
-- **Cheap.** **1.5 QPU seconds** of Canary time (19 circuits x 250 shots) still calls all 34 jobs correctly, 85% less than our current Batches use, and no single Canary family manages it alone. **Checked on hardware:** 6 of 6 real 250-shot jobs called right; IBM bills about 2 s of fixed overhead per job on top, so each billed 4 to 5 s.
+- **Frozen and blind.** Trained once on two jobs from 10 October, never retrained, then scored every later job: **32 of 32 correct** (16 real jobs and their forged copies) over 13 calibration cycles, including **ibm_fez and ibm_kingston, which it had never seen**.
+- **Forward in time.** Trained only on earlier days and scored on the next: **32 of 32**, AUC 1.00.
+- **Cheap.** **1.5 QPU seconds** of Canary time (19 circuits x 250 shots) still calls all 36 jobs correctly, 85% less than our current Batches use, and no single Canary family manages it alone. **Checked on hardware:** 6 of 6 real 250-shot jobs called right; IBM bills about 2 s of fixed overhead per job on top, so each billed 4 to 5 s.
 - **It detects physics, not formatting.** With a simulator on both sides, the same pipeline scores AUC **0.52**, chance level, as it must.
 - **Real hardware, real data.** Every Run, Twin and calibration snapshot is committed in [data/](data/).
 
@@ -112,31 +112,46 @@ Two real jobs on IBM **ibm_marrakesh** (34 circuits x 1000 shots, 11 QPU seconds
 
 Detector, each job held out from training: **AUC 1.00**, all 4 jobs correct (Genuine scores 0.02 and 0.06, Forged 0.96 and 0.98). Both jobs share one calibration cycle. This Detector was then frozen.
 
-### Frozen Detector, later days and other machines (27, 29 and 30 October)
+### Frozen Detector, scored blind on every later job
 
-| Job | Backend | Calibration cycle | Genuine score | Forged Twin score |
-|---|---|---|---|---|
-| J1 | ibm_marrakesh | 2026-10-27 12:06 | 0.18 (Genuine) | 0.99 (Forged) |
-| J2 | ibm_marrakesh | 2026-10-29 20:01 | 0.00 (Genuine) | 0.99 (Forged) |
-| F1 | **ibm_fez** | 2026-10-29 19:59 | 0.02 (Genuine) | 0.99 (Forged) |
-| K1 | **ibm_kingston** | 2026-10-29 20:38 | 0.00 (Genuine) | 0.99 (Forged) |
-| K2 | ibm_kingston, same qubits | 2026-10-29 21:18 | 0.00 (Genuine) | 0.99 (Forged) |
-| F2 | ibm_fez, same qubits | 2026-10-29 21:22 | 0.00 (Genuine) | 0.99 (Forged) |
-| J3 | ibm_marrakesh, new qubits | 2026-10-30 21:03 | 0.36 (Genuine, near the Inconclusive band) | 0.99 (Forged) |
-| F3 | ibm_fez, new qubits | 2026-10-30 21:05 | 0.00 (Genuine) | 0.99 (Forged) |
-| K3 | ibm_kingston, new qubits | 2026-10-30 21:01 | 0.00 (Genuine) | 1.00 (Forged) |
-| J4 | ibm_marrakesh, repeat of J3 (same cycle, same qubits) | 2026-10-30 21:03 | 0.43 (Genuine, inside the Inconclusive band) | 0.99 (Forged) |
-| F4 | ibm_fez, repeat of F3 | 2026-10-30 21:05 | 0.00 (Genuine) | 0.99 (Forged) |
-| K4 | ibm_kingston, repeat of K3 | 2026-10-30 21:01 | 0.02 (Genuine) | 0.99 (Forged) |
-| J5 | ibm_marrakesh, J3's qubits after a recalibration | 2026-10-30 22:05 | 0.00 (Genuine) | 0.99 (Forged) |
-| K5 | ibm_kingston, new qubits | 2026-10-30 22:06 | 0.00 (Genuine) | 0.99 (Forged) |
-| F5 | ibm_fez, same qubits as F3 | 2026-10-30 22:32 | 0.00 (Genuine) | 0.99 (Forged) |
+Trained on the two 10 October jobs above, then frozen. Nothing was retrained or tuned before scoring these.
 
-30 of 30 correct: 15 Genuine jobs and their Twins over 12 calibration cycles, including two backends the Detector never saw.
+| Machine | Seen in training? | Real jobs | Calibration cycles | Real jobs called Genuine | Forgeries caught | What gave it away |
+|---|:---:|:---:|:---:|:---:|:---:|---|
+| **ibm_marrakesh** | 10 Oct only | 6 | 5 | **6 / 6** | **6 / 6** | a mix: over-rotation, crosstalk, readout |
+| **ibm_fez** | never | 5 | 4 | **5 / 5** | **5 / 5** | neighbor crosstalk, then over-rotation |
+| **ibm_kingston** | never | 5 | 4 | **5 / 5** | **5 / 5** | coherent over-rotation (91% vs 2% after 128 X gates) |
+| **Total** | | **16** | **13** | **16 / 16** | **16 / 16** | 0 errors; 95% bound 0.17 per job, 0.21 per cycle |
+
+<details>
+<summary><b>Every job</b> (forged score: below 0.35 Genuine, above 0.65 Forged)</summary>
+
+| Job | Machine | Calibration cycle | Qubits | Real job | Its forged Twin |
+|---|---|---|---|:---:|:---:|
+| J1 | marrakesh | 27 Oct 12:06 | new | 0.18 ✅ | 0.99 ✅ |
+| F1 | fez | 29 Oct 19:59 | new | 0.02 ✅ | 0.99 ✅ |
+| J2 | marrakesh | 29 Oct 20:01 | new | 0.00 ✅ | 0.99 ✅ |
+| K1 | kingston | 29 Oct 20:38 | new | 0.00 ✅ | 0.99 ✅ |
+| K2 | kingston | 29 Oct 21:18 | same as K1 | 0.00 ✅ | 0.99 ✅ |
+| F2 | fez | 29 Oct 21:22 | same as F1 | 0.00 ✅ | 0.99 ✅ |
+| K3 | kingston | 30 Oct 21:01 | new | 0.00 ✅ | 1.00 ✅ |
+| K4 | kingston | 30 Oct 21:01 | same cycle as K3 | 0.02 ✅ | 0.99 ✅ |
+| J3 | marrakesh | 30 Oct 21:03 | new | 0.36 ⚠️ | 0.99 ✅ |
+| J4 | marrakesh | 30 Oct 21:03 | same cycle as J3 | 0.43 ⚠️ | 0.99 ✅ |
+| F3 | fez | 30 Oct 21:05 | new | 0.00 ✅ | 0.99 ✅ |
+| F4 | fez | 30 Oct 21:05 | same cycle as F3 | 0.00 ✅ | 0.99 ✅ |
+| J5 | marrakesh | 30 Oct 22:05 | J3's, recalibrated | 0.00 ✅ | 0.99 ✅ |
+| K5 | kingston | 30 Oct 22:06 | new | 0.00 ✅ | 0.99 ✅ |
+| F5 | fez | 30 Oct 22:32 | F3's, recalibrated | 0.00 ✅ | 0.99 ✅ |
+| J6 | marrakesh | 30 Oct 22:40 | J3's, recalibrated | 0.00 ✅ | 0.98 ✅ |
+
+✅ correct Verdict. ⚠️ correct side of 0.5 but inside the Inconclusive band. J3 and J4 were run by different team members; J1 to J6 are ibm_marrakesh, F fez, K kingston.
+
+</details>
 
 - **Each machine is caught by a different effect:** fez mainly by neighbor crosstalk, kingston by coherent over-rotation (90% error after 128 X gates vs 3% for the Forger). Kingston's over-rotation survived a recalibration on the same qubits; fez's crosstalk stayed stable while its over-rotation doubled ([details](docs/research/recalibration-persistence.md)).
 - **Closest calls:** J3 (0.36) and J4 (0.43). Two separate jobs in the same cycle agreeing shows the thin margin belongs to that cycle and those qubits, not to shot noise. J5 confirms it: the same qubits one recalibration later score a clear 0.00 ([details](docs/research/cross-day-2026-10-30.md)).
-- **With every cycle held out in turn** (`evaluate()` on data/runs + data/fresh): AUC 1.00, all 34 jobs correct over 13 cycles. J3 scores 0.33; J4 scores 0.39, still correct but inside the Inconclusive band.
+- **With every cycle held out in turn** (`evaluate()` on data/runs + data/fresh): AUC 1.00, all 36 jobs correct over 14 cycles. J3 scores 0.34; J4 scores 0.40, still correct but inside the Inconclusive band.
 - **Cost and forward in time:** [docs/research/cost-and-forward.md](docs/research/cost-and-forward.md).
 - Earlier notes: [J1](docs/research/fresh-hardware-j1.md), [J2](docs/research/fresh-hardware-j2.md), [ibm_fez](docs/research/cross-backend-fez.md), [ibm_kingston](docs/research/cross-backend-kingston.md).
 
@@ -146,7 +161,7 @@ On ibm_marrakesh qubits 107-108, after 32 repeated CNOTs the target reads wrong 
 
 ## Limits
 
-- **Small sample.** With 0 errors in 15 Genuine jobs the 95% upper bound on the false-positive rate is 0.18 per job, or 0.22 counting each of the 12 calibration cycles once (the J3/J4, F3/F4 and K3/K4 pairs share a cycle). More cycles are needed.
+- **Small sample.** With 0 errors in 16 Genuine jobs the 95% upper bound on the false-positive rate is 0.17 per job, or 0.21 counting each of the 13 calibration cycles once (the J3/J4, F3/F4 and K3/K4 pairs share a cycle). More cycles are needed.
 - **A Forger with hardware access can do better.** Our stronger Forger ([ghostqpu/forger.py](ghostqpu/forger.py)) fits over-rotation, crosstalk and readout from one real probe job and fooled the original Detector. It needs real QPU access to do so, and it does not generalize to the customer's own circuits ([details](docs/research/workload-generalization.md)).
 - **If the Detector cannot separate them,** that is a result too: "public calibration data is enough to fake a quantum computer."
 - Related work and what is new: [docs/research/prior-work.md](docs/research/prior-work.md).
