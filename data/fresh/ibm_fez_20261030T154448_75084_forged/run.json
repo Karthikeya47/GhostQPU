@@ -1,0 +1,96 @@
+{
+ "run_id": "ibm_fez_20261030T154448_75084_forged",
+ "origin": "forged",
+ "backend": "ibm_fez",
+ "account": "acct1",
+ "shots": 1000,
+ "submitted_at": "2026-10-30T15:44:48.767018+00:00",
+ "manifest": {
+  "git": {
+   "commit": "9d8ac530ed1d4f0b3c8257e8b7a56ac5e8e23193",
+   "dirty": true,
+   "changed": [
+    "M app.py"
+   ]
+  },
+  "python": "3.13.7",
+  "packages": {
+   "qiskit": "2.5.2",
+   "qiskit-ibm-runtime": "0.50.0",
+   "qiskit-aer": "0.17.2",
+   "numpy": "2.5.3",
+   "scikit-learn": "1.9.1"
+  },
+  "sampler_options": {
+   "default_shots": 4096,
+   "dynamical_decoupling": {
+    "enable": false,
+    "sequence_type": "XX",
+    "extra_slack_distribution": "middle",
+    "scheduling_method": "alap",
+    "skip_reset_qubits": false
+   },
+   "execution": {
+    "init_qubits": true,
+    "rep_delay": null,
+    "scheduler_timing": false,
+    "stretch_values": false,
+    "meas_type": "classified"
+   },
+   "twirling": {
+    "enable_gates": false,
+    "enable_measure": false,
+    "group": "pauli",
+    "num_randomizations": "auto",
+    "shots_per_randomization": "auto",
+    "strategy": "active-accum"
+   },
+   "max_execution_time": null,
+   "simulator": {
+    "angle_decimals": 5,
+    "layer_noise_model": null,
+    "seed_simulator": null,
+    "warn_absent": true
+   },
+   "experimental": {},
+   "environment": {
+    "log_level": "WARNING",
+    "job_tags": [],
+    "private": false,
+    "max_execution_time": null,
+    "image": null
+   }
+  },
+  "transpile": {
+   "canaries": 0,
+   "workloads": 1
+  }
+ },
+ "job_id": "dbibmsene4hc73be8tp0",
+ "started_at": "2026-10-30T15:44:50.802652+00:00",
+ "qpu_seconds": 0.0,
+ "timestamps": {
+  "created": "2026-10-30T15:44:49.510499Z",
+  "finished": "2026-10-30T15:45:06.375701Z",
+  "running": "2026-10-30T15:44:50.802652Z"
+ },
+ "usage": {
+  "qpu_charge_time_seconds": 11,
+  "value": 0.177625,
+  "unit": "resource_units",
+  "status": "complete",
+  "details": [
+   {
+    "value": 0.177625,
+    "unit": "resource_units",
+    "metric": {
+     "id": "caffe3ca-729c-5750-8777-df63bbf8bfd9",
+     "value": 11
+    }
+   }
+  ]
+ },
+ "twin_of": "ibm_fez_20261030T154448_75084",
+ "forged_at": "2026-10-30T15:46:35.326693+00:00",
+ "seed_simulator": 1994433092
+}
