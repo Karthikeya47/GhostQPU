@@ -41,7 +41,7 @@ export const runById = (id: string) => D.runs.find((r) => r.id === id)!;
 export const twinOf = (id: string) => D.runs.find((r) => r.id === `${id}_forged`);
 export const genuineRuns = D.runs.filter((r) => r.origin === "genuine");
 
-export const COLORS = { genuine: "#2a78d6", forged: "#eb6834", gold: "#c9a24a" };
+export const COLORS = { genuine: "#2a78d6", forged: "#eb6834", gold: "#8fd3ff" };
 
 export function jobLabel(id: string) {
   const base = id.replace("_forged", "");

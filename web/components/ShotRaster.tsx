@@ -31,7 +31,7 @@ export function ShotRaster({ bits, color, label }: { bits: number[][]; color: st
         for (let b = 0; b < cols; b++) {
           const on = bits[s][b] === 1;
           // Even clbits are the canary targets (ideal 0), odd ones the neighbors.
-          ctx.fillStyle = on ? color : b % 2 === 0 ? "#1b2232" : "#141a26";
+          ctx.fillStyle = on ? color : b % 2 === 0 ? "#10263f" : "#0b1d33";
           ctx.fillRect(s * cell + 0.5, b * ch + 1, Math.max(cell - 1, 1), ch - 2);
         }
       }

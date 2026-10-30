@@ -9,7 +9,7 @@ import type { Chip, Run } from "@/lib/data";
 const GENUINE = "#2a78d6";
 const GENUINE_HI = "#5aa0f2";
 const FORGED = "#eb6834";
-const GOLD = "#c9a24a";
+const GOLD = "#8fd3ff";
 
 const reduced = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -47,8 +47,8 @@ function Lattice({ chip, placements, ghost = false, onHover }: {
     const m = mesh.current!;
     const t1s = chip.qubits.map((q) => q.T1 ?? 0).sort((a, b) => a - b);
     const dummy = new THREE.Object3D();
-    const cold = new THREE.Color("#334055");
-    const warm = new THREE.Color("#dfe8f2");
+    const cold = new THREE.Color("#2a4a6e");
+    const warm = new THREE.Color("#eaf4ff");
     chip.qubits.forEach((q, i) => {
       dummy.position.copy(pos[i]);
       dummy.scale.setScalar((placed.has(i) ? 1.5 : 1) * (ghost ? 0.7 : 1));
@@ -157,7 +157,7 @@ export function ChipScene({ chip, placements }: { chip: Chip; placements: [numbe
       </group>
       {q && hover !== null && (
         <Html position={pos[hover]} center style={{ pointerEvents: "none", transform: "translateY(-48px)" }}>
-          <div className="mono" style={{ background: "#0b0e14ee", border: `1px solid ${GOLD}`, borderRadius: 8, padding: "8px 10px", fontSize: 11, whiteSpace: "nowrap", color: "#e4eaf0" }}>
+          <div className="mono" style={{ background: "#030b17ee", border: `1px solid ${GOLD}`, borderRadius: 8, padding: "8px 10px", fontSize: 11, whiteSpace: "nowrap", color: "#eaf4ff" }}>
             <b style={{ color: GOLD }}>Q{hover}</b>{placements.flat().includes(hover) ? "  · canary placement" : ""}<br />
             T1 {q.T1?.toFixed(0)} µs · T2 {q.T2?.toFixed(0)} µs<br />
             readout error {(q.readout_error * 100).toFixed(2)}%
@@ -187,7 +187,7 @@ export function CoherentScene({ genuine, twin, sandwich }: { genuine: Run; twin?
   return (
     <>
       <OrbitControls enableZoom={false} enablePan={false} autoRotate={!reduced()} autoRotateSpeed={0.5} maxPolarAngle={Math.PI / 2.1} />
-      <gridHelper args={[10, 20, "#2b3546", "#1a2130"]} position={[0, 0, 0]} />
+      <gridHelper args={[10, 20, "#1b3a5c", "#10263f"]} position={[0, 0, 0]} />
       {all.map((s) => (
         <group key={s.key}>
           <Line points={s.pts} color={s.color} lineWidth={3} />
@@ -201,7 +201,7 @@ export function CoherentScene({ genuine, twin, sandwich }: { genuine: Run; twin?
       ))}
       {NS.map((n, i) => (
         <Html key={n} position={[sx(i), -0.05, sz(3) + 1.1]} center>
-          <span className="mono" style={{ fontSize: 11, color: "#8791a3" }}>N={n}</span>
+          <span className="mono" style={{ fontSize: 11, color: "#7f97b3" }}>N={n}</span>
         </Html>
       ))}
       {genuine.per_placement.map((pl, k) => (
@@ -211,7 +211,7 @@ export function CoherentScene({ genuine, twin, sandwich }: { genuine: Run; twin?
       ))}
       {[0.1, 0.2, 0.3, 0.4].map((p) => (
         <Html key={p} position={[sx(0) - 0.8, sy(p), sz(0) - 0.6]} center>
-          <span className="mono" style={{ fontSize: 10, color: "#8791a3" }}>{p.toFixed(1)}</span>
+          <span className="mono" style={{ fontSize: 10, color: "#7f97b3" }}>{p.toFixed(1)}</span>
         </Html>
       ))}
     </>
@@ -229,7 +229,7 @@ export function SignatureScene({ points, axes }: {
   return (
     <>
       <OrbitControls enableZoom={false} enablePan={false} autoRotate={!reduced()} autoRotateSpeed={0.6} />
-      <lineSegments geometry={box} position={[0, S / 2, 0]}><lineBasicMaterial color="#2b3546" /></lineSegments>
+      <lineSegments geometry={box} position={[0, S / 2, 0]}><lineBasicMaterial color="#1b3a5c" /></lineSegments>
       {points.map((v, i) => (
         <mesh key={i} position={p(v)} onPointerOver={(e) => { e.stopPropagation(); setHover(i); }} onPointerOut={() => setHover(null)}>
           {v.fresh ? <octahedronGeometry args={[0.13]} /> : <sphereGeometry args={[0.09, 14, 14]} />}
@@ -238,7 +238,7 @@ export function SignatureScene({ points, axes }: {
       ))}
       {hover !== null && (
         <Html position={p(points[hover])} center style={{ pointerEvents: "none", transform: "translateY(-30px)" }}>
-          <div className="mono" style={{ background: "#0b0e14ee", border: "1px solid #c9a24a", borderRadius: 6, padding: "4px 8px", fontSize: 11, whiteSpace: "nowrap" }}>
+          <div className="mono" style={{ background: "#030b17ee", border: "1px solid #8fd3ff", borderRadius: 6, padding: "4px 8px", fontSize: 11, whiteSpace: "nowrap" }}>
             {points[hover].label}
           </div>
         </Html>
@@ -292,10 +292,10 @@ export function BlochScene({ hardware, forger, n }: { hardware: [number, number]
     <>
       <OrbitControls enableZoom={false} enablePan={false} autoRotate={!reduced()} autoRotateSpeed={0.4} />
       <mesh><sphereGeometry args={[1.6, 48, 48]} /><meshBasicMaterial color="#5aa0f2" transparent opacity={0.05} depthWrite={false} /></mesh>
-      {(["x", "y", "z"] as const).map((a) => <Line key={a} points={ring(a)} color="#2b3546" lineWidth={1} />)}
-      <Line points={[new THREE.Vector3(0, -1.9, 0), new THREE.Vector3(0, 1.9, 0)]} color="#3a4456" lineWidth={1} />
-      <Line points={[new THREE.Vector3(-1.9, 0, 0), new THREE.Vector3(1.9, 0, 0)]} color="#3a4456" lineWidth={1} />
-      <Line points={[new THREE.Vector3(0, 0, -1.9), new THREE.Vector3(0, 0, 1.9)]} color="#3a4456" lineWidth={1} />
+      {(["x", "y", "z"] as const).map((a) => <Line key={a} points={ring(a)} color="#1b3a5c" lineWidth={1} />)}
+      <Line points={[new THREE.Vector3(0, -1.9, 0), new THREE.Vector3(0, 1.9, 0)]} color="#24476d" lineWidth={1} />
+      <Line points={[new THREE.Vector3(-1.9, 0, 0), new THREE.Vector3(1.9, 0, 0)]} color="#24476d" lineWidth={1} />
+      <Line points={[new THREE.Vector3(0, 0, -1.9), new THREE.Vector3(0, 0, 1.9)]} color="#24476d" lineWidth={1} />
       {n > 0 && <Line points={trail} color={GENUINE_HI} lineWidth={2} transparent opacity={0.5} />}
       <Arrow to={hw} color={GENUINE_HI} />
       <Arrow to={fz} color={FORGED} />

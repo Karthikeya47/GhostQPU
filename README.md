@@ -155,7 +155,7 @@ python -m ruff check .
 
 ## Web frontend
 
-A 3D, animated Next.js site in [web/](web/) shows the same data: the real ibm_marrakesh lattice, a job console that replays any real job end to end, a data-driven Bloch sphere, a "beat the Detector" lab that runs the frozen Detector in the browser, Canary curves, day-to-day variation, held-out Verdicts and the research stress tests.
+A 3D, animated Next.js site in [web/](web/) tells the story in six chapters (problem, trap, run a job, evidence, verdict, break it) with the same data: the real ibm_marrakesh lattice, a job console that replays any real job end to end, a data-driven Bloch sphere, a "beat the Detector" lab that runs the frozen Detector in the browser, Canary curves, day-to-day variation, held-out Verdicts and the research stress tests.
 
 ```sh
 PYTHONPATH=. python scripts/export_web_data.py   # regenerate web/public/data.json from data/runs and data/fresh

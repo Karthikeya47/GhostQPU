@@ -97,7 +97,7 @@ export function JobConsole() {
             <div className="mono" style={{ fontSize: 11, color: "var(--mute)", marginBottom: 6 }}>
               shot record, N={run.raster_circuit.n} X-gate Canary · each column one shot · lit = 1
             </div>
-            <ShotRaster key={jobId} bits={run.raster} color="#e4eaf0" label="Shot record streaming in" />
+            <ShotRaster key={jobId} bits={run.raster} color="#eaf4ff" label="Shot record streaming in" />
           </div>
         )}
 

@@ -1,13 +1,14 @@
 "use client";
 import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GroupedBars, LineChart, WeightBars } from "@/components/charts";
 import { ShotRaster } from "@/components/ShotRaster";
 import { Wire } from "@/components/Wire";
 import { DayVariance } from "@/components/DayVariance";
 import { ForgerLab } from "@/components/ForgerLab";
 import { JobConsole } from "@/components/JobConsole";
+import { Vault } from "@/components/Vault";
 import { COLORS, D, FEATURE_LABELS, genuineRuns, jobLabel, mean, type Pilot, runById, scoreOf, twinOf } from "@/lib/data";
 import { IDEAL_TVD, J1, NULL_TEST_AUC, STRONGER_FORGER, WORKLOAD_TVD } from "@/lib/research";
 
@@ -23,62 +24,116 @@ const pct = (v: number, d = 1) => `${(v * 100).toFixed(d)}%`;
 
 const rise = { initial: { opacity: 0, y: 40 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-10%" }, transition: { duration: 0.8, ease: [0.2, 0.8, 0.2, 1] as const } };
 
+const CHAPTERS = [
+  { id: "problem", title: "The problem" },
+  { id: "trap", title: "The trap" },
+  { id: "run", title: "Run a job" },
+  { id: "evidence", title: "The evidence" },
+  { id: "verdict", title: "The verdict" },
+  { id: "break", title: "Break it" },
+] as const;
+
 export default function Page() {
   const [runId, setRunId] = useState(genuineRuns[genuineRuns.length - 1].id);
+  const [ch, setCh] = useState(0);
+  const go = useCallback((i: number) => setCh(Math.max(0, Math.min(CHAPTERS.length - 1, i))), []);
+  const first = useRef(true);
+
+  useEffect(() => {
+    if (first.current) { first.current = false; return; }
+    window.history.replaceState(null, "", `#${CHAPTERS[ch].id}`);
+    window.scrollTo({ top: 0 });
+  }, [ch]);
+
+  useEffect(() => {
+    const i = CHAPTERS.findIndex((c) => `#${c.id}` === window.location.hash);
+    if (i > 0) setCh(i);
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement;
+      if (t.closest("input, textarea, select, [contenteditable]") || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (e.key === "ArrowRight") setCh((c) => Math.min(c + 1, CHAPTERS.length - 1));
+      if (e.key === "ArrowLeft") setCh((c) => Math.max(c - 1, 0));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const body = [
+    <><Hero go={go} /><Threat /></>,
+    <><BatchSection /><BlochSection /></>,
+    <RunIt key="run" />,
+    <><Evidence runId={runId} setRunId={setRunId} /><Coherent3D runId={runId} setRunId={setRunId} /><Shots runId={runId} /></>,
+    <><Verdict /><SignatureSpace /></>,
+    <><BeatIt /><StressTest /><Footer /></>,
+  ][ch];
+
   return (
     <MotionConfig reducedMotion="user">
-      <Hero />
-      <RunIt />
-      <Threat />
-      <BatchSection />
-      <Evidence runId={runId} setRunId={setRunId} />
-      <BlochSection />
-      <Coherent3D runId={runId} setRunId={setRunId} />
-      <Shots runId={runId} />
-      <Verdict />
-      <SignatureSpace />
-      <BeatIt />
-      <StressTest />
-      <Footer />
+      <Vault strength={ch === 0 ? 0.95 : 0.32} />
+      <div className="app">
+        <nav className="chapnav" aria-label="Story chapters">
+          <button className="brand" onClick={() => go(0)}>GhostQPU</button>
+          <div className="chaps">
+            {CHAPTERS.map((c, i) => (
+              <button key={c.id} className={`chap${i < ch ? " done" : ""}`} aria-current={i === ch ? "step" : undefined} onClick={() => go(i)}>
+                <span className="n">{i + 1}</span><span className="t">{c.title}</span>
+              </button>
+            ))}
+          </div>
+          <motion.div className="progress" animate={{ width: `${((ch + 1) / CHAPTERS.length) * 100}%` }} transition={{ type: "spring", stiffness: 120, damping: 22 }} />
+        </nav>
+        <AnimatePresence mode="wait">
+          <motion.main key={ch} className="chapter" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
+            transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}>
+            {body}
+          </motion.main>
+        </AnimatePresence>
+        <div className="pager">
+          {ch > 0 ? <button onClick={() => go(ch - 1)}>← {CHAPTERS[ch - 1].title}</button> : <span />}
+          <span className="hint">← → to move between chapters</span>
+          {ch < CHAPTERS.length - 1 ? <button className="next" onClick={() => go(ch + 1)}>{CHAPTERS[ch + 1].title} →</button> : <span />}
+        </div>
+      </div>
     </MotionConfig>
   );
 }
 
-function Hero() {
+function Hero({ go }: { go: (i: number) => void }) {
   const canaries = fresh.circuits.filter((c) => c.role === "canary").length;
   return (
-    <header style={{ position: "relative", minHeight: "100svh", display: "flex", alignItems: "flex-end", overflow: "hidden" }}>
+    <header style={{ position: "relative", minHeight: "calc(100svh - 60px)", display: "flex", alignItems: "flex-end", overflow: "hidden" }}>
       <div style={{ position: "absolute", inset: 0 }}>
         <Scene camera={[0, 7.5, 9.5]} className="hero3d" label="3D model of the 156-qubit ibm_marrakesh chip with its forged copy floating above">
           <ChipScene chip={D.chips.fresh} placements={fresh.placements} />
         </Scene>
       </div>
-      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", background: "linear-gradient(180deg, rgba(11,14,20,0.6) 0%, transparent 25%, transparent 50%, var(--ink) 96%)" }} />
-      <div className="wrap" style={{ position: "relative", width: "100%", padding: "0 var(--gutter) 64px", pointerEvents: "none" }}>
+      <div className="hero-shade" style={{ position: "absolute", inset: 0, pointerEvents: "none", background: "linear-gradient(180deg, transparent 40%, rgba(3,11,23,0.85) 92%)" }} />
+      <div className="wrap" style={{ position: "relative", width: "100%", padding: "0 var(--gutter) 56px", pointerEvents: "none" }}>
         <motion.div className="stage" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
-          GhostQPU · ibm_marrakesh · 156 qubits
+          ibm_marrakesh · 156 qubits · live calibration
         </motion.div>
-        <h1 className="display" style={{ fontWeight: 900, fontSize: "clamp(52px, 8.4vw, 132px)", lineHeight: 0.86, maxWidth: "11ch", textShadow: "0 4px 40px #0b0e14" }}>
+        <h1 className="display" style={{ fontWeight: 500, fontSize: "clamp(34px, 5.4vw, 80px)", lineHeight: 1.02, maxWidth: "15ch", letterSpacing: "-0.04em" }}>
           {"Did your job ever touch a quantum computer?".split(" ").map((w, i) => (
-            <motion.span key={i} style={{ display: "inline-block", marginRight: "0.22em", color: w === "touch" ? "var(--gold)" : undefined }}
-              initial={{ opacity: 0, y: 60, filter: "blur(12px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            <motion.span key={i} style={{ display: "inline-block", marginRight: "0.24em", color: w === "touch" ? "var(--gold)" : undefined, textShadow: w === "touch" ? "0 0 30px #8fd3ff88" : undefined }}
+              initial={{ opacity: 0, y: 40, filter: "blur(10px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ delay: 0.4 + i * 0.08, duration: 0.9, ease: [0.2, 0.8, 0.2, 1] }}>{w}</motion.span>
           ))}
         </h1>
         <motion.p className="lede" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.3 }}>
-          The gold lattice is the real chip, drawn from its published coupling map. The orange copy floating above it is the <b>Forger</b>: a
+          The bright lattice is the real chip, drawn from its published coupling map. The orange copy floating above it is the <b>Forger</b>: a
           simulator built from the same public calibration. GhostQPU hides {canaries} <b>Canaries</b> in your Batch to tell them apart.
         </motion.p>
-        <motion.div className="mono" style={{ marginTop: 28, fontSize: 12, color: "var(--mute)", display: "flex", gap: 24, flexWrap: "wrap" }}
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.6 }}>
+        <motion.div style={{ marginTop: 28, display: "flex", gap: 12, flexWrap: "wrap", pointerEvents: "auto" }}
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.7 }}>
+          <button className="run-btn" style={{ marginLeft: 0 }} onClick={() => go(1)}>Start the story →</button>
+          <button className="tab" onClick={() => go(2)}>▶ Jump to the live demo</button>
+        </motion.div>
+        <motion.div className="mono" style={{ marginTop: 22, fontSize: 12, color: "var(--mute)", display: "flex", gap: 24, flexWrap: "wrap" }}
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.9 }}>
           <span><span style={{ color: "var(--gold)" }}>●</span> canary placements</span>
           <span>brightness = T1</span>
           <span>hover a qubit for its calibration</span>
         </motion.div>
-        <motion.a href="#run" className="run-btn" style={{ display: "inline-block", marginTop: 28, textDecoration: "none", pointerEvents: "auto" }}
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.9 }}>
-          ▶ Submit a job and catch the ghost
-        </motion.a>
       </div>
     </header>
   );
@@ -229,12 +284,12 @@ function Threat() {
   );
 }
 
-const FAMILY_COLOR: Record<string, string> = { coherent: "#c9a24a", spectator: "#5aa0f2", readout: "#b48cf0" };
+const FAMILY_COLOR: Record<string, string> = { coherent: "#8fd3ff", spectator: "#5aa0f2", readout: "#b48cf0" };
 
 function BatchSection() {
   const [reveal, setReveal] = useState(false);
   return (
-    <section className="section" style={{ background: "linear-gradient(180deg, transparent, #0e121a 30%, #0e121a 70%, transparent)" }}>
+    <section className="section" style={{ background: "linear-gradient(180deg, transparent, rgba(6,24,45,0.5) 30%, rgba(6,24,45,0.5) 70%, transparent)" }}>
       <div className="wrap">
         <motion.div {...rise}>
           <Wire gate="H">Inside one Batch · {jobLabel(fresh.id)}</Wire>
@@ -249,13 +304,13 @@ function BatchSection() {
           {reveal && (
             <div className="legend" style={{ alignItems: "center" }}>
               {Object.entries(FAMILY_COLOR).map(([k, c]) => <span key={k}><i style={{ background: c }} />{k}</span>)}
-              <span><i style={{ background: "#e4eaf0" }} />workload</span>
+              <span><i style={{ background: "#eaf4ff" }} />workload</span>
             </div>
           )}
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(118px, 1fr))", gap: 10 }}>
           {fresh.circuits.map((c, i) => {
-            const color = c.role === "workload" ? "#e4eaf0" : FAMILY_COLOR[c.family];
+            const color = c.role === "workload" ? "#eaf4ff" : FAMILY_COLOR[c.family];
             const params = Object.entries(c.params).map(([k, v]) => `${k}=${v}`).join(" ");
             return (
               <motion.div key={i} layout className="mono"
@@ -274,7 +329,7 @@ function BatchSection() {
                       <div style={{ color: "var(--mute)", wordBreak: "break-word" }}>{params || "customer circuit"}</div>
                     </motion.div>
                   ) : (
-                    <motion.div key="h" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ marginTop: 4, color: "#c4ccd8" }}>
+                    <motion.div key="h" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ marginTop: 4, color: "#c2d6ea" }}>
                       depth {c.depth}<br /><span style={{ color: "var(--mute)" }}>{Object.values(c.ops).reduce((a, b) => a + b, 0)} ops</span>
                     </motion.div>
                   )}
@@ -290,13 +345,14 @@ function BatchSection() {
 
 function RunTabs({ runId, setRunId }: { runId: string; setRunId: (id: string) => void }) {
   return (
-    <div className="tabs" role="group" aria-label="Genuine run">
-      {genuineRuns.map((r) => (
-        <button key={r.id} className="tab" aria-pressed={r.id === runId} onClick={() => setRunId(r.id)}>
-          {jobLabel(r.id)}{D.fresh_ids.includes(r.id) ? " · new cycle" : ""}
-        </button>
-      ))}
-    </div>
+    <label className="picker">
+      <span className="unit">Genuine job</span>
+      <select value={runId} onChange={(e) => setRunId(e.target.value)}>
+        {genuineRuns.map((r) => (
+          <option key={r.id} value={r.id}>{jobLabel(r.id)}{D.fresh_ids.includes(r.id) ? " · scored blind" : " · training"}</option>
+        ))}
+      </select>
+    </label>
   );
 }
 
@@ -443,7 +499,7 @@ function Verdict() {
   const frozenRight = fresh_.filter((id) => (scoreOf(D.fresh_scores, id) > 0.5 ? "forged" : "genuine") === runById(id).origin).length;
   const cycles = new Set(fresh_.map((id) => runById(id).cycle)).size;
   return (
-    <section className="section" style={{ background: "linear-gradient(180deg, transparent, #0e121a 20%, #0e121a 80%, transparent)" }}>
+    <section className="section" style={{ background: "linear-gradient(180deg, transparent, rgba(6,24,45,0.5) 20%, rgba(6,24,45,0.5) 80%, transparent)" }}>
       <div className="wrap">
         <motion.div {...rise}>
           <Wire gate="M">The Detector</Wire>
@@ -561,15 +617,15 @@ function StressTest() {
             <p className="cap">Total variation distance on Workload circuits (lower is closer). The dashed floor is shot noise alone. Neither forger reaches it on GHZ.</p>
             <div className="legend">
               <span><i style={{ background: COLORS.forged }} />stock Forger</span>
-              <span><i style={{ background: "#c9a24a" }} />stronger Forger</span>
-              <span><i style={{ background: "#3a4456" }} />shot-noise floor</span>
+              <span><i style={{ background: "#8fd3ff" }} />stronger Forger</span>
+              <span><i style={{ background: "#24476d" }} />shot-noise floor</span>
             </div>
             <GroupedBars label="TVD from real hardware per workload circuit" yLabel="TVD"
               groups={WORKLOAD_TVD.filter((w) => w.cz > 0).map((w) => `${w.run} ${w.circuit.replace("random4_", "r")}`)}
               series={[
                 { name: "stock", color: COLORS.forged, values: WORKLOAD_TVD.filter((w) => w.cz > 0).map((w) => w.stock) },
-                { name: "stronger", color: "#c9a24a", values: WORKLOAD_TVD.filter((w) => w.cz > 0).map((w) => w.v2) },
-                { name: "floor", color: "#3a4456", values: WORKLOAD_TVD.filter((w) => w.cz > 0).map((w) => w.floor) },
+                { name: "stronger", color: "#8fd3ff", values: WORKLOAD_TVD.filter((w) => w.cz > 0).map((w) => w.v2) },
+                { name: "floor", color: "#24476d", values: WORKLOAD_TVD.filter((w) => w.cz > 0).map((w) => w.floor) },
               ]} />
           </motion.div>
           <motion.div className="card" {...rise}>
@@ -578,14 +634,14 @@ function StressTest() {
             <div className="legend">
               <span><i style={{ background: COLORS.genuine }} />real</span>
               <span><i style={{ background: COLORS.forged }} />stock</span>
-              <span><i style={{ background: "#c9a24a" }} />stronger</span>
+              <span><i style={{ background: "#8fd3ff" }} />stronger</span>
             </div>
             <GroupedBars label="TVD to ideal output" yLabel="TVD to ideal"
               groups={IDEAL_TVD.slice(0, 4).map((r) => r.label.replace("random4_", "r"))}
               series={[
                 { name: "real", color: COLORS.genuine, values: IDEAL_TVD.slice(0, 4).map((r) => r.real) },
                 { name: "stock", color: COLORS.forged, values: IDEAL_TVD.slice(0, 4).map((r) => r.stock) },
-                { name: "stronger", color: "#c9a24a", values: IDEAL_TVD.slice(0, 4).map((r) => r.v2) },
+                { name: "stronger", color: "#8fd3ff", values: IDEAL_TVD.slice(0, 4).map((r) => r.v2) },
               ]} />
           </motion.div>
         </div>
@@ -678,7 +734,7 @@ function PilotBody({ run }: { run: Pilot }) {
         <span><i style={{ background: COLORS.genuine }} />hardware, control 1</span>
         <span><i style={{ background: COLORS.forged }} />Forger, control 1</span>
         <span><i style={{ background: COLORS.gold }} />hardware, control 0</span>
-        <span><i style={{ background: "#8791a3" }} />hardware, CZ replaced by idle</span>
+        <span><i style={{ background: "#7f97b3" }} />hardware, CZ replaced by idle</span>
       </div>
       <LineChart key={pl} label={`CNOT canary on qubits ${pl}: P(target wrong) vs repeats`} xTicks={[0, 32, 64, 96, 128]} xLabel="CNOT repeats (N)"
         yLabel="P(target wrong)" yMax={1}
@@ -686,7 +742,7 @@ function PilotBody({ run }: { run: Pilot }) {
           { name: "hardware c=1", color: COLORS.genuine, pts: pts("cnot", 1, "hardware") },
           { name: "Forger c=1", color: COLORS.forged, pts: pts("cnot", 1, "stock") },
           { name: "hardware c=0", color: COLORS.gold, dashed: true, pts: pts("cnot", 0, "hardware") },
-          { name: "hardware idle", color: "#8791a3", dashed: true, pts: pts("idle", 1, "hardware") },
+          { name: "hardware idle", color: "#7f97b3", dashed: true, pts: pts("idle", 1, "hardware") },
         ]} />
       <div className="scrollx" style={{ marginTop: 16 }}>
         <table className="data">

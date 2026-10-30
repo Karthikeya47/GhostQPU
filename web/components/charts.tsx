@@ -7,8 +7,8 @@ const H = 320;
 const P = { l: 52, r: 16, t: 16, b: 44 };
 const iw = W - P.l - P.r;
 const ih = H - P.t - P.b;
-const GRID = "#232b3a";
-const MUTE = "#8791a3";
+const GRID = "#17304d";
+const MUTE = "#7f97b3";
 
 const nice = (max: number, n = 4) => {
   const step = Math.pow(10, Math.floor(Math.log10(max / n)));
@@ -68,7 +68,7 @@ export function LineChart({ series, xLabel, yLabel, xTicks, yMax, label, xFmt = 
               initial={{ pathLength: 0 }} animate={{ pathLength: seen ? 1 : 0 }} transition={{ duration: 1.6, delay: si * 0.35, ease: "easeInOut" }}
               style={{ filter: `drop-shadow(0 0 6px ${s.color}66)` }} />
             {s.pts.map((p, i) => (
-              <motion.circle key={i} cx={sx(p[0])} cy={sy(p[1])} r={4.5} fill={s.color} stroke="#0b0e14" strokeWidth={1.5}
+              <motion.circle key={i} cx={sx(p[0])} cy={sy(p[1])} r={4.5} fill={s.color} stroke="#030b17" strokeWidth={1.5}
                 initial={{ scale: 0 }} animate={{ scale: seen ? 1 : 0 }} transition={{ delay: si * 0.35 + 0.2 + (i / s.pts.length) * 1.4 }}
                 onMouseEnter={() => setHover({ x: p[0], y: p[1], s: s.name, c: s.color, px: sx(p[0]), py: sy(p[1]) })}
                 style={{ cursor: "crosshair" }} />
@@ -87,8 +87,8 @@ function Tip({ px, py, c, text }: { px: number; py: number; c: string; text: str
   const y = py < 50 ? py + 14 : py - 36;
   return (
     <g pointerEvents="none">
-      <rect x={x} y={y} width={w} height={24} rx={6} fill="#0b0e14" stroke={c} />
-      <text x={x + 8} y={y + 16} fontSize={11} fill="#e4eaf0">{text}</text>
+      <rect x={x} y={y} width={w} height={24} rx={6} fill="#030b17" stroke={c} />
+      <text x={x + 8} y={y + 16} fontSize={11} fill="#eaf4ff">{text}</text>
     </g>
   );
 }
@@ -139,11 +139,11 @@ export function ScoreBars({ scores, label, color }: { scores: number[]; label: s
     <svg ref={ref} viewBox={`0 0 ${W} ${h}`} width="100%" role="img" aria-label={label}>
       {[0, 0.5, 1].map((v) => (
         <g key={v} fontSize={11} fill={MUTE}>
-          <line x1={P.l} x2={W - P.r} y1={sy(v)} y2={sy(v)} stroke={v === 0.5 ? "#c9a24a" : GRID} strokeDasharray={v === 0.5 ? "4 4" : undefined} />
+          <line x1={P.l} x2={W - P.r} y1={sy(v)} y2={sy(v)} stroke={v === 0.5 ? "#8fd3ff" : GRID} strokeDasharray={v === 0.5 ? "4 4" : undefined} />
           <text x={P.l - 8} y={sy(v) + 4} textAnchor="end">{v}</text>
         </g>
       ))}
-      <text x={W - P.r} y={sy(0.5) - 6} textAnchor="end" fontSize={10} fill="#c9a24a">threshold</text>
+      <text x={W - P.r} y={sy(0.5) - 6} textAnchor="end" fontSize={10} fill="#8fd3ff">threshold</text>
       {scores.map((s, i) => (
         <g key={i}>
           <motion.rect x={P.l + gw * i + gw * 0.18} width={gw * 0.64} rx={4} fill={color}
@@ -165,12 +165,12 @@ export function WeightBars({ weights, labels }: { weights: [string, number][]; l
     <div ref={ref} style={{ display: "grid", gap: 8 }}>
       {weights.map(([k, v], i) => (
         <div key={k} style={{ display: "grid", gridTemplateColumns: "minmax(120px, 230px) 1fr 56px", gap: 12, alignItems: "center", fontSize: 13 }}>
-          <span style={{ color: "#c4ccd8" }}>{labels[k] ?? k}</span>
-          <div style={{ height: 12, background: "#1a2130", borderRadius: 6, overflow: "hidden" }}>
+          <span style={{ color: "#c2d6ea" }}>{labels[k] ?? k}</span>
+          <div style={{ height: 12, background: "#10263f", borderRadius: 6, overflow: "hidden" }}>
             <motion.div style={{ height: "100%", borderRadius: 6, background: v < 0 ? "#2a78d6" : "#eb6834", boxShadow: `0 0 12px ${v < 0 ? "#2a78d6" : "#eb6834"}88` }}
               initial={{ width: 0 }} animate={{ width: seen ? `${(Math.abs(v) / max) * 100}%` : 0 }} transition={{ duration: 1, delay: i * 0.06 }} />
           </div>
-          <span className="mono" style={{ color: "#8791a3", textAlign: "right" }}>{v > 0 ? "+" : ""}{v.toFixed(2)}</span>
+          <span className="mono" style={{ color: "#7f97b3", textAlign: "right" }}>{v > 0 ? "+" : ""}{v.toFixed(2)}</span>
         </div>
       ))}
     </div>

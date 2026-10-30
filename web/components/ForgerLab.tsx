@@ -56,13 +56,12 @@ export function ForgerLab() {
       <div className="card">
         <h3>Your forged job</h3>
         <p className="cap">Start from the stock Forger&apos;s Twin. Each slider copies part of one Canary family from the real hardware run into your forgery.</p>
-        <div className="tabs" role="group" aria-label="Job to forge" style={{ margin: "8px 0 18px" }}>
-          {pairs.map((g) => (
-            <button key={g.id} className="tab" aria-pressed={g.id === gid} onClick={() => { setGid(g.id); setMix([0, 0, 0, 0]); }}>
-              {jobLabel(g.id).replace(" · new cycle", "")}
-            </button>
-          ))}
-        </div>
+        <label className="picker" style={{ margin: "8px 0 18px" }}>
+          <span className="unit">Job to forge</span>
+          <select value={gid} onChange={(e) => { setGid(e.target.value); setMix([0, 0, 0, 0]); }}>
+            {pairs.map((g) => <option key={g.id} value={g.id}>{jobLabel(g.id).replace(" · new cycle", "")}</option>)}
+          </select>
+        </label>
         <div style={{ display: "grid", gap: 18 }}>
           {FAMILIES.map((f, i) => (
             <label key={f.key} style={{ display: "grid", gap: 6 }}>
@@ -87,7 +86,7 @@ export function ForgerLab() {
         <div className="mono" style={{ marginTop: 8, color: "var(--mute)" }}>
           forged score <span style={{ color: "var(--frost)", fontSize: 22 }}>{s.toFixed(3)}</span>
         </div>
-        <div style={{ position: "relative", height: 14, background: "#1a2130", borderRadius: 7, marginTop: 18, overflow: "hidden" }}>
+        <div style={{ position: "relative", height: 14, background: "#10263f", borderRadius: 7, marginTop: 18, overflow: "hidden" }}>
           <motion.div animate={{ width: `${s * 100}%` }} transition={{ type: "spring", stiffness: 140, damping: 20 }}
             style={{ height: "100%", background: `linear-gradient(90deg, var(--good), ${COLORS.forged})`, borderRadius: 7 }} />
           {[0.35, 0.5, 0.65].map((t) => (
