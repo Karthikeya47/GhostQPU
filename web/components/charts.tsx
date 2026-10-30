@@ -129,34 +129,6 @@ export function GroupedBars({ groups, series, yLabel, label }: {
   );
 }
 
-export function ScoreBars({ scores, label, color }: { scores: number[]; label: string; color: string }) {
-  const { ref, seen } = useDraw();
-  const h = 220;
-  const ih2 = h - P.t - 36;
-  const sy = (v: number) => P.t + ih2 - v * ih2;
-  const gw = iw / scores.length;
-  return (
-    <svg ref={ref} viewBox={`0 0 ${W} ${h}`} width="100%" role="img" aria-label={label}>
-      {[0, 0.5, 1].map((v) => (
-        <g key={v} fontSize={11} fill={MUTE}>
-          <line x1={P.l} x2={W - P.r} y1={sy(v)} y2={sy(v)} stroke={v === 0.5 ? "#8fd3ff" : GRID} strokeDasharray={v === 0.5 ? "4 4" : undefined} />
-          <text x={P.l - 8} y={sy(v) + 4} textAnchor="end">{v}</text>
-        </g>
-      ))}
-      <text x={W - P.r} y={sy(0.5) - 6} textAnchor="end" fontSize={10} fill="#8fd3ff">threshold</text>
-      {scores.map((s, i) => (
-        <g key={i}>
-          <motion.rect x={P.l + gw * i + gw * 0.18} width={gw * 0.64} rx={4} fill={color}
-            initial={{ y: sy(0), height: 0 }} animate={seen ? { y: sy(s), height: sy(0) - sy(s) } : {}}
-            transition={{ duration: 0.8, delay: i * 0.07, ease: [0.2, 0.8, 0.2, 1] }} />
-          <text x={P.l + gw * i + gw / 2} y={h - 16} textAnchor="middle" fontSize={11} fill={MUTE}>{i + 1}</text>
-        </g>
-      ))}
-      <text x={P.l + iw / 2} y={h - 1} textAnchor="middle" fontSize={11} fill={MUTE}>time-ordered chunk of the job</text>
-    </svg>
-  );
-}
-
 export function WeightBars({ weights, labels }: { weights: [string, number][]; labels: Record<string, string> }) {
   const ref = useRef<HTMLDivElement>(null);
   const seen = useInView(ref, { once: true, margin: "-10% 0px" });

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GroupedBars, LineChart, WeightBars } from "@/components/charts";
 import { ShotRaster } from "@/components/ShotRaster";
 import { Wire } from "@/components/Wire";
+import { CostCard } from "@/components/CostCard";
 import { DayVariance } from "@/components/DayVariance";
 import { ForgerLab } from "@/components/ForgerLab";
 import { JobConsole } from "@/components/JobConsole";
@@ -528,6 +529,8 @@ function Verdict() {
 
         <ByCycle />
 
+        <CostCard />
+
         <motion.div {...rise} style={{ marginTop: 28 }}>
           <DayVariance />
         </motion.div>
@@ -776,7 +779,6 @@ function freshLimit() {
 function Footer() {
   const links = [
     ["Source code", "https://github.com/Karthikeya47/GhostQPU"],
-    ["Live Streamlit dashboard", "https://ghostqpu-xk84u6gxdnv2bb26lvakuj.streamlit.app/?data=hardware"],
     ["Demo video", "https://drive.google.com/drive/folders/1M0DklU9nP6OGHuq1RZSj4r4Gzi0MHY0b"],
   ];
   return (

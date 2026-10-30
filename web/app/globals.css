@@ -121,7 +121,6 @@ svg text { font-family: var(--f-mono), monospace; }
 .wire-pulse { animation: wire-pulse 3.2s cubic-bezier(.6,0,.4,1) infinite; filter: drop-shadow(0 0 6px var(--gold)); }
 @keyframes wire-pulse { 0% { cx: 34px; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { cx: 230px; opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .wire-pulse { animation: none; opacity: 0; } }
-.ket { font-family: var(--f-mono), monospace; font-weight: 400; color: var(--gold); }
 
 /* Job console */
 .console { border: 1px solid var(--gold-dim); border-radius: 14px; background: #020812; overflow: hidden; box-shadow: 0 0 0 1px #000, 0 30px 80px -30px #8fd3ff33; }

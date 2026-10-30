@@ -43,4 +43,4 @@ export const J1 = {
 };
 
 // README.md
-export const NULL_TEST_AUC = 0.4;
+export const NULL_TEST_AUC = 0.52; // rerun 2026-10-30 with the seeded Forger

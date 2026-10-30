@@ -12,19 +12,18 @@ We built both sides: the **Forger** (the attack, using the exact calibration tha
 
 | What | Where |
 |---|---|
-| Live dashboard | [Streamlit Cloud](https://ghostqpu-xk84u6gxdnv2bb26lvakuj.streamlit.app/?data=hardware) (real IBM hardware data, nothing to install) |
-| Presentation | [docs/GhostQPU_QHack_India26.pptx](docs/GhostQPU_QHack_India26.pptx) |
+| Interactive site | [web/](web/): six-chapter story with a live job console, Bloch sphere and "beat the Detector" lab (run it below) |
+| Presenter notes | [docs/PRESENTATION.md](docs/PRESENTATION.md) |
 | Demo video | [Google Drive](https://drive.google.com/drive/folders/1M0DklU9nP6OGHuq1RZSj4r4Gzi0MHY0b) (silent captioned cut: [demo/GhostQPU_demo.mp4](demo/GhostQPU_demo.mp4)) |
-| Plain-language explainer | [docs/GhostQPU_explained.pdf](docs/GhostQPU_explained.pdf) |
-| Real IBM hardware runs + forged twins | [data/runs/](data/runs/) |
-| Code | [ghostqpu/](ghostqpu/) (library + CLI), [app.py](app.py) (dashboard), [tests/](tests/) |
+| Real IBM hardware runs + forged twins | [data/runs/](data/runs/) (training), [data/fresh/](data/fresh/) (scored blind), [data/pilot/runs/](data/pilot/runs/) (CNOT pilot) |
+| Code | [ghostqpu/](ghostqpu/) (library + CLI), [web/](web/) (site), [scripts/](scripts/), [tests/](tests/) |
 
-Or run the dashboard locally on the included real-hardware data (no IBM account needed):
+Run the site locally on the included real-hardware data (no IBM account needed):
 
 ```sh
-python -m venv .venv
-.venv/Scripts/python -m pip install -r requirements.txt   # macOS / Linux: .venv/bin/python
-.venv/Scripts/python -m streamlit run app.py
+cd web
+npm install
+npm run dev        # http://localhost:3000
 ```
 
 ### Repository layout
@@ -38,9 +37,13 @@ ghostqpu/
   signature.py   12 canary features per time chunk of a Run
   detector.py    logistic regression, held-out evaluation, verdicts
   cli.py         add-account | accounts | submit | collect | evaluate | null-test
-app.py           Streamlit dashboard (Verify a job, Evidence, Detector)
-data/runs/       2 genuine ibm_marrakesh runs and their forged twins
-tests/           24 tests, no QPU time needed
+  forger.py      stronger Forger fitted from a Genuine probe run
+  pilot.py       CNOT pilot circuits and analysis
+scripts/         frozen scorer, CNOT pilot, cost and forward-in-time study, web data export
+web/             Next.js site (reads web/public/data.json and cost.json)
+data/runs/       2 genuine ibm_marrakesh runs and their forged twins (the frozen Detector's training set)
+data/fresh/      later runs on marrakesh, fez and kingston, scored blind
+tests/           pytest suite, no QPU time needed
 ```
 
 ## Results so far (Oct 10, 2026)
@@ -84,7 +87,7 @@ On ibm_marrakesh qubits 107-108, after 32 repeated CNOTs the target reads wrong 
 
 Related work and what is new: [docs/research/prior-work.md](docs/research/prior-work.md).
 
-Slides: [docs/GhostQPU_QHack_India26.pptx](docs/GhostQPU_QHack_India26.pptx). Demo video: [Google Drive](https://drive.google.com/drive/folders/1M0DklU9nP6OGHuq1RZSj4r4Gzi0MHY0b). New to quantum computing? Start with the plain-language explainer: [docs/GhostQPU_explained.pdf](docs/GhostQPU_explained.pdf).
+How few Canaries are enough, and does it work forward in time: [docs/research/cost-and-forward.md](docs/research/cost-and-forward.md). Demo video: [Google Drive](https://drive.google.com/drive/folders/1M0DklU9nP6OGHuq1RZSj4r4Gzi0MHY0b).
 
 ## Setup
 
@@ -125,17 +128,12 @@ The commands below use `python` for the venv's interpreter.
 
 ## Demo
 
-Live on [Streamlit Cloud](https://ghostqpu-xk84u6gxdnv2bb26lvakuj.streamlit.app/?data=hardware), or locally:
+The site in [web/](web/) (see "Web frontend" below) is the demo. Its chapters are linkable: `#problem`, `#trap`, `#run`, `#evidence`, `#verdict`, `#break`.
 
-```sh
-python -m streamlit run app.py
-```
-
-- **Verify a job**: pick an anonymized job and get a verdict (Genuine, Forged or Inconclusive). Every score comes from a Detector that never saw that job or its twin.
+- **Run a job**: replays any of the real recorded jobs end to end and gives a Verdict scored without that job's calibration cycle.
 - **Evidence**: canary curves from hardware vs the Forger, for the same circuits and calibration.
-- **Detector**: held-out AUC, job accuracy, and which features drive the decision.
-
-`?data=stand_in` in the URL opens the null test view.
+- **Verdict**: held-out accuracy, cost of verification, forward-in-time test, day-to-day variation.
+- **Break it**: run the frozen Detector in the browser and try to fake your way past it.
 
 ## The null test
 
@@ -143,11 +141,11 @@ python -m streamlit run app.py
 python -m ghostqpu null-test
 ```
 
-This runs the whole pipeline with a simulator on **both** sides. The Detector must fail here (AUC near 0.5). If it succeeded, it would be detecting a formatting artifact instead of physics. Current result: AUC 0.40, PASS.
+This runs the whole pipeline with a simulator on **both** sides. The Detector must fail here (AUC near 0.5). If it succeeded, it would be detecting a formatting artifact instead of physics. Current result: AUC 0.52, PASS (rerun 2026-10-30 with the seeded Forger; it was 0.40 before).
 
 ## If the Detector can't separate them
 
-That is a result too: "public calibration data is enough to fake a quantum computer." The Evidence tab shows how close the forgery gets.
+That is a result too: "public calibration data is enough to fake a quantum computer." The Evidence chapter shows how close the forgery gets.
 
 ## Development
 

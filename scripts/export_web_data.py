@@ -1,6 +1,6 @@
 """Export every Run, Detector result and Calibration snapshot in the repo to web/public/data.json.
 
-No QPU time, no retraining beyond what app.py and score_fresh.py already do.
+No QPU time, no retraining beyond what scripts/score_fresh.py and detector.evaluate already do.
 Run from the repo root:  PYTHONPATH=. python scripts/export_web_data.py
 """
 
