@@ -316,6 +316,7 @@ const USES = [
   ["Funded programme audits", "Grants and national quantum programmes pay for cloud QPU time; an auditor can check it was real."],
   ["Brokers and marketplaces", "A platform reselling several vendors can verify its own suppliers and show a verified-on-hardware badge."],
   ["Silent fallbacks", "A misconfigured pipeline or overloaded queue that quietly falls back to a simulator is caught the same way."],
+  ["Billing disputes", "A saved Verdict for every job is evidence when a Customer challenges a QPU bill or asks for a refund."],
 ] as const;
 
 const FAMILY_COLOR: Record<string, string> = { coherent: "#8fd3ff", spectator: "#5aa0f2", readout: "#b48cf0" };

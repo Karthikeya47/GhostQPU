@@ -33,6 +33,7 @@ Buying straight from IBM, there is little reason to doubt a job ran. The need ap
 - **Audits of funded quantum programmes.** Grants and national programmes pay for cloud QPU time. An auditor can check the billed hardware time was real without trusting the invoice.
 - **Brokers and marketplaces.** A platform reselling several vendors can verify its own suppliers and offer a "verified on hardware" badge.
 - **Honest mistakes.** A misconfigured pipeline or overloaded queue that quietly falls back to a simulator is caught the same way.
+- **Billing disputes.** A saved Verdict for every job is evidence when a Customer challenges a QPU bill or asks for a refund.
 
 ## Proof
 
