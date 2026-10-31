@@ -24,6 +24,16 @@ You pay a cloud reseller for time on a quantum computer. How do you know your jo
 
 We built both sides: the **Forger** (the attack, simulating each job from the exact calibration that was live when it ran) and the **Detector**. Vocabulary is in [CONTEXT.md](CONTEXT.md).
 
+## Where it's useful
+
+Buying straight from IBM, there is little reason to doubt a job ran. The need appears whenever someone sits between the Customer and the QPU, and checking costs about 1.5 QPU seconds per job.
+
+- **Customers of resellers and aggregators.** Labs, startups and students often buy cheaper QPU time through a third party. That Provider can bill QPU seconds and run Aer instead: the attack we built and caught on 56 of 56 later jobs.
+- **Research and benchmarking papers.** "We ran this on ibm_kingston" is taken on trust today. Canaries in the Batch, saved with the Run and its calibration, let authors and reviewers check it later.
+- **Audits of funded quantum programmes.** Grants and national programmes pay for cloud QPU time. An auditor can check the billed hardware time was real without trusting the invoice.
+- **Brokers and marketplaces.** A platform reselling several vendors can verify its own suppliers and offer a "verified on hardware" badge.
+- **Honest mistakes.** A misconfigured pipeline or overloaded queue that quietly falls back to a simulator is caught the same way.
+
 ## Proof
 
 <p align="center">
@@ -239,6 +249,16 @@ This tests the overall error level, so it complements the X-chain Canaries, whic
 - **A Forger with hardware access can do better.** Our stronger Forger ([ghostqpu/forger.py](ghostqpu/forger.py)) learns over-rotation, crosstalk and readout from one earlier real job on the same qubits. Across 13 such pairs it fooled the frozen Detector on 12; a Detector retrained on this attacker's forgeries from other days catches 12 of 13, with 1 false alarm in 13 real jobs ([details](docs/research/stronger-forger-study.md)). It needs real QPU time to learn, and it does not generalize to the customer's own circuits ([details](docs/research/workload-generalization.md)).
 - **If the Detector cannot separate them,** that is a result too: "public calibration data is enough to fake a quantum computer."
 - Related work and what is new: [docs/research/prior-work.md](docs/research/prior-work.md).
+
+## Next steps
+
+1. **Drop-in adoption.** Wrap Qiskit's Sampler so Canaries are hidden automatically around any Customer circuit and a Verdict comes back with the results.
+2. **More cycles.** One job per machine per day for weeks, to bring the false-positive bound well below 0.10.
+3. **Against the stronger Forger.** Add the CNOT Canary to the Detector and randomize Canaries per job so they cannot be fitted in advance.
+4. **Stronger disguised Canaries.** The mirror gap is 3 to 12 points, versus 30 to 90 for the X chains.
+5. **Other vendors.** IonQ, Quantinuum or IQM have different error physics; the Canary families may not carry over.
+6. **Partial forgery.** Not tested yet: a Provider that runs some circuits for real and forges the rest, or pads fewer shots.
+7. **Ship a Detector trained on more than 2 jobs.** With more training data the close calls (J3, J4, K8, J9) all drop below 0.16.
 
 ## Team
 

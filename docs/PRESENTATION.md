@@ -84,6 +84,12 @@ About 6 minutes, one chapter of the site at a time. Arrow keys move between chap
 
 ## Hard questions
 
+**"Would anyone actually use this?"** Not if you buy straight from IBM. It matters whenever someone sits between you
+and the QPU: reseller and aggregator customers (labs, startups, students buying cheaper time), papers that claim a
+specific machine, auditors of grant-funded or national-programme QPU time, brokers verifying their own suppliers, and
+pipelines that silently fall back to a simulator. Checking costs about 1.5 QPU seconds per job. The next step that makes
+it usable is a drop-in wrapper around Qiskit's Sampler (README, Next steps).
+
 **"AUC 1.00 looks too good. Is it faked, or is your simulator just bad?"** It is real, and here is why it is 1.00:
 IBM's public calibration contains only average random error rates, so a simulator built from it (our Forger, the same
 way Qiskit's fake backends work) has no coherent over-rotation at all. Our Canaries amplify exactly that: after 128 X

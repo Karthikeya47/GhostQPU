@@ -292,10 +292,30 @@ function Threat() {
             </motion.div>
           ))}
         </div>
+        <motion.div {...rise} style={{ marginTop: 56 }}>
+          <h3>Who needs this</h3>
+          <p className="cap">Anyone with a middleman between them and the QPU. Checking costs about 1.5 QPU seconds per job.</p>
+        </motion.div>
+        <div className="grid2" style={{ marginTop: 16 }}>
+          {USES.map(([t, d]) => (
+            <motion.div key={t} className="card" {...rise}>
+              <h3>{t}</h3>
+              <p className="cap">{d}</p>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
+
+const USES = [
+  ["Customers of resellers", "Labs, startups and students who buy cheaper QPU time through a third party instead of from IBM."],
+  ["Research papers", "Proof that results reported as run on ibm_kingston ran on ibm_kingston, re-checkable from the saved Run."],
+  ["Funded programme audits", "Grants and national quantum programmes pay for cloud QPU time; an auditor can check it was real."],
+  ["Brokers and marketplaces", "A platform reselling several vendors can verify its own suppliers and show a verified-on-hardware badge."],
+  ["Silent fallbacks", "A misconfigured pipeline or overloaded queue that quietly falls back to a simulator is caught the same way."],
+] as const;
 
 const FAMILY_COLOR: Record<string, string> = { coherent: "#8fd3ff", spectator: "#5aa0f2", readout: "#b48cf0" };
 
