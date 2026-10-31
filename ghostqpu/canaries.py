@@ -104,7 +104,7 @@ def choose_placements(target, n: int) -> list[tuple[int, int]]:
     for (a, b), props in target["cz"].items():
         if a > b or props is None or props.error is None or props.error > MAX_CZ_ERROR:
             continue
-        if max(readout[a], readout[b]) > MAX_READOUT_ERROR:
+        if readout[a] is None or readout[b] is None or max(readout[a], readout[b]) > MAX_READOUT_ERROR:
             continue
         edges.append((readout[a] + readout[b] + props.error, a, b))
 
