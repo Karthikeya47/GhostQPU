@@ -39,6 +39,10 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--chunks", type=int, default=8)
     p.add_argument("--stand-in", action="store_true", help="use local stand-in Runs instead of real ones")
 
+    p = sub.add_parser("verify", help="Verdict for one Run folder from the frozen Detector (trained on data/runs)")
+    p.add_argument("run", type=Path, help="a Run folder, e.g. data/fresh/<run_id>")
+    p.add_argument("--chunks", type=int, default=8)
+
     p = sub.add_parser("null-test", help="stand-in vs Forger on a fake backend: the Detector must fail")
     p.add_argument("--pairs", type=int, default=4)
     p.add_argument("--shots", type=int, default=2000)
@@ -51,6 +55,7 @@ def main(argv: list[str] | None = None) -> None:
         "submit": cmd_submit,
         "collect": cmd_collect,
         "evaluate": cmd_evaluate,
+        "verify": cmd_verify,
         "null-test": cmd_null_test,
     }[args.command](args)
 
@@ -137,6 +142,21 @@ def cmd_collect(args) -> None:
         COLLECTED.mkdir(parents=True, exist_ok=True)
         shutil.move(str(folder), str(COLLECTED / folder.name))
         print(f"{run.run_id}: collected, {run.info['qpu_seconds']} QPU seconds, Twin forged")
+
+
+def cmd_verify(args) -> None:
+    from ghostqpu.detector import dataset, train, verdict
+    from ghostqpu.runs import Run, load_runs
+
+    training = [r for r in load_runs(RUNS) if r.run_id != Path(args.run).name]
+    model = train(dataset(training, args.chunks))
+    run = Run.load(args.run)
+    v = verdict(model, run, args.chunks)
+    # Same bands as the site: a score near 0.5 gets no Verdict rather than a guess.
+    label = "Forged" if v.forged_score >= 0.65 else "Genuine" if v.forged_score <= 0.35 else "Inconclusive"
+    print(f"{run.run_id}: {label} (forged score {v.forged_score:.3f}; below 0.35 Genuine, above 0.65 Forged)")
+    print(f"   {run.batch.backend_name}, calibration cycle {run.snapshot.cycle}, {len(run.batch.circuits)} circuits x "
+          f"{run.info.get('shots')} shots, Detector trained on {len(training)} Runs from {RUNS}")
 
 
 def cmd_evaluate(args) -> None:

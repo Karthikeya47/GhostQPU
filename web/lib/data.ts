@@ -47,7 +47,7 @@ export function jobLabel(id: string) {
   const base = id.replace("_forged", "");
   // Run ids are <backend>_<YYYYMMDD>T<time>_<seed>; A, B and J1 are the names the research notes use.
   const [, ymd, seed] = base.match(/_(\d{8})T\d+_(\d+)$/) ?? [];
-  const name = ({ "12894": "Job A", "13117": "Job B", "77679": "Job J1", "85181": "Job J2", "86034": "Job F1", "88635": "Job K1", "89619": "Job K2", "89673": "Job F2", "75072": "Job J3", "75084": "Job F3", "75097": "Job K3", "75600": "Job J4", "75616": "Job K4", "75630": "Job F4", "80201": "Job J5", "80240": "Job K5", "80270": "Job F5", "81197": "Job J6" } as Record<string, string>)[seed] ?? `Job ${seed ?? base}`;
+  const name = ({ "12894": "Job A", "13117": "Job B", "77679": "Job J1", "85181": "Job J2", "86034": "Job F1", "88635": "Job K1", "89619": "Job K2", "89673": "Job F2", "75072": "Job J3", "75084": "Job F3", "75097": "Job K3", "75600": "Job J4", "75616": "Job K4", "75630": "Job F4", "80201": "Job J5", "80240": "Job K5", "80270": "Job F5", "81197": "Job J6", "18122": "Job J7", "18137": "Job K6", "18152": "Job F6" } as Record<string, string>)[seed] ?? `Job ${seed ?? base}`;
   const backend = base.match(/^ibm_([a-z]+)_/)?.[1];
   const tag = backend && backend !== "marrakesh" ? ` · ${backend}` : "";
   if (!ymd) return name + tag;

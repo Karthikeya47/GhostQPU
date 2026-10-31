@@ -17,12 +17,12 @@ We built both sides: the **Forger** (the attack, simulating each job from the ex
 ## Proof
 
 <p align="center">
-  <img src="assets/readme/proof.svg" width="100%" alt="32 of 32 later jobs called correctly by a Detector frozen on 10 October; 3 IBM machines and 13 calibration cycles; 1.5 QPU seconds of Canaries still catches all 36 jobs.">
+  <img src="assets/readme/proof.svg" width="100%" alt="38 of 38 later jobs called correctly by a Detector frozen on 10 October; 3 IBM machines and 16 calibration cycles; 1.5 QPU seconds of Canaries still catches all 42 jobs.">
 </p>
 
-- **Frozen and blind.** Trained once on two jobs from 10 October, never retrained, then scored every later job: **32 of 32 correct** (16 real jobs and their forged copies) over 13 calibration cycles, including **ibm_fez and ibm_kingston, which it had never seen**.
-- **Forward in time.** Trained only on earlier days and scored on the next: **32 of 32**, AUC 1.00.
-- **Cheap.** **1.5 QPU seconds** of Canary time (19 circuits x 250 shots) still calls all 36 jobs correctly, 85% less than our current Batches use, and no single Canary family manages it alone. **Checked on hardware:** 6 of 6 real 250-shot jobs called right; IBM bills about 2 s of fixed overhead per job on top, so each billed 4 to 5 s.
+- **Frozen and blind.** Trained once on two jobs from 10 October, never retrained, then scored every later job: **38 of 38 correct** (19 real jobs and their forged copies) over 16 calibration cycles and 4 days, including **ibm_fez and ibm_kingston, which it had never seen**.
+- **Forward in time.** Trained only on earlier days and scored on the next: **38 of 38**, AUC 1.00.
+- **Cheap.** **1.5 QPU seconds** of Canary time (19 circuits x 250 shots) still calls all 42 jobs correctly, 85% less than our current Batches use, and no single Canary family manages it alone. **Checked on hardware:** 6 of 6 real 250-shot jobs called right; IBM bills about 2 s of fixed overhead per job on top, so each billed 4 to 5 s.
 - **It detects physics, not formatting.** With a simulator on both sides, the same pipeline scores AUC **0.52**, chance level, as it must.
 - **Real hardware, real data.** Every Run, Twin and calibration snapshot is committed in [data/](data/).
 
@@ -60,6 +60,13 @@ python -m venv .venv
 .venv/Scripts/python -m pip install -r requirements.txt   # macOS / Linux: .venv/bin/python
 .venv/Scripts/python -m ghostqpu null-test                # simulator vs Forger, must score near chance
 .venv/Scripts/python -m ghostqpu evaluate                 # held-out Detector report on data/runs
+```
+
+**Check one job** with the frozen Detector:
+
+```sh
+.venv/Scripts/python -m ghostqpu verify data/fresh/ibm_kingston_20261029T154358_88635
+# ibm_kingston_20261029T154358_88635: Genuine (forged score 0.000; below 0.35 Genuine, above 0.65 Forged)
 ```
 
 <details>
@@ -118,10 +125,10 @@ Trained on the two 10 October jobs above, then frozen. Nothing was retrained or 
 
 | Machine | Seen in training? | Real jobs | Calibration cycles | Real jobs called Genuine | Forgeries caught | What gave it away |
 |---|:---:|:---:|:---:|:---:|:---:|---|
-| **ibm_marrakesh** | 10 Oct only | 6 | 5 | **6 / 6** | **6 / 6** | a mix: over-rotation, crosstalk, readout |
-| **ibm_fez** | never | 5 | 4 | **5 / 5** | **5 / 5** | neighbor crosstalk, then over-rotation |
-| **ibm_kingston** | never | 5 | 4 | **5 / 5** | **5 / 5** | coherent over-rotation (91% vs 2% after 128 X gates) |
-| **Total** | | **16** | **13** | **16 / 16** | **16 / 16** | 0 errors; 95% bound 0.17 per job, 0.21 per cycle |
+| **ibm_marrakesh** | 10 Oct only | 7 | 6 | **7 / 7** | **7 / 7** | a mix: over-rotation, crosstalk, readout |
+| **ibm_fez** | never | 6 | 5 | **6 / 6** | **6 / 6** | neighbor crosstalk, then over-rotation |
+| **ibm_kingston** | never | 6 | 5 | **6 / 6** | **6 / 6** | coherent over-rotation (91% vs 2% after 128 X gates) |
+| **Total** | | **19** | **16** | **19 / 19** | **19 / 19** | 0 errors; 95% bound 0.15 per job, 0.17 per cycle |
 
 <details>
 <summary><b>Every job</b> (forged score: below 0.35 Genuine, above 0.65 Forged)</summary>
@@ -144,14 +151,17 @@ Trained on the two 10 October jobs above, then frozen. Nothing was retrained or 
 | K5 | kingston | 30 Oct 22:06 | new | 0.00 ✅ | 0.99 ✅ |
 | F5 | fez | 30 Oct 22:32 | F3's, recalibrated | 0.00 ✅ | 0.99 ✅ |
 | J6 | marrakesh | 30 Oct 22:40 | J3's, recalibrated | 0.00 ✅ | 0.98 ✅ |
+| J7 | marrakesh | 31 Oct 08:57 | new | 0.01 ✅ | 0.99 ✅ |
+| F6 | fez | 31 Oct 09:00 | new | 0.00 ✅ | 0.99 ✅ |
+| K6 | kingston | 31 Oct 09:00 | new | 0.00 ✅ | 0.99 ✅ |
 
-✅ correct Verdict. ⚠️ correct side of 0.5 but inside the Inconclusive band. J3 and J4 were run by different team members; J1 to J6 are ibm_marrakesh, F fez, K kingston.
+✅ correct Verdict. ⚠️ correct side of 0.5 but inside the Inconclusive band. J3 and J4 were run by different team members; J are ibm_marrakesh, F fez, K kingston. J7, F6 and K6 ran on the morning of the presentation.
 
 </details>
 
 - **Each machine is caught by a different effect:** fez mainly by neighbor crosstalk, kingston by coherent over-rotation (90% error after 128 X gates vs 3% for the Forger). Kingston's over-rotation survived a recalibration on the same qubits; fez's crosstalk stayed stable while its over-rotation doubled ([details](docs/research/recalibration-persistence.md)).
 - **Closest calls:** J3 (0.36) and J4 (0.43). Two separate jobs in the same cycle agreeing shows the thin margin belongs to that cycle and those qubits, not to shot noise. J5 confirms it: the same qubits one recalibration later score a clear 0.00 ([details](docs/research/cross-day-2026-10-30.md)).
-- **With every cycle held out in turn** (`evaluate()` on data/runs + data/fresh): AUC 1.00, all 36 jobs correct over 14 cycles. J3 scores 0.34; J4 scores 0.40, still correct but inside the Inconclusive band.
+- **With every cycle held out in turn** (`evaluate()` on data/runs + data/fresh): AUC 1.00, all 42 jobs correct over 17 cycles. J3 scores 0.34; J4 scores 0.40, still correct but inside the Inconclusive band.
 - **Cost and forward in time:** [docs/research/cost-and-forward.md](docs/research/cost-and-forward.md).
 - Earlier notes: [J1](docs/research/fresh-hardware-j1.md), [J2](docs/research/fresh-hardware-j2.md), [ibm_fez](docs/research/cross-backend-fez.md), [ibm_kingston](docs/research/cross-backend-kingston.md).
 
@@ -161,7 +171,7 @@ On ibm_marrakesh qubits 107-108, after 32 repeated CNOTs the target reads wrong 
 
 ## Limits
 
-- **Small sample.** With 0 errors in 16 Genuine jobs the 95% upper bound on the false-positive rate is 0.17 per job, or 0.21 counting each of the 13 calibration cycles once (the J3/J4, F3/F4 and K3/K4 pairs share a cycle). More cycles are needed.
+- **Small sample.** With 0 errors in 19 Genuine jobs the 95% upper bound on the false-positive rate is 0.15 per job, or 0.17 counting each of the 16 calibration cycles once (the J3/J4, F3/F4 and K3/K4 pairs share a cycle). More cycles are needed.
 - **A Forger with hardware access can do better.** Our stronger Forger ([ghostqpu/forger.py](ghostqpu/forger.py)) fits over-rotation, crosstalk and readout from one real probe job and fooled the original Detector. It needs real QPU access to do so, and it does not generalize to the customer's own circuits ([details](docs/research/workload-generalization.md)).
 - **If the Detector cannot separate them,** that is a result too: "public calibration data is enough to fake a quantum computer."
 - Related work and what is new: [docs/research/prior-work.md](docs/research/prior-work.md).
@@ -188,7 +198,7 @@ ghostqpu/
   runs.py        a Run: shot records + batch + calibration, saved to disk
   signature.py   12 Canary features per time chunk of a Run
   detector.py    logistic regression, held-out evaluation, Verdicts
-  cli.py         add-account | accounts | submit | collect | evaluate | null-test
+  cli.py         add-account | accounts | submit | collect | verify | evaluate | null-test
   forger.py      stronger Forger fitted from a Genuine probe run
   pilot.py       CNOT pilot circuits and analysis
 scripts/         frozen scorer, CNOT pilot, cost and forward-in-time study, web data export
