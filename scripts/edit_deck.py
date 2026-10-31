@@ -161,7 +161,7 @@ set_bullets(
         ("Working end-to-end tool:", "python -m ghostqpu submit / collect / verify / evaluate / null-test."),
         (
             "Real hardware runs:",
-            "28 jobs on ibm_marrakesh, ibm_fez and ibm_kingston over 20 calibration cycles and 4 days, each with a forged twin.",
+            "44 IBM jobs on marrakesh, fez and kingston over 4 days: 30 full batches with forged twins, plus 6 short, 5 CNOT and 3 disguised-canary jobs.",
         ),
         (
             "Live site:",

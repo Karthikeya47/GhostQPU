@@ -54,3 +54,21 @@ export const MIRROR = [
   { machine: "kingston", hardware: 0.875, forger: 0.912, cleaner: 15, strong: 9 },
   { machine: "fez", hardware: 0.762, forger: 0.878, cleaner: 15, strong: 9 },
 ];
+
+// Every IBM job that is not a full 34-circuit Batch: data/short, data/pilot/runs, data/pilot/unpublished, data/mirror/runs.
+export const OTHER_JOB_LIST = [
+  {"kind": "CNOT pilot (first try)", "machine": "marrakesh", "at": "2026-10-28 15:59", "job": "dbh1m6kdgr2s73cshlj0", "qpu": 11, "result": "first pilot, Karthikeya's account; not analyzed"},
+  {"kind": "CNOT pilot", "machine": "marrakesh", "at": "2026-10-29 15:01", "job": "dbhlvcune4hc73bd5vng", "qpu": 11, "result": "CZ error detected on 3 of 4 qubit pairs"},
+  {"kind": "CNOT pilot", "machine": "fez", "at": "2026-10-29 16:00", "job": "dbhmrds2d77s739d2de0", "qpu": 11, "result": "CZ error detected on 4 of 4 qubit pairs"},
+  {"kind": "CNOT pilot", "machine": "kingston", "at": "2026-10-29 16:00", "job": "dbhmr9o1h92s7382340g", "qpu": 11, "result": "CZ error detected on 4 of 4 qubit pairs"},
+  {"kind": "CNOT pilot", "machine": "marrakesh", "at": "2026-10-30 15:54", "job": "dbibr8une4hc73be93a0", "qpu": 11, "result": "CZ error detected on 2 of 4 qubit pairs"},
+  {"kind": "Short Batch, 250 shots", "machine": "marrakesh", "at": "2026-10-30 17:10", "job": "dbicv00hoj4c73b5unvg", "qpu": 5, "result": "real 0.00, Twin 0.95: both right"},
+  {"kind": "Short Batch, 250 shots", "machine": "fez", "at": "2026-10-30 17:11", "job": "dbicvh8hoj4c73b5up00", "qpu": 4, "result": "real 0.00, Twin 0.99: both right"},
+  {"kind": "Short Batch, 250 shots", "machine": "kingston", "at": "2026-10-30 17:11", "job": "dbicv8o1h92s73836q6g", "qpu": 5, "result": "real 0.00, Twin 0.99: both right"},
+  {"kind": "Short Batch, 250 shots", "machine": "fez", "at": "2026-10-31 04:00", "job": "dbimflune4hc73betu70", "qpu": 4, "result": "real 0.00, Twin 0.98: both right"},
+  {"kind": "Short Batch, 250 shots", "machine": "kingston", "at": "2026-10-31 04:00", "job": "dbimfiene4hc73bettug", "qpu": 5, "result": "real 0.04, Twin 0.99: both right"},
+  {"kind": "Short Batch, 250 shots", "machine": "marrakesh", "at": "2026-10-31 04:00", "job": "dbimfstep8hs73ao6b6g", "qpu": 5, "result": "real 0.00, Twin 0.98: both right"},
+  {"kind": "Disguised Canaries", "machine": "fez", "at": "2026-10-31 04:02", "job": "dbimgrohoj4c73b6hsm0", "qpu": 6, "result": "all zeros 76% real vs 88% Forger"},
+  {"kind": "Disguised Canaries", "machine": "kingston", "at": "2026-10-31 04:02", "job": "dbimgmo1h92s7383ps6g", "qpu": 6, "result": "all zeros 88% real vs 91% Forger"},
+  {"kind": "Disguised Canaries", "machine": "marrakesh", "at": "2026-10-31 04:02", "job": "dbimgjlep8hs73ao6cvg", "qpu": 7, "result": "all zeros 76% real vs 88% Forger"},
+];

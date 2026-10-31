@@ -80,7 +80,7 @@ export function ForgerLab() {
 
       <div className="card" style={{ position: "sticky", top: 24 }}>
         <div className="unit">frozen Detector says</div>
-        <div className="display" style={{ fontSize: "clamp(40px, 6vw, 76px)", fontWeight: 900, lineHeight: 0.95, color, textShadow: `0 0 40px ${color}55` }}>
+        <div className="display" style={{ fontSize: label === "INCONCLUSIVE" ? "clamp(26px, 3.4vw, 46px)" : "clamp(40px, 6vw, 76px)", fontWeight: 900, lineHeight: 0.95, color, textShadow: `0 0 40px ${color}55`, overflowWrap: "anywhere" }}>
           |{label}⟩
         </div>
         <div className="mono" style={{ marginTop: 8, color: "var(--mute)" }}>
@@ -99,6 +99,8 @@ export function ForgerLab() {
         <p style={{ marginTop: 18, fontSize: 15, color: fooled ? "var(--frost)" : "var(--mute)" }}>
           {fooled
             ? `You fooled it, by faking ${FAMILIES.filter((_, i) => mix[i] > 0).map((f) => f.name.toLowerCase()).join(", ")}. Each of those is physics the public calibration does not contain.`
+            : label === "INCONCLUSIVE"
+            ? "Close. The Detector can no longer give a confident Verdict, but the score still leans forged. Keep faking, or try another job."
             : "Still caught. Find out how much of the hardware's physics you have to copy before the Detector lets you through. On most of our jobs one family carries the evidence, and which one changes by machine and day; try the other jobs."}
         </p>
         <p className="cap" style={{ marginTop: 10 }}>

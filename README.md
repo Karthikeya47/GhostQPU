@@ -14,7 +14,7 @@ You pay a cloud reseller for time on a quantum computer. How do you know your jo
 
 <table align="center">
   <tr>
-    <td align="center"><b>43</b><br><sub>jobs on real IBM<br>quantum computers</sub></td>
+    <td align="center"><b>44</b><br><sub>jobs on real IBM<br>quantum computers</sub></td>
     <td align="center"><b>3</b><br><sub>machines: marrakesh,<br>fez, kingston</sub></td>
     <td align="center"><b>21</b><br><sub>calibration<br>cycles, 4 days</sub></td>
     <td align="center"><b>56 / 56</b><br><sub>later jobs right, Detector<br>frozen on 2 jobs</sub></td>
@@ -154,38 +154,60 @@ Trained on the two 10 October jobs above, then frozen. Nothing was retrained or 
 <details>
 <summary><b>Every job</b> (forged score: below 0.35 Genuine, above 0.65 Forged)</summary>
 
-| Job | Machine | Calibration cycle | Qubits | Real job | Its forged Twin |
-|---|---|---|---|:---:|:---:|
-| J1 | marrakesh | 27 Oct 12:06 | new | 0.18 ✅ | 0.99 ✅ |
-| F1 | fez | 29 Oct 19:59 | new | 0.02 ✅ | 0.99 ✅ |
-| J2 | marrakesh | 29 Oct 20:01 | new | 0.00 ✅ | 0.99 ✅ |
-| K1 | kingston | 29 Oct 20:38 | new | 0.00 ✅ | 0.99 ✅ |
-| K2 | kingston | 29 Oct 21:18 | same as K1 | 0.00 ✅ | 0.99 ✅ |
-| F2 | fez | 29 Oct 21:22 | same as F1 | 0.00 ✅ | 0.99 ✅ |
-| K3 | kingston | 30 Oct 21:01 | new | 0.00 ✅ | 1.00 ✅ |
-| K4 | kingston | 30 Oct 21:01 | same cycle as K3 | 0.02 ✅ | 0.99 ✅ |
-| J3 | marrakesh | 30 Oct 21:03 | new | 0.36 ⚠️ | 0.99 ✅ |
-| J4 | marrakesh | 30 Oct 21:03 | same cycle as J3 | 0.43 ⚠️ | 0.99 ✅ |
-| F3 | fez | 30 Oct 21:05 | new | 0.00 ✅ | 0.99 ✅ |
-| F4 | fez | 30 Oct 21:05 | same cycle as F3 | 0.00 ✅ | 0.99 ✅ |
-| J5 | marrakesh | 30 Oct 22:05 | J3's, recalibrated | 0.00 ✅ | 0.99 ✅ |
-| K5 | kingston | 30 Oct 22:06 | new | 0.00 ✅ | 0.99 ✅ |
-| F5 | fez | 30 Oct 22:32 | F3's, recalibrated | 0.00 ✅ | 0.99 ✅ |
-| J6 | marrakesh | 30 Oct 22:40 | J3's, recalibrated | 0.00 ✅ | 0.98 ✅ |
-| J7 | marrakesh | 31 Oct 08:57 | new | 0.01 ✅ | 0.99 ✅ |
-| F6 | fez | 31 Oct 09:00 | new | 0.00 ✅ | 0.99 ✅ |
-| K6 | kingston | 31 Oct 09:00 | new | 0.00 ✅ | 0.99 ✅ |
-| F7 | fez | 31 Oct 09:20 | F6's, recalibrated | 0.00 ✅ | 0.99 ✅ |
-| J8 | marrakesh | 31 Oct 08:57 | same cycle as J7 | 0.00 ✅ | 0.99 ✅ |
-| F8 | fez | 31 Oct 09:20 | same cycle as F7 | 0.00 ✅ | 0.99 ✅ |
-| K7 | kingston | 31 Oct 09:20 | K6's, recalibrated | 0.19 ✅ | 0.99 ✅ |
-| K8 | kingston | 31 Oct 09:20 | same cycle as K7 | 0.43 ⚠️ | 0.99 ✅ |
-| J9 | marrakesh | 31 Oct 09:57 | J7's, recalibrated | 0.37 ⚠️ | 0.99 ✅ |
-| J10 | marrakesh | 31 Oct 09:57 | same cycle as J9 | 0.28 ✅ | 0.99 ✅ |
-| K9 | kingston | 31 Oct 10:16 | K6's, recalibrated | 0.22 ✅ | 0.99 ✅ |
-| K10 | kingston | 31 Oct 10:16 | same cycle as K9 | 0.31 ✅ | 0.99 ✅ |
+| Job | Machine | Calibration cycle | Qubits | IBM job id | Real job | Its forged Twin |
+|---|---|---|---|---|:---:|:---:|
+| J1 | marrakesh | 27 Oct 12:06 | new | `dbg33ctjm0ks73efpbc0` | 0.18 ✅ | 0.99 ✅ |
+| F1 | fez | 29 Oct 19:59 | new | `dbhlv5k2d77s739d0no0` | 0.02 ✅ | 0.99 ✅ |
+| J2 | marrakesh | 29 Oct 20:01 | new | `dbhlogdep8hs73amdtfg` | 0.00 ✅ | 0.99 ✅ |
+| K1 | kingston | 29 Oct 20:38 | new | `dbhmjfk2d77s739d1vsg` | 0.00 ✅ | 0.99 ✅ |
+| K2 | kingston | 29 Oct 21:18 | same as K1 | `dbhmr5mne4hc73bd7jcg` | 0.00 ✅ | 0.99 ✅ |
+| F2 | fez | 29 Oct 21:22 | same as F1 | `dbhmrj01h92s738234a0` | 0.00 ✅ | 0.99 ✅ |
+| K3 | kingston | 30 Oct 21:01 | new | `dbibmvdep8hs73anhfd0` | 0.00 ✅ | 1.00 ✅ |
+| K4 | kingston | 30 Oct 21:01 | same cycle as K3 | `dbibr0mne4hc73be9300` | 0.02 ✅ | 0.99 ✅ |
+| J3 | marrakesh | 30 Oct 21:03 | new | `dbibmp8hoj4c73b5snfg` | 0.36 ⚠️ | 0.99 ✅ |
+| J4 | marrakesh | 30 Oct 21:03 | same cycle as J3 | `dbibqt0hoj4c73b5ssq0` | 0.43 ⚠️ | 0.99 ✅ |
+| F3 | fez | 30 Oct 21:05 | new | `dbibmsene4hc73be8tp0` | 0.00 ✅ | 0.99 ✅ |
+| F4 | fez | 30 Oct 21:05 | same cycle as F3 | `dbibr45ep8hs73anhkmg` | 0.00 ✅ | 0.99 ✅ |
+| J5 | marrakesh | 30 Oct 22:05 | J3's, recalibrated | `dbicurene4hc73beasv0` | 0.00 ✅ | 0.99 ✅ |
+| K5 | kingston | 30 Oct 22:06 | new | `dbicv56ne4hc73beateg` | 0.00 ✅ | 0.99 ✅ |
+| F5 | fez | 30 Oct 22:32 | F3's, recalibrated | `dbicvcmne4hc73beatrg` | 0.00 ✅ | 0.99 ✅ |
+| J6 | marrakesh | 30 Oct 22:40 | J3's, recalibrated | `dbid6k81h92s7383771g` | 0.00 ✅ | 0.98 ✅ |
+| J7 | marrakesh | 31 Oct 08:57 | new | `dbim7381h92s7383p9f0` | 0.01 ✅ | 0.99 ✅ |
+| F6 | fez | 31 Oct 09:00 | new | `dbim7atep8hs73ao5qlg` | 0.00 ✅ | 0.99 ✅ |
+| K6 | kingston | 31 Oct 09:00 | new | `dbim775ep8hs73ao5qe0` | 0.00 ✅ | 0.99 ✅ |
+| F7 | fez | 31 Oct 09:20 | F6's, recalibrated | `dbimerghoj4c73b6hnqg` | 0.00 ✅ | 0.99 ✅ |
+| J8 | marrakesh | 31 Oct 08:57 | same cycle as J7 | `dbimeodep8hs73ao6890` | 0.00 ✅ | 0.99 ✅ |
+| F8 | fez | 31 Oct 09:20 | same cycle as F7 | `dbimf2lep8hs73ao692g` | 0.00 ✅ | 0.99 ✅ |
+| K7 | kingston | 31 Oct 09:20 | K6's, recalibrated | `dbimfbtep8hs73ao69mg` | 0.19 ✅ | 0.99 ✅ |
+| K8 | kingston | 31 Oct 09:20 | same cycle as K7 | `dbin3ho1h92s7383ra1g` | 0.43 ⚠️ | 0.99 ✅ |
+| J9 | marrakesh | 31 Oct 09:57 | J7's, recalibrated | `dbingd81h92s7383s8kg` | 0.37 ⚠️ | 0.99 ✅ |
+| J10 | marrakesh | 31 Oct 09:57 | same cycle as J9 | `dbingm01h92s7383s950` | 0.28 ✅ | 0.99 ✅ |
+| K9 | kingston | 31 Oct 10:16 | K6's, recalibrated | `dbinghohoj4c73b6kaog` | 0.22 ✅ | 0.99 ✅ |
+| K10 | kingston | 31 Oct 10:16 | same cycle as K9 | `dbingq6ne4hc73bf0df0` | 0.31 ✅ | 0.99 ✅ |
 
-✅ correct Verdict. ⚠️ correct side of 0.5 but inside the Inconclusive band. J3 and J4 were run by different team members; J are ibm_marrakesh, F fez, K kingston. J7 to J10, F6 to F8 and K6 to K10 ran on the morning of the presentation.
+✅ correct Verdict. ⚠️ correct side of 0.5 but inside the Inconclusive band. J3 and J4 were run by different team members; J are ibm_marrakesh, F fez, K kingston. J7 to J10, F6 to F8 and K6 to K10 ran on the morning of the presentation. The two 10 October training jobs are A (`db4tfp4vf2bc73cv3v1g`) and B (`db4thh2mb58s7389n1v0`).
+
+</details>
+
+<details>
+<summary><b>The other 14 hardware jobs</b> (short Batches, CNOT pilots, disguised Canaries)</summary>
+
+| Experiment | Machine | Ran at (UTC) | IBM job id | QPU s | Result |
+|---|---|---|---|:---:|---|
+| CNOT pilot (first try) | marrakesh | 2026-10-28 15:59 | `dbh1m6kdgr2s73cshlj0` | 11 | first pilot, Karthikeya's account; not analyzed |
+| CNOT pilot | marrakesh | 2026-10-29 15:01 | `dbhlvcune4hc73bd5vng` | 11 | CZ error detected on 3 of 4 qubit pairs |
+| CNOT pilot | fez | 2026-10-29 16:00 | `dbhmrds2d77s739d2de0` | 11 | CZ error detected on 4 of 4 qubit pairs |
+| CNOT pilot | kingston | 2026-10-29 16:00 | `dbhmr9o1h92s7382340g` | 11 | CZ error detected on 4 of 4 qubit pairs |
+| CNOT pilot | marrakesh | 2026-10-30 15:54 | `dbibr8une4hc73be93a0` | 11 | CZ error detected on 2 of 4 qubit pairs |
+| Short Batch, 250 shots | marrakesh | 2026-10-30 17:10 | `dbicv00hoj4c73b5unvg` | 5 | real 0.00, Twin 0.95: both right |
+| Short Batch, 250 shots | fez | 2026-10-30 17:11 | `dbicvh8hoj4c73b5up00` | 4 | real 0.00, Twin 0.99: both right |
+| Short Batch, 250 shots | kingston | 2026-10-30 17:11 | `dbicv8o1h92s73836q6g` | 5 | real 0.00, Twin 0.99: both right |
+| Short Batch, 250 shots | fez | 2026-10-31 04:00 | `dbimflune4hc73betu70` | 4 | real 0.00, Twin 0.98: both right |
+| Short Batch, 250 shots | kingston | 2026-10-31 04:00 | `dbimfiene4hc73bettug` | 5 | real 0.04, Twin 0.99: both right |
+| Short Batch, 250 shots | marrakesh | 2026-10-31 04:00 | `dbimfstep8hs73ao6b6g` | 5 | real 0.00, Twin 0.98: both right |
+| Disguised Canaries | fez | 2026-10-31 04:02 | `dbimgrohoj4c73b6hsm0` | 6 | all zeros 76% real vs 88% Forger |
+| Disguised Canaries | kingston | 2026-10-31 04:02 | `dbimgmo1h92s7383ps6g` | 6 | all zeros 88% real vs 91% Forger |
+| Disguised Canaries | marrakesh | 2026-10-31 04:02 | `dbimgjlep8hs73ao6cvg` | 7 | all zeros 76% real vs 88% Forger |
 
 </details>
 

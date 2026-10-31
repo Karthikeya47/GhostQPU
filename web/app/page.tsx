@@ -12,7 +12,7 @@ import { JobConsole } from "@/components/JobConsole";
 import { Explain, NumbersTable } from "@/components/Explain";
 import { Vault } from "@/components/Vault";
 import { COLORS, D, FEATURE_LABELS, genuineRuns, jobLabel, mean, type Pilot, runById, scoreOf, twinOf } from "@/lib/data";
-import { IDEAL_TVD, J1, MIRROR, NULL_TEST_AUC, STRONGER_FORGER, TEN_JOB, WORKLOAD_TVD } from "@/lib/research";
+import { IDEAL_TVD, J1, MIRROR, NULL_TEST_AUC, OTHER_JOB_LIST, STRONGER_FORGER, TEN_JOB, WORKLOAD_TVD } from "@/lib/research";
 
 const Scene = dynamic(() => import("@/components/three").then((m) => m.Scene), { ssr: false });
 const ChipScene = dynamic(() => import("@/components/three").then((m) => m.ChipScene), { ssr: false });
@@ -457,24 +457,17 @@ function Evidence({ runId, setRunId }: { runId: string; setRunId: (id: string) =
   );
 }
 
-// Jobs outside the main Batch format: data/short (250 shots), data/pilot/runs (CNOT), data/mirror/runs (disguised Canaries).
-const OTHER_JOBS = [
-  ["6", "short Batches, 250 shots, 3 machines", "12 of 12 real and forged runs called right"],
-  ["4", "CNOT Canary pilots, 3 machines", "two-qubit error the Forger does not model"],
-  ["3", "disguised (mirror) Canary jobs, 1 per machine", "real hardware loses more than the Forger predicts"],
-] as const;
-
 function JobLedger({ runId, setRunId }: { runId: string; setRunId: (id: string) => void }) {
   const fresh = new Set(D.fresh_ids);
   const score = (id: string) => (fresh.has(id) ? scoreOf(D.fresh_scores, id) : undefined);
   const rows = [...genuineRuns].sort((a, b) => (a.info.started_at ?? a.id).localeCompare(b.info.started_at ?? b.id));
-  const total = rows.length + OTHER_JOBS.reduce((n, [k]) => n + Number(k), 0);
-  const qpu = rows.reduce((n, r) => n + (r.info.qpu_seconds ?? 0), 0);
+  const total = rows.length + OTHER_JOB_LIST.length;
+  const qpu = rows.reduce((n, r) => n + (r.info.qpu_seconds ?? 0), 0) + OTHER_JOB_LIST.reduce((n, j) => n + j.qpu, 0);
   return (
     <motion.div className="card" {...rise} style={{ marginTop: 28 }}>
       <h3>Every job we ran on IBM hardware</h3>
       <p className="cap">
-        {total} jobs on real IBM quantum computers. The {rows.length} full Batches below ({qpu} QPU seconds) each have a forged Twin. Click a row to load that job
+        {total} jobs on real IBM quantum computers, {qpu} QPU seconds in all. Each of the {rows.length} full Batches below has a forged Twin. Click a row to load that job
         into the charts above. Scores are from the Detector frozen on the two 10 October jobs: below 0.5 means Genuine.
       </p>
       <div className="scrollx" style={{ maxHeight: 420, overflowY: "auto" }}>
@@ -498,14 +491,24 @@ function JobLedger({ runId, setRunId }: { runId: string; setRunId: (id: string) 
           </tbody>
         </table>
       </div>
-      <div className="grid4" style={{ marginTop: 20 }}>
-        {OTHER_JOBS.map(([n, what, why]) => (
-          <div key={what} style={{ borderTop: "1px solid var(--gold-dim)", paddingTop: 12 }}>
-            <div className="big" style={{ fontSize: 40 }}>{n}</div>
-            <div className="unit">{what}</div>
-            <div style={{ color: "var(--mute)", fontSize: 13, marginTop: 4 }}>{why}</div>
-          </div>
-        ))}
+      <h3 style={{ marginTop: 28 }}>Other experiments on hardware ({OTHER_JOB_LIST.length} jobs)</h3>
+      <p className="cap">Cheaper 250-shot Batches, CNOT Canary pilots and disguised Canaries. These are not scored by the frozen Detector.</p>
+      <div className="scrollx">
+        <table className="data">
+          <thead><tr><th>experiment</th><th>machine</th><th>ran at (UTC)</th><th>IBM job id</th><th>QPU s</th><th>result</th></tr></thead>
+          <tbody>
+            {OTHER_JOB_LIST.map((j) => (
+              <tr key={j.job}>
+                <td>{j.kind}</td>
+                <td>{j.machine}</td>
+                <td>{j.at}</td>
+                <td style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>{j.job}</td>
+                <td>{j.qpu}</td>
+                <td>{j.result}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </motion.div>
   );
