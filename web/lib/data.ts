@@ -39,6 +39,8 @@ export type Data = {
 export const D = raw as unknown as Data;
 export const runById = (id: string) => D.runs.find((r) => r.id === id)!;
 export const twinOf = (id: string) => D.runs.find((r) => r.id === `${id}_forged`);
+// A Twin is always shown beside the Genuine Run it was forged from.
+export const genuineIdOf = (id: string) => id.replace(/_forged$/, "");
 export const genuineRuns = D.runs.filter((r) => r.origin === "genuine");
 
 export const COLORS = { genuine: "#2a78d6", forged: "#eb6834", gold: "#8fd3ff" };

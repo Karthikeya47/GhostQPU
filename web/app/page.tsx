@@ -11,7 +11,7 @@ import { ForgerLab } from "@/components/ForgerLab";
 import { JobConsole } from "@/components/JobConsole";
 import { Explain, NumbersTable } from "@/components/Explain";
 import { Vault } from "@/components/Vault";
-import { COLORS, D, FEATURE_LABELS, genuineRuns, jobLabel, mean, type Pilot, runById, scoreOf, twinOf } from "@/lib/data";
+import { COLORS, D, FEATURE_LABELS, genuineIdOf, genuineRuns, jobLabel, mean, type Pilot, runById, scoreOf, twinOf } from "@/lib/data";
 import { IDEAL_TVD, J1, MIRROR, NULL_TEST_AUC, OTHER_JOB_LIST, STRONGER_FORGER, TEN_JOB, WORKLOAD_TVD } from "@/lib/research";
 
 const Scene = dynamic(() => import("@/components/three").then((m) => m.Scene), { ssr: false });
@@ -359,11 +359,18 @@ function BatchSection() {
 function RunTabs({ runId, setRunId }: { runId: string; setRunId: (id: string) => void }) {
   return (
     <label className="picker">
-      <span className="unit">Genuine job</span>
+      <span className="unit">Job</span>
       <select value={runId} onChange={(e) => setRunId(e.target.value)}>
-        {genuineRuns.map((r) => (
-          <option key={r.id} value={r.id}>{jobLabel(r.id)}{D.fresh_ids.includes(r.id) ? " · scored blind" : " · training"}</option>
-        ))}
+        {genuineRuns.map((r) => {
+          const tag = D.fresh_ids.includes(r.id) ? " · scored blind" : " · training";
+          const twin = twinOf(r.id);
+          return (
+            <optgroup key={r.id} label={jobLabel(r.id)}>
+              <option value={r.id}>{jobLabel(r.id)} · Genuine{tag}</option>
+              {twin && <option value={twin.id}>{jobLabel(r.id)} · Forged Twin{tag}</option>}
+            </optgroup>
+          );
+        })}
       </select>
     </label>
   );
@@ -380,8 +387,8 @@ function Legend() {
 
 function Evidence({ runId, setRunId }: { runId: string; setRunId: (id: string) => void }) {
   const [variant, setVariant] = useState<"plain" | "sx sandwich">("plain");
-  const g = runById(runId);
-  const t = twinOf(runId);
+  const g = runById(genuineIdOf(runId));
+  const t = twinOf(g.id);
   const coh = (r: typeof g) => r.curves.coherent.filter((c) => c.variant === variant).sort((a, b) => a.n - b.n).map((c) => [c.n, c.p1] as [number, number]);
   const spec = (r: typeof g) => r.curves.spectator.map((c) => [c.delay_us, c.shift] as [number, number]);
   const ro = (r: typeof g) => [[0, 0], [0, 1], [1, 0], [1, 1]].map(([tg, nb]) => r.curves.readout.find((c) => c.target === tg && c.neighbor === nb)!.error);
@@ -478,7 +485,7 @@ function JobLedger({ runId, setRunId }: { runId: string; setRunId: (id: string) 
               const s = score(g.id);
               const t = score(`${g.id}_forged`);
               return (
-                <tr key={g.id} onClick={() => setRunId(g.id)} style={{ cursor: "pointer", background: g.id === runId ? "rgba(143,211,255,0.08)" : undefined }}>
+                <tr key={g.id} onClick={() => setRunId(g.id)} style={{ cursor: "pointer", background: g.id === genuineIdOf(runId) ? "rgba(143,211,255,0.08)" : undefined }}>
                   <td>{jobLabel(g.id).split(" · ")[0]}</td>
                   <td>{(g.info.backend ?? "ibm_marrakesh").replace("ibm_", "")}</td>
                   <td>{(g.info.started_at ?? "").slice(0, 16).replace("T", " ")}</td>
@@ -516,7 +523,7 @@ function JobLedger({ runId, setRunId }: { runId: string; setRunId: (id: string) 
 
 function Coherent3D({ runId, setRunId }: { runId: string; setRunId: (id: string) => void }) {
   const [sandwich, setSandwich] = useState(false);
-  const g = runById(runId);
+  const g = runById(genuineIdOf(runId));
   return (
     <section className="section">
       <div className="wrap">
@@ -538,7 +545,7 @@ function Coherent3D({ runId, setRunId }: { runId: string; setRunId: (id: string)
         <Legend />
         <div style={{ marginTop: 14 }}>
           <Scene camera={[6, 4.5, 6.5]} label="3D ribbons of P(1) vs X gate count for each canary placement">
-            <CoherentScene genuine={g} twin={twinOf(runId)} sandwich={sandwich} />
+            <CoherentScene genuine={g} twin={twinOf(g.id)} sandwich={sandwich} />
           </Scene>
           <Explain>
             <p>The same over-rotation measurement as the Evidence chapter, split by qubit pair instead of averaged. Left to right is the number of X gates (0 to 128), height is how often the qubit read wrong, and each row is one of the four qubit pairs (labelled with the target qubit&apos;s number on the chip). Blue ribbons are the real machine, orange the Forger.</p>
@@ -550,8 +557,8 @@ function Coherent3D({ runId, setRunId }: { runId: string; setRunId: (id: string)
 }
 
 function Shots({ runId }: { runId: string }) {
-  const g = runById(runId);
-  const t = twinOf(runId);
+  const g = runById(genuineIdOf(runId));
+  const t = twinOf(g.id);
   const ones = (bits: number[][]) => mean(bits.map((s) => s.filter((_, i) => i % 2 === 0).reduce((a, b) => a + b, 0) / (s.length / 2)));
   return (
     <section className="section">
