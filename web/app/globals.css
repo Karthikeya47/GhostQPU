@@ -171,3 +171,12 @@ svg text { font-family: var(--f-mono), monospace; }
   background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%; background-size: 6px 6px; background-repeat: no-repeat; }
 .picker select option { background: #071629; }
 @media (max-width: 760px) { .hero-shade { background: linear-gradient(180deg, transparent 12%, rgba(3,11,23,0.82) 38%, rgba(3,11,23,0.92) 100%) !important; } }
+
+/* Explainers */
+.explain { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 10px; }
+.explain summary { cursor: pointer; font: 500 13px var(--f-mono), monospace; color: var(--gold); list-style: none; }
+.explain summary::-webkit-details-marker { display: none; }
+.explain summary::before { content: "+ "; }
+.explain[open] summary::before { content: "− "; }
+.explain-body { margin-top: 10px; font-size: 15px; color: #c2d6ea; line-height: 1.6; display: grid; gap: 8px; }
+.explain-body b { color: var(--frost); font-weight: 500; }

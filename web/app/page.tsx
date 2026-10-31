@@ -9,6 +9,7 @@ import { CostCard } from "@/components/CostCard";
 import { DayVariance } from "@/components/DayVariance";
 import { ForgerLab } from "@/components/ForgerLab";
 import { JobConsole } from "@/components/JobConsole";
+import { Explain, NumbersTable } from "@/components/Explain";
 import { Vault } from "@/components/Vault";
 import { COLORS, D, FEATURE_LABELS, genuineRuns, jobLabel, mean, type Pilot, runById, scoreOf, twinOf } from "@/lib/data";
 import { IDEAL_TVD, J1, MIRROR, NULL_TEST_AUC, STRONGER_FORGER, WORKLOAD_TVD } from "@/lib/research";
@@ -153,6 +154,10 @@ function RunIt() {
         </motion.div>
         <motion.div {...rise} style={{ marginTop: 32 }}>
           <JobConsole />
+          <Explain>
+            <p><b>What happens when you press Submit:</b> the console picks one of the real jobs we ran on that IBM machine, or its forged copy, at random. You don&apos;t know which. It replays the recorded steps: building the Batch with 30 hidden Canaries, compiling to the chip&apos;s native gates, queueing, then streaming the actual recorded shots (the grid of 0s and 1s).</p>
+            <p>The Detector then scores each eighth of the job&apos;s shots: a bar above the dashed line leans Forged, below leans Genuine. The mean gives the Verdict: below 0.35 Genuine, above 0.65 Forged, in between Inconclusive. Each score comes from a Detector that never saw that job&apos;s calibration cycle, so it is a fair test. Only the timing is staged; every number is real.</p>
+          </Explain>
         </motion.div>
       </div>
     </section>
@@ -224,6 +229,10 @@ function BlochSection() {
               Measured at N = 0, 4, 8, 16, 32, 64, 128 and interpolated between. Drawn as pure rotation for hardware and pure decay for the Forger, which
               is what the curve shapes indicate; real states have some of both.
             </p>
+            <Explain>
+              <p>A Bloch sphere is the standard picture of one qubit: the top pole is |0⟩, the bottom pole |1⟩. Press the button to apply X gates one by one. Pairs of X gates should return the arrow to the top every time.</p>
+              <p>On real hardware each gate overshoots slightly, so the <b>blue arrow</b> drifts off the pole and the drift accumulates (its trail shows the path). The Forger only knows random error, so its <b>orange arrow</b> just shortens slightly. The percentages are measured: how often each version actually read 1.</p>
+            </Explain>
           </div>
         </div>
       </div>
@@ -245,6 +254,10 @@ function BeatIt() {
         </motion.div>
         <motion.div {...rise} style={{ marginTop: 32 }}>
           <ForgerLab />
+          <Explain>
+            <p>You start with a real forged job, scored Forged. Each slider copies one family of hardware behavior (over-rotation, crosstalk, readout, drift) from the matching real job into your forgery, chunk by chunk. The verdict is computed live in your browser with the frozen Detector&apos;s exact weights.</p>
+            <p>The point: to pass as Genuine you must reproduce physics that IBM&apos;s public calibration does not contain, which a real forger could only learn by running jobs on the real machine. Some jobs fall to one faked effect; that is why we use several Canary families together.</p>
+          </Explain>
         </motion.div>
       </div>
     </section>
@@ -405,6 +418,11 @@ function Evidence({ runId, setRunId }: { runId: string; setRunId: (id: string) =
             <LineChart key={`${runId}${variant}`} label="Coherent amplification: P(1) vs number of X gates"
               series={[{ name: "Genuine", color: COLORS.genuine, pts: gc }, ...(t ? [{ name: "Forged", color: COLORS.forged, pts: tc }] : [])]}
               xTicks={[0, 16, 32, 64, 128]} xLabel="X gates (N)" yLabel="P(1)" />
+            <Explain>
+              <p>Each point is one hidden circuit that flips the qubit N times. An even number of flips should bring it back to 0, so ideally every point sits on the floor. <b>Blue</b> is what the real IBM machine returned, <b>orange</b> is what the Forger returned for the identical circuit under the identical calibration.</p>
+              <p>Real pulses overshoot by a tiny, consistent angle, so the error compounds and the blue curve bends upward. The Forger&apos;s noise model only contains random error, which barely grows. The &quot;sx sandwich&quot; version wraps the flips in half-turns to test a second rotation axis. Averaged over the job&apos;s four qubit pairs.</p>
+            </Explain>
+            <NumbersTable head={["X gates (N)", "Genuine P(1)", "Forged P(1)"]} rows={gc.map(([n, v], i) => [n, (v * 100).toFixed(2) + "%", tc[i] ? (tc[i][1] * 100).toFixed(2) + "%" : "n/a"])} />
           </motion.div>
           <motion.div className="card" {...rise}>
             <h3>Spectator crosstalk</h3>
@@ -413,6 +431,11 @@ function Evidence({ runId, setRunId }: { runId: string; setRunId: (id: string) =
             <LineChart key={`s${runId}`} label="Spectator shift vs idle time"
               series={[{ name: "Genuine", color: COLORS.genuine, pts: spec(g) }, ...(t ? [{ name: "Forged", color: COLORS.forged, pts: spec(t) }] : [])]}
               xTicks={[0, 4, 8, 12, 16]} xLabel="idle time (µs)" yLabel="|shift in P(1)|" />
+            <Explain>
+              <p>The target qubit is put halfway between 0 and 1, left alone for a few microseconds, then read. The same circuit runs twice: once with its neighbor at 0, once with its neighbor flipped to 1. Each point is how much the target&apos;s result changed between the two.</p>
+              <p>On real chips neighboring qubits are coupled (an always-on &quot;ZZ&quot; interaction), so the neighbor&apos;s state nudges the target and the gap grows with waiting time. The Forger simulates each gate on its own, so for it the gap stays near zero.</p>
+            </Explain>
+            <NumbersTable head={["Idle time (µs)", "Genuine shift", "Forged shift"]} rows={spec(g).map(([d, v], i) => [d, (v * 100).toFixed(2) + "%", t ? (spec(t)[i][1] * 100).toFixed(2) + "%" : "n/a"])} />
           </motion.div>
           <motion.div className="card" {...rise}>
             <h3>Readout in context</h3>
@@ -421,6 +444,11 @@ function Evidence({ runId, setRunId }: { runId: string; setRunId: (id: string) =
             <GroupedBars key={`r${runId}`} label="Readout error by target and neighbor state" yLabel="readout error"
               groups={["t=0 n=0", "t=0 n=1", "t=1 n=0", "t=1 n=1"]}
               series={[{ name: "Genuine", color: COLORS.genuine, values: ro(g) }, ...(t ? [{ name: "Forged", color: COLORS.forged, values: ro(t) }] : [])]} />
+            <Explain>
+              <p>The target is set to 0 or 1 (t=0, t=1) while its neighbor is set to 0 or 1 (n=0, n=1), then both are measured at once. Each bar is how often the target was read wrong.</p>
+              <p>On real hardware the error rate depends on the neighbor, because the readout signals interfere. IBM publishes one readout error per qubit, so the Forger uses the same number whatever the neighbor holds.</p>
+            </Explain>
+            <NumbersTable head={["State", "Genuine error", "Forged error"]} rows={["t=0 n=0", "t=0 n=1", "t=1 n=0", "t=1 n=1"].map((l, i) => [l, (ro(g)[i] * 100).toFixed(2) + "%", t ? (ro(t)[i] * 100).toFixed(2) + "%" : "n/a"])} />
           </motion.div>
         </div>
       </div>
@@ -454,6 +482,9 @@ function Coherent3D({ runId, setRunId }: { runId: string; setRunId: (id: string)
           <Scene camera={[6, 4.5, 6.5]} label="3D ribbons of P(1) vs X gate count for each canary placement">
             <CoherentScene genuine={g} twin={twinOf(runId)} sandwich={sandwich} />
           </Scene>
+          <Explain>
+            <p>The same over-rotation measurement as the Evidence chapter, split by qubit pair instead of averaged. Left to right is the number of X gates (0 to 128), height is how often the qubit read wrong, and each row is one of the four qubit pairs (labelled with the target qubit&apos;s number on the chip). Blue ribbons are the real machine, orange the Forger.</p>
+          </Explain>
         </div>
       </div>
     </section>
@@ -474,6 +505,9 @@ function Shots({ runId }: { runId: string }) {
             The first {g.raster.length} shots of the N={g.raster_circuit.n} coherent Canary, in the order the QPU fired them. Each column is one shot;
             the 8 rows are the clbits of the 4 placements (target, neighbor). Every lit cell is a 1, which here means an error.
           </p>
+          <Explain>
+            <p>A quantum job does not return one answer; it runs each circuit 1000 times (shots) and returns every result. Here each column is one shot, in the order the machine ran it, and each row is one measured qubit. This Canary should return all zeros, so every bright cell is an error. Count them: real hardware has far more, and the Detector also checks how errors cluster over time, which a simulator cannot fake.</p>
+          </Explain>
         </motion.div>
         <div style={{ display: "grid", gap: 28, marginTop: 40 }}>
           {[[g, COLORS.genuine, "Genuine"], ...(t ? [[t, COLORS.forged, "Forged Twin"]] : [])].map(([r, c, name]) => {
@@ -527,17 +561,28 @@ function Verdict() {
         </div>
 
         <ByCycle />
+        <NullTestCard />
 
         <CostCard />
+        <Explain>
+          <p>Each bar is one way of shrinking the verification cost: fewer Canary families, fewer shots, or both. Bar length is the QPU time those Canaries cost; the number on the right is how many of the jobs the Detector still calls correctly, each scored without its own calibration cycle. Gold means every job correct.</p>
+          <p>&quot;Forward in time&quot; is the strictest test: the Detector only learns from earlier days and is scored on the next day, exactly how a customer would use it.</p>
+        </Explain>
 
         <motion.div {...rise} style={{ marginTop: 28 }}>
           <DayVariance />
+          <Explain>
+            <p>Each point averages that machine&apos;s real jobs on one day. IBM recalibrates its machines several times a day, and the physics drifts: kingston&apos;s over-rotation fell from 0.90 to 0.32 between days, fez&apos;s rose. The Forger&apos;s orange line stays flat because public calibration never contains these effects. Switch metrics with the buttons; &quot;Detector score&quot; shows the verdicts stayed on the right side of 0.5 every day.</p>
+          </Explain>
         </motion.div>
 
         <motion.div className="card" {...rise} style={{ marginTop: 56 }}>
           <h3>What the Detector looks at</h3>
           <p className="cap">Standardized weights of a model fit on the development runs. Blue means a larger value points to Genuine: each effect is stronger on real hardware, so a job that lacks them looks forged.</p>
           <WeightBars weights={D.report.weights} labels={FEATURE_LABELS} />
+          <Explain>
+            <p>The Detector is a logistic regression: it multiplies each of the 12 measurements by a weight, adds them up and squashes the total into a 0 to 1 &quot;forged score&quot;. Longer bars matter more. All bars are blue because every effect is larger on real hardware, so a job that lacks them looks forged. Features are standardized first, so the weights are comparable.</p>
+          </Explain>
         </motion.div>
       </div>
     </section>
@@ -578,6 +623,9 @@ function SignatureSpace() {
           <Scene camera={[6.5, 5, 7]} label="3D scatter of Signature features for every chunk of every run">
             <SignatureScene points={points} axes={[FEATURE_LABELS[AXES[0]], FEATURE_LABELS[AXES[1]], FEATURE_LABELS[AXES[2]]]} />
           </Scene>
+          <Explain>
+            <p>Every job&apos;s shots are cut into 8 time chunks, and each chunk becomes one point, placed by three of its 12 Signature measurements (each axis scaled from lowest to highest). Real-hardware chunks (blue) and forged chunks (orange) form separate clouds; that separation is what the Detector learns. Diamonds are jobs from later calibration cycles, scored blind.</p>
+          </Explain>
         </div>
       </div>
     </section>
@@ -667,6 +715,9 @@ function StressTest() {
             Forger cleaner on {MIRROR.reduce((a, m) => a + m.cleaner, 0)} of {MIRROR.length * 16} circuits; strongly significant (z above 3) on{" "}
             {MIRROR.reduce((a, m) => a + m.strong, 0)}. This tests the overall error level, so it pairs with the X-chain Canaries that test its shape.
           </p>
+          <Explain>
+            <p>Each disguised Canary is a random-looking circuit followed by its exact reverse, so the qubits should end exactly where they started (all zeros). Nothing about it marks it as a test: it is compiled like any customer circuit. Bars show how often each machine really returned all zeros, against what the Forger predicted for the same circuits. Real hardware loses more, because its two-qubit gates carry error the public calibration does not describe.</p>
+          </Explain>
         </motion.div>
 
         <motion.div {...rise} style={{ marginTop: 56, color: "var(--mute)", maxWidth: "72ch", fontSize: 15 }}>
@@ -685,31 +736,76 @@ function StressTest() {
 
 function ByCycle() {
   const B = D.by_cycle;
-  const pairs = genuineRuns.map((g) => ({ g, s: B.runs.find((r) => r.run_id === g.id), t: B.runs.find((r) => r.run_id === `${g.id}_forged`) }));
+  const [mode, setMode] = useState<"frozen" | "held">("frozen");
+  const frozenIds = new Set(D.fresh_scores.map((c) => c.run_id));
+  const score = (id: string) =>
+    mode === "held" ? B.runs.find((r) => r.run_id === id)?.forged_score : frozenIds.has(id) ? scoreOf(D.fresh_scores, id) : undefined;
+  const rows = genuineRuns.map((g) => ({ g, s: score(g.id), t: score(`${g.id}_forged`) }));
+  const scored = rows.filter((r) => r.s !== undefined);
+  const right = scored.filter((r) => r.s! < 0.5).length + scored.filter((r) => r.t !== undefined && r.t > 0.5).length;
+  const total = scored.length + scored.filter((r) => r.t !== undefined).length;
   return (
     <motion.div className="card" {...rise} style={{ marginTop: 56 }}>
-      <h3>Hold out a whole calibration cycle</h3>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+        <h3>Every job, scored</h3>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button className="tab" aria-pressed={mode === "frozen"} onClick={() => setMode("frozen")}>Frozen Detector</button>
+          <button className="tab" aria-pressed={mode === "held"} onClick={() => setMode("held")}>Held out by cycle</button>
+        </div>
+      </div>
       <p className="cap">
-        Every job below is scored by a Detector trained on all the other {B.n_cycles - 1} calibration cycles, never on its own, across all three
-        machines. AUC {B.auc.toFixed(2)}, {pct(B.run_accuracy, 0)} of jobs correct.
+        {mode === "frozen"
+          ? `The Detector trained on the two 10 October jobs and frozen. Every later job was scored blind: ${right} of ${total} correct. The 10 October jobs are its training set, so they are not scored here.`
+          : `Every job scored by a Detector trained on all the other ${B.n_cycles - 1} calibration cycles, never its own, across all three machines. AUC ${B.auc.toFixed(2)}, ${right} of ${total} correct.`}
       </p>
       <div className="scrollx">
         <table className="data">
           <thead><tr><th>job</th><th>machine</th><th>calibration cycle</th><th>Genuine scored</th><th>its Twin scored</th></tr></thead>
           <tbody>
-            {pairs.map(({ g, s, t }) => (
+            {rows.map(({ g, s, t }) => (
               <tr key={g.id}>
                 <td>{jobLabel(g.id).split(" · ")[0]}</td>
-                <td>{(s?.backend ?? "").replace("ibm_", "")}</td>
+                <td>{(g.info.backend ?? "ibm_marrakesh").replace("ibm_", "")}</td>
                 <td>{g.cycle.slice(0, 16).replace("T", " ")}</td>
-                <td style={{ color: COLORS.genuine }}>{s ? s.forged_score.toFixed(2) : "n/a"}</td>
-                <td style={{ color: COLORS.forged }}>{t ? t.forged_score.toFixed(2) : "n/a"}</td>
+                <td style={{ color: COLORS.genuine }}>{s !== undefined ? s.toFixed(2) : "training"}</td>
+                <td style={{ color: COLORS.forged }}>{t !== undefined ? t.toFixed(2) : "training"}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <p className="cap" style={{ marginTop: 12 }}>Scores are the probability of Forged. Below 0.5 is a Genuine Verdict.</p>
+      <Explain>
+        <p>The score is the Detector&apos;s probability that the job was forged. Below 0.5 is a Genuine Verdict; the site also treats 0.35 to 0.65 as Inconclusive. A good result is a low blue number and a high orange one on every row.</p>
+        <p><b>Frozen Detector</b> is the strict, pre-registered test: trained once and never changed, then scored on new days and on two machines it had never seen. <b>Held out by cycle</b> uses all the data but always hides the job&apos;s own calibration cycle from training, which is fairer to a Detector that keeps learning.</p>
+      </Explain>
+    </motion.div>
+  );
+}
+
+function NullTestCard() {
+  return (
+    <motion.div className="card" {...rise} style={{ marginTop: 28 }}>
+      <h3>The null test: can it tell a simulator from a simulator?</h3>
+      <p className="cap">
+        It must not. We ran the whole pipeline with a simulator on both sides: stand-in &quot;hardware&quot; jobs from a fake IBM backend, and the
+        Forger&apos;s copies of them. A Detector that separated those would be picking up a formatting difference between the two code paths,
+        not physics.
+      </p>
+      <div className="grid4" style={{ marginTop: 8 }}>
+        {[
+          [NULL_TEST_AUC.toFixed(2), "AUC, simulator vs simulator", "0.5 is a coin flip: passes"],
+          [D.report.auc.toFixed(2), "AUC, real hardware vs Forger", "the same pipeline, real data"],
+        ].map(([v, l, d]) => (
+          <div key={l} style={{ borderTop: "1px solid var(--gold-dim)", paddingTop: 12 }}>
+            <div className="big" style={{ fontSize: 48 }}>{v}</div>
+            <div className="unit">{l}</div>
+            <div style={{ color: "var(--mute)", fontSize: 13, marginTop: 4 }}>{d}</div>
+          </div>
+        ))}
+      </div>
+      <Explain>
+        <p>Same code, same features, same Detector. The only change is whether real IBM hardware is on one side. With hardware, separation is perfect; without it, the Detector is guessing. So what it detects is the physics of the real chip. Reproduce it with <b>python -m ghostqpu null-test</b>.</p>
+      </Explain>
     </motion.div>
   );
 }
@@ -733,6 +829,9 @@ function PilotCard() {
         {D.pilot.map((r, i) => <button key={r.id} className="tab" aria-pressed={i === pi} onClick={() => setPi(i)}>{machine(r.id)} · {detected(r)}/4 pairs</button>)}
       </div>
       <PilotBody key={pi} run={D.pilot[pi]} />
+      <Explain>
+        <p>A CNOT is the chip&apos;s basic two-qubit gate (built from a CZ). Repeating it an even number of times should return the target to 0. On real hardware a small, consistent phase error in each CZ pulse compounds, so the target reads wrong far more often than the Forger predicts. The control-0, control-1 and idle rows separate where the error comes from. z above 3.2 means the gap is far beyond random chance.</p>
+      </Explain>
     </motion.div>
   );
 }

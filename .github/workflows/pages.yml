@@ -16,6 +16,8 @@ concurrency:
 
 jobs:
   build:
+    # Pages is enabled on the jacklachan fork; skip elsewhere so other copies don't show failed deploys.
+    if: github.repository == 'jacklachan/GhostQPU'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
