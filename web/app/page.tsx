@@ -66,7 +66,7 @@ export default function Page() {
     <RunIt key="run" />,
     <><Evidence runId={runId} setRunId={setRunId} /><Coherent3D runId={runId} setRunId={setRunId} /><Shots runId={runId} /></>,
     <><Verdict /><SignatureSpace /></>,
-    <><BeatIt /><StressTest /><Footer /></>,
+    <><BeatIt /><StressTest /><NextSteps /><Footer /></>,
   ][ch];
 
   return (
@@ -122,7 +122,8 @@ function Hero({ go }: { go: (i: number) => void }) {
         </h1>
         <motion.p className="lede" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.3 }}>
           The bright lattice is the real chip, drawn from its published coupling map. The orange copy floating above it is the <b>Forger</b>: a
-          simulator built from the same public calibration. GhostQPU hides {canaries} <b>Canaries</b> in your Batch to tell them apart.
+          simulator built from the same public calibration. GhostQPU hides {canaries} <b>Canaries</b> in your Batch to tell them apart, for anyone
+          who buys QPU time through a reseller, broker or marketplace.
         </motion.p>
         <motion.div style={{ marginTop: 28, display: "flex", gap: 12, flexWrap: "wrap", pointerEvents: "auto" }}
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.7 }}>
@@ -998,6 +999,36 @@ function freshLimit() {
   return wrong
     ? `The frozen Detector called ${wrong} of ${n} new-cycle Genuine jobs Forged.`
     : `With zero errors in ${n} new-cycle Genuine job${n > 1 ? "s" : ""}, the 95% upper bound on the false-positive rate is still ${(1 - 0.05 ** (1 / n)).toFixed(2)}.`;
+}
+
+const NEXT = [
+  ["Drop-in wrapper", "Wrap Qiskit's Sampler so Canaries are hidden around any Customer circuit and a Verdict comes back with the results."],
+  ["More cycles", "One job per machine per day for weeks, to bring the false-alarm bound well below 0.10 per job."],
+  ["Beat the stronger Forger", "Add the CNOT Canary to the Detector and pick Canaries at random per job so they cannot be fitted in advance."],
+  ["Stronger disguised Canaries", "The mirror gap is 3 to 12 points, versus 30 to 90 for the X chains."],
+  ["Other vendors", "IonQ, Quantinuum or IQM have different error physics; the Canary families may not carry over."],
+  ["Partial forgery", "Not tested yet: a Provider that runs some circuits for real and forges the rest, or pads fewer shots."],
+] as const;
+
+function NextSteps() {
+  return (
+    <section className="section">
+      <div className="wrap">
+        <motion.div {...rise}>
+          <Wire gate="X">What&apos;s next</Wire>
+          <h2 className="title">From a demo to something you can switch on.</h2>
+        </motion.div>
+        <div className="grid2" style={{ marginTop: 28 }}>
+          {NEXT.map(([t, d]) => (
+            <motion.div key={t} className="card" {...rise}>
+              <h3>{t}</h3>
+              <p className="cap">{d}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function Footer() {
