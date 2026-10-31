@@ -1,0 +1,93 @@
+{
+ "run_id": "pilot_ibm_marrakesh_20261028T155610_1",
+ "origin": "genuine",
+ "backend": "ibm_marrakesh",
+ "account": "acct1",
+ "shots": 1000,
+ "submitted_at": "2026-10-28T15:56:10.083717+00:00",
+ "manifest": {
+  "git": {
+   "commit": "ea03da828a5611453966d45c3931e29b0327620f",
+   "dirty": true,
+   "changed": [
+    "M app.py"
+   ]
+  },
+  "python": "3.13.7",
+  "packages": {
+   "qiskit": "2.5.2",
+   "qiskit-ibm-runtime": "0.50.0",
+   "qiskit-aer": "0.17.2",
+   "numpy": "2.5.3",
+   "scikit-learn": "1.9.1"
+  },
+  "sampler_options": {
+   "default_shots": 4096,
+   "dynamical_decoupling": {
+    "enable": false,
+    "sequence_type": "XX",
+    "extra_slack_distribution": "middle",
+    "scheduling_method": "alap",
+    "skip_reset_qubits": false
+   },
+   "execution": {
+    "init_qubits": true,
+    "rep_delay": null,
+    "scheduler_timing": false,
+    "stretch_values": false,
+    "meas_type": "classified"
+   },
+   "twirling": {
+    "enable_gates": false,
+    "enable_measure": false,
+    "group": "pauli",
+    "num_randomizations": "auto",
+    "shots_per_randomization": "auto",
+    "strategy": "active-accum"
+   },
+   "max_execution_time": null,
+   "simulator": {
+    "angle_decimals": 5,
+    "layer_noise_model": null,
+    "seed_simulator": null,
+    "warn_absent": true
+   },
+   "experimental": {},
+   "environment": {
+    "log_level": "WARNING",
+    "job_tags": [],
+    "private": false,
+    "max_execution_time": null,
+    "image": null
+   }
+  },
+  "transpile": {
+   "canaries": 0,
+   "workloads": 1
+  }
+ },
+ "job_id": "dbh1m6kdgr2s73cshlj0",
+ "started_at": "2026-10-28T15:59:53.379215+00:00",
+ "qpu_seconds": 11,
+ "timestamps": {
+  "created": "2026-10-28T15:56:10.626525Z",
+  "finished": "2026-10-28T16:01:34.494624Z",
+  "running": "2026-10-28T15:59:53.379215Z"
+ },
+ "usage": {
+  "qpu_charge_time_seconds": 11,
+  "value": 0.172483,
+  "unit": "resource_units",
+  "status": "complete",
+  "details": [
+   {
+    "value": 0.172483,
+    "unit": "resource_units",
+    "metric": {
+     "id": "caffe3ca-729c-5750-8777-df63bbf8bfd9",
+     "value": 11
+    }
+   }
+  ]
+ }
+}
