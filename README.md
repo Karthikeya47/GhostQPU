@@ -54,6 +54,15 @@ npm run dev        # http://localhost:3000
 
 Chapters are linkable: `#problem`, `#trap`, `#run`, `#evidence`, `#verdict`, `#break`. For an offline copy, `npm run build` writes static files to `web/out/`; serve them with `python -m http.server 8080 -d web/out`.
 
+**The backend API** (FastAPI) serves the frozen Detector and every committed Run over HTTP, with interactive docs at `/docs`:
+
+```sh
+.venv/Scripts/python -m uvicorn ghostqpu.api:app --port 8000
+# GET /runs                      every committed Run
+# GET /runs/{run_id}/verdict     the frozen Detector's Verdict, with per-chunk scores
+# GET /detector                  features, weights and fingerprint
+```
+
 **The Python pipeline:**
 
 ```sh
@@ -189,7 +198,7 @@ This tests the overall error level, so it complements the X-chain Canaries, whic
 ## Limits
 
 - **Small sample.** With 0 errors in 23 Genuine jobs the 95% upper bound on the false-positive rate is 0.12 per job, or 0.15 counting each of the 18 calibration cycles once (the J3/J4, F3/F4 and K3/K4 pairs share a cycle). More cycles are needed.
-- **A Forger with hardware access can do better.** Our stronger Forger ([ghostqpu/forger.py](ghostqpu/forger.py)) fits over-rotation, crosstalk and readout from one real probe job and fooled the original Detector. It needs real QPU access to do so, and it does not generalize to the customer's own circuits ([details](docs/research/workload-generalization.md)).
+- **A Forger with hardware access can do better.** Our stronger Forger ([ghostqpu/forger.py](ghostqpu/forger.py)) learns over-rotation, crosstalk and readout from one earlier real job on the same qubits. Across 13 such pairs it fooled the frozen Detector on 12; a Detector retrained on this attacker's forgeries from other days catches 12 of 13, with 1 false alarm in 13 real jobs ([details](docs/research/stronger-forger-study.md)). It needs real QPU time to learn, and it does not generalize to the customer's own circuits ([details](docs/research/workload-generalization.md)).
 - **If the Detector cannot separate them,** that is a result too: "public calibration data is enough to fake a quantum computer."
 - Related work and what is new: [docs/research/prior-work.md](docs/research/prior-work.md).
 
@@ -218,6 +227,7 @@ ghostqpu/
   cli.py         add-account | accounts | submit | collect | verify | evaluate | null-test
   forger.py      stronger Forger fitted from a Genuine probe run
   pilot.py       CNOT pilot circuits and analysis
+  api.py         FastAPI backend: runs, verdicts, Detector
 scripts/         frozen scorer, CNOT and mirror pilots, cost and forward-in-time study, web data export
 web/             Next.js site (reads web/public/data.json and cost.json)
 data/runs/       2 Genuine ibm_marrakesh runs and their Twins (the frozen Detector's training set)

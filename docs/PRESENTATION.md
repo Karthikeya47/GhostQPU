@@ -92,6 +92,16 @@ artifact: simulator vs simulator scores 0.52 (chance), and it stayed perfect on 
 The honest catch: our stronger Forger, which learns those effects from one real job, fooled the original Detector
 (0.07 and 0.11); retrained, it catches it only weakly (0.64, 0.80). So say "1.00 against a public-data Forger".
 
+**"What's the backend?"** The `ghostqpu` Python package: it builds Batches, submits to IBM Quantum through Qiskit
+Runtime, collects results with the execution-time calibration, runs the Forger in Qiskit Aer, computes Signatures and
+runs the Detector. It is served over HTTP by a FastAPI app (`uvicorn ghostqpu.api:app`, docs at /docs) with endpoints
+for every Run, a Verdict per job and the Detector's weights. The website is a static front-end over its exported results,
+so it stays fast and works offline.
+
+**"What about a smarter forger?"** We tested one on 13 job pairs: learning from an earlier real job on the same qubits,
+it fooled the frozen Detector 12 times. Retrained on that attacker's output from other days, the Detector caught 12 of 13
+with one false alarm. It is an arms race, and the defender can keep up; the forger also has to pay for real QPU time.
+
 **"Your test set is tiny."** Yes. 23 real jobs in 18 cycles. With zero errors the 95% upper bound on the false-positive
 rate is still 0.12 to 0.15. The value is the method plus a pre-registered frozen test that holds across days and
 machines; the next step is one job per machine per day for weeks.
