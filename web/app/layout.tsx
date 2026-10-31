@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans, Unbounded } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const display = Unbounded({ variable: "--f-display", subsets: ["latin"], weight: ["300", "500", "700"] });
-const sans = IBM_Plex_Sans({ variable: "--f-sans", subsets: ["latin"], weight: ["400", "500", "600"] });
-const mono = IBM_Plex_Mono({ variable: "--f-mono", subsets: ["latin"], weight: ["400", "500"] });
+// Bundled (Latin subset, OFL) so builds never depend on reaching Google Fonts, which failed in CI and offline.
+const display = localFont({ src: "./fonts/Unbounded-latin.woff2", weight: "300 700", variable: "--f-display", display: "swap" });
+const sans = localFont({ src: "./fonts/IBMPlexSans-latin.woff2", weight: "400 600", variable: "--f-sans", display: "swap" });
+const mono = localFont({
+  src: [{ path: "./fonts/IBMPlexMono-400-latin.woff2", weight: "400" }, { path: "./fonts/IBMPlexMono-500-latin.woff2", weight: "500" }],
+  variable: "--f-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "GhostQPU",
