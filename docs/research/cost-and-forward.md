@@ -1,6 +1,6 @@
 # How few Canaries are enough, and does it work forward in time? (2026-10-30)
 
-Offline, no QPU time. 50 Runs (25 Genuine + Twins), 19 Calibration cycles, 3 Backends. Script: `scripts/cost_and_forward.py`. Fewer shots means the first N shots of each 1000-shot Run.
+Offline, no QPU time. 52 Runs (26 Genuine + Twins), 19 Calibration cycles, 3 Backends. Script: `scripts/cost_and_forward.py`. Fewer shots means the first N shots of each 1000-shot Run.
 
 ## Cost: Canary families and shots vs detection (held out by Calibration cycle)
 
@@ -8,20 +8,20 @@ QPU seconds are for the Canaries alone at 11 s per 34,000 shots. Drift features 
 
 | Canaries | shots | circuits | QPU s | AUC | jobs correct | worst Genuine score | worst Twin score |
 |---|---|---|---|---|---|---|---|
-| all families (today) | 1000 | 30 | 9.7 | 1.000 | 50/50 | 0.32 | 0.97 |
-| coherent plain + spectator | 1000 | 19 | 6.1 | 1.000 | 50/50 | 0.35 | 0.97 |
-| coherent plain + readout | 1000 | 11 | 3.6 | 0.998 | 49/50 | 0.87 | 0.91 |
-| coherent plain only | 1000 | 7 | 2.3 | 0.998 | 49/50 | 0.86 | 0.94 |
-| spectator only | 1000 | 12 | 3.9 | 0.995 | 50/50 | 0.43 | 0.80 |
-| readout only | 1000 | 4 | 1.3 | 0.710 | 43/50 | 0.62 | 0.38 |
-| all families (today) | 500 | 30 | 4.9 | 1.000 | 50/50 | 0.24 | 0.96 |
-| coherent plain + spectator | 500 | 19 | 3.1 | 1.000 | 50/50 | 0.29 | 0.96 |
-| all families (today) | 250 | 30 | 2.4 | 1.000 | 50/50 | 0.28 | 0.96 |
-| coherent plain + spectator | 250 | 19 | 1.5 | 1.000 | 50/50 | 0.31 | 0.95 |
+| all families (today) | 1000 | 30 | 9.7 | 1.000 | 52/52 | 0.25 | 0.97 |
+| coherent plain + spectator | 1000 | 19 | 6.1 | 1.000 | 52/52 | 0.32 | 0.97 |
+| coherent plain + readout | 1000 | 11 | 3.6 | 0.999 | 51/52 | 0.82 | 0.91 |
+| coherent plain only | 1000 | 7 | 2.3 | 0.999 | 51/52 | 0.81 | 0.93 |
+| spectator only | 1000 | 12 | 3.9 | 0.995 | 52/52 | 0.43 | 0.81 |
+| readout only | 1000 | 4 | 1.3 | 0.707 | 45/52 | 0.61 | 0.39 |
+| all families (today) | 500 | 30 | 4.9 | 1.000 | 52/52 | 0.20 | 0.96 |
+| coherent plain + spectator | 500 | 19 | 3.1 | 1.000 | 52/52 | 0.22 | 0.95 |
+| all families (today) | 250 | 30 | 2.4 | 1.000 | 52/52 | 0.21 | 0.95 |
+| coherent plain + spectator | 250 | 19 | 1.5 | 1.000 | 52/52 | 0.26 | 0.94 |
 
 ## Forward in time: train only on earlier cycles
 
-AUC 1.000, 46/46 jobs correct, worst Genuine 0.29, worst Twin 0.97. The first cycle has nothing earlier to train on and is not scored.
+AUC 1.000, 48/48 jobs correct, worst Genuine 0.29, worst Twin 0.97. The first cycle has nothing earlier to train on and is not scored.
 
 | job | backend | cycle | cycles trained on | score |
 |---|---|---|---|---|
@@ -67,8 +67,10 @@ AUC 1.000, 46/46 jobs correct, worst Genuine 0.29, worst Twin 0.97. The first cy
 | ibm_kingston_20261031T034221_18137_forged | ibm_kingston | 2026-10-31T09:00 | 16 | 0.993 |
 | ibm_kingston_20261031T035941_19168 | ibm_kingston | 2026-10-31T09:20 | 17 | 0.033 |
 | ibm_kingston_20261031T035941_19168_forged | ibm_kingston | 2026-10-31T09:20 | 17 | 0.994 |
+| ibm_kingston_20261031T044247_21758 | ibm_kingston | 2026-10-31T09:20 | 17 | 0.182 |
+| ibm_kingston_20261031T044247_21758_forged | ibm_kingston | 2026-10-31T09:20 | 17 | 0.991 |
 | ibm_fez_20261031T035839_19081 | ibm_fez | 2026-10-31T09:20 | 18 | 0.000 |
-| ibm_fez_20261031T035839_19081_forged | ibm_fez | 2026-10-31T09:20 | 18 | 0.990 |
+| ibm_fez_20261031T035839_19081_forged | ibm_fez | 2026-10-31T09:20 | 18 | 0.989 |
 | ibm_fez_20261031T035904_19126 | ibm_fez | 2026-10-31T09:20 | 18 | 0.000 |
 | ibm_fez_20261031T035904_19126_forged | ibm_fez | 2026-10-31T09:20 | 18 | 0.992 |
 
@@ -79,26 +81,26 @@ Submitted at 250 shots on hardware, not truncated. Each is scored by a Detector 
 | job | backend | Canaries | score | Verdict |
 |---|---|---|---|---|
 | ibm_fez_20261030T171133_80290 | ibm_fez | all families (today) | 0.000 | Genuine (right) |
-| ibm_fez_20261030T171133_80290_forged | ibm_fez | all families (today) | 0.993 | Forged (right) |
+| ibm_fez_20261030T171133_80290_forged | ibm_fez | all families (today) | 0.992 | Forged (right) |
 | ibm_fez_20261031T040024_19221 | ibm_fez | all families (today) | 0.000 | Genuine (right) |
-| ibm_fez_20261031T040024_19221_forged | ibm_fez | all families (today) | 0.984 | Forged (right) |
+| ibm_fez_20261031T040024_19221_forged | ibm_fez | all families (today) | 0.982 | Forged (right) |
 | ibm_kingston_20261030T171059_80256 | ibm_kingston | all families (today) | 0.000 | Genuine (right) |
 | ibm_kingston_20261030T171059_80256_forged | ibm_kingston | all families (today) | 0.992 | Forged (right) |
 | ibm_kingston_20261031T040010_19205 | ibm_kingston | all families (today) | 0.079 | Genuine (right) |
 | ibm_kingston_20261031T040010_19205_forged | ibm_kingston | all families (today) | 0.989 | Forged (right) |
 | ibm_marrakesh_20261030T171025_80221 | ibm_marrakesh | all families (today) | 0.000 | Genuine (right) |
-| ibm_marrakesh_20261030T171025_80221_forged | ibm_marrakesh | all families (today) | 0.963 | Forged (right) |
+| ibm_marrakesh_20261030T171025_80221_forged | ibm_marrakesh | all families (today) | 0.956 | Forged (right) |
 | ibm_marrakesh_20261031T040052_19242 | ibm_marrakesh | all families (today) | 0.000 | Genuine (right) |
-| ibm_marrakesh_20261031T040052_19242_forged | ibm_marrakesh | all families (today) | 0.986 | Forged (right) |
+| ibm_marrakesh_20261031T040052_19242_forged | ibm_marrakesh | all families (today) | 0.985 | Forged (right) |
 | ibm_fez_20261030T171133_80290 | ibm_fez | coherent plain + spectator | 0.000 | Genuine (right) |
 | ibm_fez_20261030T171133_80290_forged | ibm_fez | coherent plain + spectator | 0.987 | Forged (right) |
 | ibm_fez_20261031T040024_19221 | ibm_fez | coherent plain + spectator | 0.000 | Genuine (right) |
-| ibm_fez_20261031T040024_19221_forged | ibm_fez | coherent plain + spectator | 0.971 | Forged (right) |
+| ibm_fez_20261031T040024_19221_forged | ibm_fez | coherent plain + spectator | 0.969 | Forged (right) |
 | ibm_kingston_20261030T171059_80256 | ibm_kingston | coherent plain + spectator | 0.000 | Genuine (right) |
-| ibm_kingston_20261030T171059_80256_forged | ibm_kingston | coherent plain + spectator | 0.980 | Forged (right) |
+| ibm_kingston_20261030T171059_80256_forged | ibm_kingston | coherent plain + spectator | 0.978 | Forged (right) |
 | ibm_kingston_20261031T040010_19205 | ibm_kingston | coherent plain + spectator | 0.088 | Genuine (right) |
 | ibm_kingston_20261031T040010_19205_forged | ibm_kingston | coherent plain + spectator | 0.988 | Forged (right) |
 | ibm_marrakesh_20261030T171025_80221 | ibm_marrakesh | coherent plain + spectator | 0.000 | Genuine (right) |
-| ibm_marrakesh_20261030T171025_80221_forged | ibm_marrakesh | coherent plain + spectator | 0.934 | Forged (right) |
+| ibm_marrakesh_20261030T171025_80221_forged | ibm_marrakesh | coherent plain + spectator | 0.926 | Forged (right) |
 | ibm_marrakesh_20261031T040052_19242 | ibm_marrakesh | coherent plain + spectator | 0.000 | Genuine (right) |
-| ibm_marrakesh_20261031T040052_19242_forged | ibm_marrakesh | coherent plain + spectator | 0.979 | Forged (right) |
+| ibm_marrakesh_20261031T040052_19242_forged | ibm_marrakesh | coherent plain + spectator | 0.978 | Forged (right) |
