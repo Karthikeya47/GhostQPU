@@ -45,6 +45,9 @@ export const J1 = {
 // README.md
 export const NULL_TEST_AUC = 0.52; // rerun 2026-10-30 with the seeded Forger
 
+// scripts/score_ten.py: same model trained on the 10 earliest Genuine Runs and their Twins, every later Run scored blind.
+export const TEN_JOB = { trained: 10, cycles: 9, machines: 3, right: 40, scored: 40, laterCycles: 14, worstGenuine: 0.22, frozenWorst: 0.43 };
+
 // mirror-canaries.md: disguised Canaries (random U then U inverse, ideal all zeros), one job per machine on 2026-10-31.
 export const MIRROR = [
   { machine: "marrakesh", hardware: 0.756, forger: 0.879, cleaner: 15, strong: 13 },

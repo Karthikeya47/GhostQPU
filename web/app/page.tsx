@@ -12,7 +12,7 @@ import { JobConsole } from "@/components/JobConsole";
 import { Explain, NumbersTable } from "@/components/Explain";
 import { Vault } from "@/components/Vault";
 import { COLORS, D, FEATURE_LABELS, genuineRuns, jobLabel, mean, type Pilot, runById, scoreOf, twinOf } from "@/lib/data";
-import { IDEAL_TVD, J1, MIRROR, NULL_TEST_AUC, STRONGER_FORGER, WORKLOAD_TVD } from "@/lib/research";
+import { IDEAL_TVD, J1, MIRROR, NULL_TEST_AUC, STRONGER_FORGER, TEN_JOB, WORKLOAD_TVD } from "@/lib/research";
 
 const Scene = dynamic(() => import("@/components/three").then((m) => m.Scene), { ssr: false });
 const ChipScene = dynamic(() => import("@/components/three").then((m) => m.ChipScene), { ssr: false });
@@ -451,8 +451,63 @@ function Evidence({ runId, setRunId }: { runId: string; setRunId: (id: string) =
             <NumbersTable head={["State", "Genuine error", "Forged error"]} rows={["t=0 n=0", "t=0 n=1", "t=1 n=0", "t=1 n=1"].map((l, i) => [l, (ro(g)[i] * 100).toFixed(2) + "%", t ? (ro(t)[i] * 100).toFixed(2) + "%" : "n/a"])} />
           </motion.div>
         </div>
+        <JobLedger runId={runId} setRunId={setRunId} />
       </div>
     </section>
+  );
+}
+
+// Jobs outside the main Batch format: data/short (250 shots), data/pilot/runs (CNOT), data/mirror/runs (disguised Canaries).
+const OTHER_JOBS = [
+  ["6", "short Batches, 250 shots, 3 machines", "12 of 12 real and forged runs called right"],
+  ["4", "CNOT Canary pilots, 3 machines", "two-qubit error the Forger does not model"],
+  ["3", "disguised (mirror) Canary jobs, 1 per machine", "real hardware loses more than the Forger predicts"],
+] as const;
+
+function JobLedger({ runId, setRunId }: { runId: string; setRunId: (id: string) => void }) {
+  const fresh = new Set(D.fresh_ids);
+  const score = (id: string) => (fresh.has(id) ? scoreOf(D.fresh_scores, id) : undefined);
+  const rows = [...genuineRuns].sort((a, b) => (a.info.started_at ?? a.id).localeCompare(b.info.started_at ?? b.id));
+  const total = rows.length + OTHER_JOBS.reduce((n, [k]) => n + Number(k), 0);
+  const qpu = rows.reduce((n, r) => n + (r.info.qpu_seconds ?? 0), 0);
+  return (
+    <motion.div className="card" {...rise} style={{ marginTop: 28 }}>
+      <h3>Every job we ran on IBM hardware</h3>
+      <p className="cap">
+        {total} jobs on real IBM quantum computers. The {rows.length} full Batches below ({qpu} QPU seconds) each have a forged Twin. Click a row to load that job
+        into the charts above. Scores are from the Detector frozen on the two 10 October jobs: below 0.5 means Genuine.
+      </p>
+      <div className="scrollx" style={{ maxHeight: 420, overflowY: "auto" }}>
+        <table className="data">
+          <thead><tr><th>job</th><th>machine</th><th>ran at (UTC)</th><th>IBM job id</th><th>real job scored</th><th>its Twin scored</th></tr></thead>
+          <tbody>
+            {rows.map((g) => {
+              const s = score(g.id);
+              const t = score(`${g.id}_forged`);
+              return (
+                <tr key={g.id} onClick={() => setRunId(g.id)} style={{ cursor: "pointer", background: g.id === runId ? "rgba(143,211,255,0.08)" : undefined }}>
+                  <td>{jobLabel(g.id).split(" · ")[0]}</td>
+                  <td>{(g.info.backend ?? "ibm_marrakesh").replace("ibm_", "")}</td>
+                  <td>{(g.info.started_at ?? "").slice(0, 16).replace("T", " ")}</td>
+                  <td style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>{g.info.job_id ?? ""}</td>
+                  <td style={{ color: COLORS.genuine }}>{s !== undefined ? s.toFixed(2) : "training"}</td>
+                  <td style={{ color: COLORS.forged }}>{t !== undefined ? t.toFixed(2) : "training"}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div className="grid4" style={{ marginTop: 20 }}>
+        {OTHER_JOBS.map(([n, what, why]) => (
+          <div key={what} style={{ borderTop: "1px solid var(--gold-dim)", paddingTop: 12 }}>
+            <div className="big" style={{ fontSize: 40 }}>{n}</div>
+            <div className="unit">{what}</div>
+            <div style={{ color: "var(--mute)", fontSize: 13, marginTop: 4 }}>{why}</div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
   );
 }
 
@@ -561,6 +616,7 @@ function Verdict() {
         </div>
 
         <ByCycle />
+        <TenJobCard />
         <NullTestCard />
 
         <CostCard />
@@ -777,6 +833,34 @@ function ByCycle() {
       <Explain>
         <p>The score is the Detector&apos;s probability that the job was forged. Below 0.5 is a Genuine Verdict; the site also treats 0.35 to 0.65 as Inconclusive. A good result is a low blue number and a high orange one on every row.</p>
         <p><b>Frozen Detector</b> is the strict, pre-registered test: trained once and never changed, then scored on new days and on two machines it had never seen. <b>Held out by cycle</b> uses all the data but always hides the job&apos;s own calibration cycle from training, which is fairer to a Detector that keeps learning.</p>
+      </Explain>
+    </motion.div>
+  );
+}
+
+function TenJobCard() {
+  const T = TEN_JOB;
+  return (
+    <motion.div className="card" {...rise} style={{ marginTop: 28 }}>
+      <h3>More training, still blind</h3>
+      <p className="cap">
+        Two jobs were enough. Trained on the {T.trained} earliest real jobs instead ({T.cycles} cycles, all {T.machines} machines), and scored on every job
+        that came after them, the same Detector only gets more sure.
+      </p>
+      <div className="grid4" style={{ marginTop: 8 }}>
+        {[
+          [`${T.right}/${T.scored}`, "later jobs correct", `${T.laterCycles} newer calibration cycles, never seen in training`],
+          [T.worstGenuine.toFixed(2), "closest real job", `was ${T.frozenWorst.toFixed(2)} with the 2-job Detector`],
+        ].map(([v, l, d]) => (
+          <div key={l} style={{ borderTop: "1px solid var(--gold-dim)", paddingTop: 12 }}>
+            <div className="big" style={{ fontSize: 48 }}>{v}</div>
+            <div className="unit">{l}</div>
+            <div style={{ color: "var(--mute)", fontSize: 13, marginTop: 4 }}>{d}</div>
+          </div>
+        ))}
+      </div>
+      <Explain>
+        <p>Every scored job is newer than everything the Detector trained on, so this is still a blind test. The 2-job frozen Detector stays the headline because it shows how little the Detector needs; this card shows that more real jobs push real scores further from the 0.5 line. Reproduce it with <b>python scripts/score_ten.py</b>.</p>
       </Explain>
     </motion.div>
   );

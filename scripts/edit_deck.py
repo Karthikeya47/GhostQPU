@@ -161,7 +161,7 @@ set_bullets(
         ("Working end-to-end tool:", "python -m ghostqpu submit / collect / verify / evaluate / null-test."),
         (
             "Real hardware runs:",
-            "24 jobs on ibm_marrakesh, ibm_fez and ibm_kingston over 18 calibration cycles and 4 days, each with a forged twin.",
+            "28 jobs on ibm_marrakesh, ibm_fez and ibm_kingston over 20 calibration cycles and 4 days, each with a forged twin.",
         ),
         (
             "Live site:",
@@ -196,10 +196,10 @@ set_bullets(
     8,
     "Null test",
     [
-        ("Frozen Detector, scored blind:", "48 of 48 later jobs correct (24 real, 24 forged), 18 cycles, 3 machines."),
-        ("Held out by cycle:", POOLED + " Trained only on earlier days: 48 of 48."),
+        ("Frozen Detector, scored blind:", "56 of 56 later jobs correct (28 real, 28 forged), 20 cycles, 3 machines."),
+        ("Held out by cycle:", POOLED + " Earlier days only: 56 of 56. Trained on 10 jobs: 40 of 40."),
         ("Null test:", "simulator vs Forger scores AUC 0.52 (chance), so it detects physics, not formatting."),
-        ("Cost:", "1.5 QPU seconds of canaries still calls all 52 jobs right."),
+        ("Cost:", "1.5 QPU seconds of canaries still calls all 60 jobs right."),
         (
             "Why AUC is 1.00:",
             "public calibration has no coherent error, so the Forger is 2-4% wrong where hardware is 30-90%.",

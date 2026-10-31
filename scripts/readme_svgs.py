@@ -93,9 +93,9 @@ def hero():
 
 def proof():
     cards = [
-        ("48/48", "jobs called right by a", "Detector frozen on 10 Oct"),
-        ("3 · 18", "IBM machines ·", "calibration cycles"),
-        ("1.5 s", "of QPU time for Canaries", "still catches all 52 jobs"),
+        ("56/56", "jobs called right by a", "Detector frozen on 10 Oct"),
+        ("3 · 20", "IBM machines ·", "calibration cycles"),
+        ("1.5 s", "of QPU time for Canaries", "still catches all 60 jobs"),
     ]
     g = []
     for i, (big, a, b) in enumerate(cards):
@@ -110,8 +110,8 @@ def proof():
         svg(
             300,
             "GhostQPU results",
-            "48 of 48 later jobs called correctly by a Detector frozen on 10 October; "
-            "3 IBM machines and 18 calibration cycles; 1.5 QPU seconds of Canaries still catches all 52 jobs.",
+            "56 of 56 later jobs called correctly by a Detector frozen on 10 October; "
+            "3 IBM machines and 20 calibration cycles; 1.5 QPU seconds of Canaries still catches all 60 jobs.",
             "\n".join(g),
         ),
         encoding="utf-8",
