@@ -75,6 +75,35 @@ def replace_text(n, old, new):
     tree.write(str(path), xml_declaration=True, encoding="UTF-8", standalone=True)
 
 
+# Slide 1: the template's label and value boxes are too narrow, so their text wraps over the pills. Keep each on one line.
+path, tree = load(1)
+LABEL_SZ = {"Team Name:": "3000", "Team Lead Name:": "3000", "Track:": "3000", "Problem Statement title:": "3000"}
+VALUES = ("lwyrup", "Neelagiri Karthikeya", "Quantum Security & Cryptography", "Detecting Faked Quantum Cloud Jobs")
+for tx in tree.iter("{{{}}}txBody".format(NS["p"])):
+    text = "".join(tx.itertext()).strip()
+    if text in LABEL_SZ or text in VALUES:
+        tx.find(A + "bodyPr").set("wrap", "none")
+    if text in LABEL_SZ:
+        for r in tx.iter(A + "rPr"):
+            r.set("sz", LABEL_SZ[text])
+tree.write(str(path), xml_declaration=True, encoding="UTF-8", standalone=True)
+
+# Section titles that wrap out of their pills in the template.
+for n, title in ((4, "Proposed Solution"), (5, "Why Quantum?"), (6, "Implementation and Architecture"), (8, "Results / Validation")):
+    path, tree = load(n)
+    tx = body_with(tree, title)
+    tx.find(A + "bodyPr").set("wrap", "none")
+    # LibreOffice ignores wrap="none" here, so also widen the box around its centre to fit the text.
+    xfrm = tx.getparent().find("{{{}}}spPr/{}xfrm".format(NS["p"], A))
+    off, ext = xfrm.find(A + "off"), xfrm.find(A + "ext")
+    size = int(tx.find(".//" + A + "rPr").get("sz")) / 100
+    need = int(len(title) * 0.6 * size * 12700)
+    cx = int(ext.get("cx"))
+    if need > cx:
+        off.set("x", str(int(off.get("x")) - (need - cx) // 2))
+        ext.set("cx", str(need))
+    tree.write(str(path), xml_declaration=True, encoding="UTF-8", standalone=True)
+
 # Slide 1: whole team.
 
 # Slide 4: proposed solution.
