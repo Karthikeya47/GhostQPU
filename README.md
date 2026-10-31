@@ -7,7 +7,7 @@
   <br>
   Neelagiri Karthikeya (lead) · L Mohit Jain · Tanvi Jain · Aditi Gorti
   <br>
-  <a href="#run-it">Run the demo</a> · <a href="docs/PRESENTATION.md">Presenter notes</a> · <a href="https://drive.google.com/drive/folders/1M0DklU9nP6OGHuq1RZSj4r4Gzi0MHY0b">Demo video</a> · <a href="#results">Results</a> · <a href="docs/research/">Research notes</a>
+  <a href="https://jacklachan.github.io/GhostQPU/"><b>Live site</b></a> · <a href="docs/GhostQPU_QHack_India26.pptx"><b>Slides (PPT)</b></a> · <a href="#run-it">Run it locally</a> · <a href="docs/PRESENTATION.md">Presenter notes</a> · <a href="https://drive.google.com/drive/folders/1M0DklU9nP6OGHuq1RZSj4r4Gzi0MHY0b">Demo video</a> · <a href="#results">Results</a> · <a href="docs/research/">Research notes</a>
 </p>
 
 You pay a cloud reseller for time on a quantum computer. How do you know your job ever ran on one? IBM publishes calibration data for every machine, and anyone can turn it into a simulator that returns believable results. **GhostQPU hides small Canary circuits in your Batch** that probe physics the published calibration leaves out, and a small Detector turns their results into a Verdict: **Genuine** or **Forged**.
@@ -43,7 +43,7 @@ We built both sides: the **Forger** (the attack, simulating each job from the ex
 
 ## Run it
 
-**The interactive site** tells the story in six chapters, with a console that replays any real job, a Bloch sphere driven by measured data, and a lab where you play the Forger against the real frozen Detector. No IBM account needed:
+**The interactive site** is live at **https://jacklachan.github.io/GhostQPU/** (deployed by `.github/workflows/pages.yml` on every push). It tells the story in six chapters, with a console that replays any real job, a Bloch sphere driven by measured data, and a lab where you play the Forger against the real frozen Detector. No IBM account needed:
 
 ```sh
 cd web

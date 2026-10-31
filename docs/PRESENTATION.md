@@ -4,6 +4,7 @@ About 6 minutes, one chapter of the site at a time. Arrow keys move between chap
 
 ## Morning checklist
 
+0. Live site: https://jacklachan.github.io/GhostQPU/ · Slides: `docs/GhostQPU_QHack_India26.pptx` (speaker notes included).
 1. `cd web` then `npm run dev`, open http://localhost:3000. If the page is blank or shows a build error, stop the
    server, delete `web/.next`, start it again.
 2. Backup with no Wi-Fi and no dev server: `cd web && npm run build` writes a static copy to `web/out/` (do it the
