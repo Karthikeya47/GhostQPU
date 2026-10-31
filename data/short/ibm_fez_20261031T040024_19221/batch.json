@@ -1,0 +1,284 @@
+{
+ "backend_name": "ibm_fez",
+ "seed": 19221,
+ "placements": [
+  [
+   22,
+   23
+  ],
+  [
+   71,
+   58
+  ],
+  [
+   142,
+   143
+  ],
+  [
+   94,
+   95
+  ]
+ ],
+ "specs": [
+  {
+   "role": "workload",
+   "family": "ghz5",
+   "params": {}
+  },
+  {
+   "role": "workload",
+   "family": "random4_2",
+   "params": {}
+  },
+  {
+   "role": "canary",
+   "family": "coherent",
+   "params": {
+    "n": 16,
+    "sandwich": false
+   }
+  },
+  {
+   "role": "canary",
+   "family": "coherent",
+   "params": {
+    "n": 4,
+    "sandwich": false
+   }
+  },
+  {
+   "role": "canary",
+   "family": "spectator",
+   "params": {
+    "neighbor": 1,
+    "delay_us": 0
+   }
+  },
+  {
+   "role": "canary",
+   "family": "coherent",
+   "params": {
+    "n": 8,
+    "sandwich": true
+   }
+  },
+  {
+   "role": "canary",
+   "family": "coherent",
+   "params": {
+    "n": 32,
+    "sandwich": false
+   }
+  },
+  {
+   "role": "workload",
+   "family": "random4_1",
+   "params": {}
+  },
+  {
+   "role": "canary",
+   "family": "spectator",
+   "params": {
+    "neighbor": 0,
+    "delay_us": 4
+   }
+  },
+  {
+   "role": "workload",
+   "family": "random4_0",
+   "params": {}
+  },
+  {
+   "role": "canary",
+   "family": "coherent",
+   "params": {
+    "n": 128,
+    "sandwich": false
+   }
+  },
+  {
+   "role": "canary",
+   "family": "coherent",
+   "params": {
+    "n": 128,
+    "sandwich": true
+   }
+  },
+  {
+   "role": "canary",
+   "family": "readout",
+   "params": {
+    "target": 1,
+    "neighbor": 1
+   }
+  },
+  {
+   "role": "canary",
+   "family": "spectator",
+   "params": {
+    "neighbor": 1,
+    "delay_us": 12
+   }
+  },
+  {
+   "role": "canary",
+   "family": "spectator",
+   "params": {
+    "neighbor": 0,
+    "delay_us": 2
+   }
+  },
+  {
+   "role": "canary",
+   "family": "readout",
+   "params": {
+    "target": 0,
+    "neighbor": 0
+   }
+  },
+  {
+   "role": "canary",
+   "family": "coherent",
+   "params": {
+    "n": 64,
+    "sandwich": false
+   }
+  },
+  {
+   "role": "canary",
+   "family": "coherent",
+   "params": {
+    "n": 64,
+    "sandwich": true
+   }
+  },
+  {
+   "role": "canary",
+   "family": "coherent",
+   "params": {
+    "n": 0,
+    "sandwich": false
+   }
+  },
+  {
+   "role": "canary",
+   "family": "spectator",
+   "params": {
+    "neighbor": 1,
+    "delay_us": 2
+   }
+  },
+  {
+   "role": "canary",
+   "family": "spectator",
+   "params": {
+    "neighbor": 0,
+    "delay_us": 0
+   }
+  },
+  {
+   "role": "canary",
+   "family": "coherent",
+   "params": {
+    "n": 8,
+    "sandwich": false
+   }
+  },
+  {
+   "role": "canary",
+   "family": "spectator",
+   "params": {
+    "neighbor": 1,
+    "delay_us": 16
+   }
+  },
+  {
+   "role": "canary",
+   "family": "coherent",
+   "params": {
+    "n": 4,
+    "sandwich": true
+   }
+  },
+  {
+   "role": "canary",
+   "family": "coherent",
+   "params": {
+    "n": 0,
+    "sandwich": true
+   }
+  },
+  {
+   "role": "canary",
+   "family": "coherent",
+   "params": {
+    "n": 16,
+    "sandwich": true
+   }
+  },
+  {
+   "role": "canary",
+   "family": "spectator",
+   "params": {
+    "neighbor": 1,
+    "delay_us": 8
+   }
+  },
+  {
+   "role": "canary",
+   "family": "spectator",
+   "params": {
+    "neighbor": 0,
+    "delay_us": 16
+   }
+  },
+  {
+   "role": "canary",
+   "family": "readout",
+   "params": {
+    "target": 0,
+    "neighbor": 1
+   }
+  },
+  {
+   "role": "canary",
+   "family": "spectator",
+   "params": {
+    "neighbor": 0,
+    "delay_us": 12
+   }
+  },
+  {
+   "role": "canary",
+   "family": "readout",
+   "params": {
+    "target": 1,
+    "neighbor": 0
+   }
+  },
+  {
+   "role": "canary",
+   "family": "spectator",
+   "params": {
+    "neighbor": 1,
+    "delay_us": 4
+   }
+  },
+  {
+   "role": "canary",
+   "family": "spectator",
+   "params": {
+    "neighbor": 0,
+    "delay_us": 8
+   }
+  },
+  {
+   "role": "canary",
+   "family": "coherent",
+   "params": {
+    "n": 32,
+    "sandwich": true
+   }
+  }
+ ]
+}

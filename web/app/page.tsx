@@ -11,7 +11,7 @@ import { ForgerLab } from "@/components/ForgerLab";
 import { JobConsole } from "@/components/JobConsole";
 import { Vault } from "@/components/Vault";
 import { COLORS, D, FEATURE_LABELS, genuineRuns, jobLabel, mean, type Pilot, runById, scoreOf, twinOf } from "@/lib/data";
-import { IDEAL_TVD, J1, NULL_TEST_AUC, STRONGER_FORGER, WORKLOAD_TVD } from "@/lib/research";
+import { IDEAL_TVD, J1, MIRROR, NULL_TEST_AUC, STRONGER_FORGER, WORKLOAD_TVD } from "@/lib/research";
 
 const Scene = dynamic(() => import("@/components/three").then((m) => m.Scene), { ssr: false });
 const ChipScene = dynamic(() => import("@/components/three").then((m) => m.ChipScene), { ssr: false });
@@ -649,6 +649,25 @@ function StressTest() {
         </div>
 
         {D.pilot.length ? <PilotCard /> : null}
+
+        <motion.div className="card" {...rise} style={{ marginTop: 28 }}>
+          <div className="stage" style={{ marginBottom: 8 }}>New on hardware · this morning</div>
+          <h3>Canaries that look like customer circuits</h3>
+          <p className="cap">
+            A provider that could spot our Canaries might run only those on real hardware. So we hid them inside random-looking circuits: a random
+            circuit followed by its exact reverse, which ideally returns all zeros but looks like any customer job. The Forger is still too clean.
+          </p>
+          <GroupedBars label="Probability a mirror circuit returns all zeros, hardware vs Forger" yLabel="P(all zeros)"
+            groups={MIRROR.map((m) => m.machine)}
+            series={[
+              { name: "real hardware", color: COLORS.genuine, values: MIRROR.map((m) => m.hardware) },
+              { name: "Forger", color: COLORS.forged, values: MIRROR.map((m) => m.forger) },
+            ]} />
+          <p className="cap" style={{ marginTop: 10 }}>
+            Forger cleaner on {MIRROR.reduce((a, m) => a + m.cleaner, 0)} of {MIRROR.length * 16} circuits; strongly significant (z above 3) on{" "}
+            {MIRROR.reduce((a, m) => a + m.strong, 0)}. This tests the overall error level, so it pairs with the X-chain Canaries that test its shape.
+          </p>
+        </motion.div>
 
         <motion.div {...rise} style={{ marginTop: 56, color: "var(--mute)", maxWidth: "72ch", fontSize: 15 }}>
           <div className="stage">Limits, stated plainly</div>

@@ -44,3 +44,10 @@ export const J1 = {
 
 // README.md
 export const NULL_TEST_AUC = 0.52; // rerun 2026-10-30 with the seeded Forger
+
+// mirror-canaries.md: disguised Canaries (random U then U inverse, ideal all zeros), one job per machine on 2026-10-31.
+export const MIRROR = [
+  { machine: "marrakesh", hardware: 0.756, forger: 0.879, cleaner: 15, strong: 13 },
+  { machine: "kingston", hardware: 0.875, forger: 0.912, cleaner: 15, strong: 9 },
+  { machine: "fez", hardware: 0.762, forger: 0.878, cleaner: 15, strong: 9 },
+];

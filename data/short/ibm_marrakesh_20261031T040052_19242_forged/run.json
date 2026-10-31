@@ -1,0 +1,97 @@
+{
+ "run_id": "ibm_marrakesh_20261031T040052_19242_forged",
+ "origin": "forged",
+ "backend": "ibm_marrakesh",
+ "account": "main",
+ "shots": 250,
+ "submitted_at": "2026-10-31T04:00:52.647013+00:00",
+ "manifest": {
+  "git": {
+   "commit": "ea893dffd74359bc4fc4b0df30ce5b8a2e6ff66e",
+   "dirty": true,
+   "changed": [
+    "M ghostqpu/canaries.py",
+    "?? data/fresh/ibm_fez_20261031T035839_19081/"
+   ]
+  },
+  "python": "3.14.6",
+  "packages": {
+   "qiskit": "2.5.2",
+   "qiskit-ibm-runtime": "0.50.0",
+   "qiskit-aer": "0.17.2",
+   "numpy": "2.5.3",
+   "scikit-learn": "1.9.1"
+  },
+  "sampler_options": {
+   "default_shots": 4096,
+   "dynamical_decoupling": {
+    "enable": false,
+    "sequence_type": "XX",
+    "extra_slack_distribution": "middle",
+    "scheduling_method": "alap",
+    "skip_reset_qubits": false
+   },
+   "execution": {
+    "init_qubits": true,
+    "rep_delay": null,
+    "scheduler_timing": false,
+    "stretch_values": false,
+    "meas_type": "classified"
+   },
+   "twirling": {
+    "enable_gates": false,
+    "enable_measure": false,
+    "group": "pauli",
+    "num_randomizations": "auto",
+    "shots_per_randomization": "auto",
+    "strategy": "active-accum"
+   },
+   "max_execution_time": null,
+   "simulator": {
+    "angle_decimals": 5,
+    "layer_noise_model": null,
+    "seed_simulator": null,
+    "warn_absent": true
+   },
+   "experimental": {},
+   "environment": {
+    "log_level": "WARNING",
+    "job_tags": [],
+    "private": false,
+    "max_execution_time": null,
+    "image": null
+   }
+  },
+  "transpile": {
+   "canaries": 0,
+   "workloads": 1
+  }
+ },
+ "job_id": "dbimfstep8hs73ao6b6g",
+ "started_at": "2026-10-31T04:00:53.553377+00:00",
+ "qpu_seconds": 0.0,
+ "timestamps": {
+  "created": "2026-10-31T04:00:51.841903Z",
+  "finished": "2026-10-31T04:01:15.766343Z",
+  "running": "2026-10-31T04:00:53.553377Z"
+ },
+ "usage": {
+  "qpu_charge_time_seconds": 5,
+  "value": 0.067271,
+  "unit": "resource_units",
+  "status": "complete",
+  "details": [
+   {
+    "value": 0.067271,
+    "unit": "resource_units",
+    "metric": {
+     "id": "caffe3ca-729c-5750-8777-df63bbf8bfd9",
+     "value": 5
+    }
+   }
+  ]
+ },
+ "twin_of": "ibm_marrakesh_20261031T040052_19242",
+ "forged_at": "2026-10-31T04:03:25.900323+00:00",
+ "seed_simulator": 3544826438
+}

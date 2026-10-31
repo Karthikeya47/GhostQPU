@@ -48,11 +48,11 @@ About 6 minutes, one chapter of the site at a time. Arrow keys move between chap
 ### 5. The verdict (`#verdict`), 60 s
 
 - "We froze the Detector after training on two jobs from 10 October and never retrained it."
-- "On every job since, on three IBM machines, it is 38 of 38: 19 real jobs and their forged copies, over 16
-  calibration cycles and 4 days, including three jobs we ran this morning, on two machines it had never seen."
-- Cost card: "Verification is cheap: 1.5 QPU seconds of Canary time still catches all 42 jobs, 85% less than we spend
-  today. We checked it on hardware last night: 6 of 6 real 250-shot jobs called right."
-- Forward in time: "Trained only on earlier days, it scores the next day 38 of 38."
+- "On every job since, on three IBM machines, it is 40 of 40: 20 real jobs and their forged copies, over 17
+  calibration cycles and 4 days, including four jobs we ran this morning, on two machines it had never seen."
+- Cost card: "Verification is cheap: 1.5 QPU seconds of Canary time still catches all 44 jobs, 85% less than we spend
+  today. We checked it on hardware on two days: 12 of 12 real 250-shot runs called right."
+- Forward in time: "Trained only on earlier days, it scores the next day 40 of 40."
 - Day-to-day chart: "Real hardware wanders between calibrations. The Forger's line is flat. That gap is what we detect."
 
 ### 6. Break it (`#break`), 60 s
@@ -61,6 +61,8 @@ About 6 minutes, one chapter of the site at a time. Arrow keys move between chap
   inconclusive. Add crosstalk: it passes as Genuine.
 - The point: "To fool it, a Forger has to measure the real hardware's physics, which public calibration does not
   contain. GhostQPU turns a free attack into one that needs real QPU access."
+- Disguised Canaries card: "And a provider can't just spot the traps: we hid Canaries inside random-looking circuits
+  this morning, and the Forger was still too clean on 45 of 48 of them, on all three machines."
 - Close: "We also tested a stronger Forger that fits these effects, and found a new Canary on hardware: repeated CNOTs
   read wrong 73% of the time on one qubit pair where the Forger predicts 10%."
 
@@ -68,12 +70,12 @@ About 6 minutes, one chapter of the site at a time. Arrow keys move between chap
 
 | Claim | Number | Source |
 |---|---|---|
-| Frozen Detector on later jobs | 38/38 (19 Genuine + 19 Twins), 16 cycles, 3 machines, 4 days | `scripts/score_fresh.py` |
-| Error-rate bound with 0 mistakes | 0.15 per job, 0.17 per cycle (95%, one-sided) | same |
-| Each cycle held out, all data | 42/42, AUC 1.00, 17 cycles | `docs/research/cost-and-forward.md` |
-| Forward in time | 38/38, AUC 1.00, worst real job 0.29 | same |
+| Frozen Detector on later jobs | 40/40 (20 Genuine + 20 Twins), 17 cycles, 3 machines, 4 days | `scripts/score_fresh.py` |
+| Error-rate bound with 0 mistakes | 0.14 per job, 0.16 per cycle (95%, one-sided) | same |
+| Each cycle held out, all data | 44/44, AUC 1.00, 18 cycles | `docs/research/cost-and-forward.md` |
+| Forward in time | 40/40, AUC 1.00, worst real job 0.29 | same |
 | Cheapest setting catching all | 1.5 QPU s of Canary time (19 circuits x 250 shots) vs 9.7 s | same |
-| Real 250-shot jobs on hardware | 6/6 called right; billed 4 to 5 s each incl. about 2 s IBM overhead | same |
+| Real 250-shot runs on hardware | 12/12 called right (6 jobs + Twins, 2 days); billed 4 to 5 s each incl. about 2 s IBM overhead | same |
 | Null test (simulator vs simulator) | AUC 0.52, near chance: PASS | `python -m ghostqpu null-test` |
 | Kingston over-rotation, 128 X gates | about 90% vs 3% for the Forger | `docs/research/cross-backend-kingston.md` |
 | CNOT Canary, marrakesh 107-108, N=32 | 73% vs 10% | `docs/research/cnot-pilot-hardware.md` |
@@ -81,14 +83,19 @@ About 6 minutes, one chapter of the site at a time. Arrow keys move between chap
 
 ## Hard questions
 
-**"Your test set is tiny."** Yes. 19 real jobs in 16 cycles. With zero errors the 95% upper bound on the false-positive
-rate is still 0.15 to 0.17. The value is the method plus a pre-registered frozen test that holds across days and
+**"Your test set is tiny."** Yes. 20 real jobs in 17 cycles. With zero errors the 95% upper bound on the false-positive
+rate is still 0.14 to 0.16. The value is the method plus a pre-registered frozen test that holds across days and
 machines; the next step is one job per machine per day for weeks.
 
 **"Could a smarter Forger beat it?"** Yes, and we show it. Our stronger Forger fits over-rotation, crosstalk and
 readout from one real probe job and fooled the original Detector. But it needs real hardware access to fit those
 effects, it does not generalize to the customer's own circuits (no better than the stock Forger on 6 of 7), and adding
 Canaries (like the CNOT one) raises the number of effects it must fit per qubit pair.
+
+**"Couldn't the provider spot the Canaries and run only those on hardware?"** Running even the Canaries on real
+hardware already costs QPU time. And we tested Canaries that look exactly like customer circuits (a random circuit then
+its reverse): on all three machines the Forger was too clean on 45 of 48 (`docs/research/mirror-canaries.md`). A Forger
+could add uniform noise to close that gap, but the X-chain Canaries test the shape of the error, so it has to fake both.
 
 **"Is the Detector just memorizing qubits?"** The frozen Detector was trained on four qubit pairs on one machine and
 scored fez and kingston, different machines and qubits, correctly. The null test (simulator on both sides) scores 0.52,

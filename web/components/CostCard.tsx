@@ -58,7 +58,7 @@ export function CostCard() {
           </div>
           {C.short?.length ? (
             <div style={{ color: "var(--frost)", fontSize: 14, marginTop: 10 }}>
-              Checked on real hardware: {shortRight} of {shortJobs.length} real 250-shot jobs called right, with every Canary setting tested.
+              Checked on real hardware: {shortRight} of {shortJobs.length} real 250-shot runs (jobs and their forged copies) called right, with every Canary setting tested.
               IBM also bills about 2 s of fixed overhead per job, so a full 250-shot job billed 4 to 5 s.
             </div>
           ) : null}

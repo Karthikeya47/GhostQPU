@@ -1,0 +1,119 @@
+{
+ "backend_name": "ibm_marrakesh",
+ "seed": 7,
+ "placements": [],
+ "specs": [
+  {
+   "role": "mirror",
+   "family": "mirror_d4_3",
+   "params": {
+    "depth": 4
+   }
+  },
+  {
+   "role": "mirror",
+   "family": "mirror_d8_2",
+   "params": {
+    "depth": 8
+   }
+  },
+  {
+   "role": "mirror",
+   "family": "mirror_d4_6",
+   "params": {
+    "depth": 4
+   }
+  },
+  {
+   "role": "mirror",
+   "family": "mirror_d8_0",
+   "params": {
+    "depth": 8
+   }
+  },
+  {
+   "role": "mirror",
+   "family": "mirror_d4_1",
+   "params": {
+    "depth": 4
+   }
+  },
+  {
+   "role": "mirror",
+   "family": "mirror_d8_6",
+   "params": {
+    "depth": 8
+   }
+  },
+  {
+   "role": "mirror",
+   "family": "mirror_d4_0",
+   "params": {
+    "depth": 4
+   }
+  },
+  {
+   "role": "mirror",
+   "family": "mirror_d4_7",
+   "params": {
+    "depth": 4
+   }
+  },
+  {
+   "role": "mirror",
+   "family": "mirror_d4_4",
+   "params": {
+    "depth": 4
+   }
+  },
+  {
+   "role": "mirror",
+   "family": "mirror_d8_5",
+   "params": {
+    "depth": 8
+   }
+  },
+  {
+   "role": "mirror",
+   "family": "mirror_d8_7",
+   "params": {
+    "depth": 8
+   }
+  },
+  {
+   "role": "mirror",
+   "family": "mirror_d4_2",
+   "params": {
+    "depth": 4
+   }
+  },
+  {
+   "role": "mirror",
+   "family": "mirror_d8_4",
+   "params": {
+    "depth": 8
+   }
+  },
+  {
+   "role": "mirror",
+   "family": "mirror_d4_5",
+   "params": {
+    "depth": 4
+   }
+  },
+  {
+   "role": "mirror",
+   "family": "mirror_d8_1",
+   "params": {
+    "depth": 8
+   }
+  },
+  {
+   "role": "mirror",
+   "family": "mirror_d8_3",
+   "params": {
+    "depth": 8
+   }
+  }
+ ]
+}
