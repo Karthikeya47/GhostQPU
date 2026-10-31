@@ -22,6 +22,7 @@ We built both sides: the **Forger** (the attack, simulating each job from the ex
 
 - **Frozen and blind.** Trained once on two jobs from 10 October, never retrained, then scored every later job: **48 of 48 correct** (24 real jobs and their forged copies) over 18 calibration cycles and 4 days, including **ibm_fez and ibm_kingston, which it had never seen**.
 - **Forward in time.** Trained only on earlier days and scored on the next: **48 of 48**, AUC 1.00.
+- **More training, still blind.** Trained on the 10 earliest real jobs (and their forged copies, 9 cycles, 3 machines) instead of 2, it scores every later job **32 of 32** and the closest real job drops from 0.43 to 0.22 (`scripts/score_ten.py`).
 - **Cheap.** **1.5 QPU seconds** of Canary time (19 circuits x 250 shots) still calls all 52 jobs correctly, 85% less than our current Batches use, and no single Canary family manages it alone. **Checked on hardware over two days:** 12 of 12 real 250-shot runs (6 jobs and their forged copies) called right; IBM bills about 2 s of fixed overhead per job on top, so each billed 4 to 5 s.
 - **Why the scores are perfect:** public calibration has no coherent-error term, so a calibration-only Forger is 2 to 4% wrong after 128 X gates where real hardware is 30 to 90%. Against our stronger Forger, which learns hardware effects from a real job, the original Detector fails ([Limits](#limits)).
 - **It detects physics, not formatting.** With a simulator on both sides, the same pipeline scores AUC **0.52**, chance level, as it must.
