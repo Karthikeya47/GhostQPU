@@ -49,11 +49,11 @@ About 6 minutes, one chapter of the site at a time. Arrow keys move between chap
 ### 5. The verdict (`#verdict`), 60 s
 
 - "We froze the Detector after training on two jobs from 10 October and never retrained it."
-- "On every job since, on three IBM machines, it is 40 of 40: 20 real jobs and their forged copies, over 17
-  calibration cycles and 4 days, including four jobs we ran this morning, on two machines it had never seen."
-- Cost card: "Verification is cheap: 1.5 QPU seconds of Canary time still catches all 44 jobs, 85% less than we spend
+- "On every job since, on three IBM machines, it is 46 of 46: 23 real jobs and their forged copies, over 18
+  calibration cycles and 4 days, including seven jobs we ran this morning, on two machines it had never seen."
+- Cost card: "Verification is cheap: 1.5 QPU seconds of Canary time still catches all 50 jobs, 85% less than we spend
   today. We checked it on hardware on two days: 12 of 12 real 250-shot runs called right."
-- Forward in time: "Trained only on earlier days, it scores the next day 40 of 40."
+- Forward in time: "Trained only on earlier days, it scores the next day 46 of 46."
 - Day-to-day chart: "Real hardware wanders between calibrations. The Forger's line is flat. That gap is what we detect."
 
 ### 6. Break it (`#break`), 60 s
@@ -71,10 +71,10 @@ About 6 minutes, one chapter of the site at a time. Arrow keys move between chap
 
 | Claim | Number | Source |
 |---|---|---|
-| Frozen Detector on later jobs | 40/40 (20 Genuine + 20 Twins), 17 cycles, 3 machines, 4 days | `scripts/score_fresh.py` |
-| Error-rate bound with 0 mistakes | 0.14 per job, 0.16 per cycle (95%, one-sided) | same |
-| Each cycle held out, all data | 44/44, AUC 1.00, 18 cycles | `docs/research/cost-and-forward.md` |
-| Forward in time | 40/40, AUC 1.00, worst real job 0.29 | same |
+| Frozen Detector on later jobs | 46/46 (23 Genuine + 23 Twins), 18 cycles, 3 machines, 4 days | `scripts/score_fresh.py` |
+| Error-rate bound with 0 mistakes | 0.12 per job, 0.15 per cycle (95%, one-sided) | same |
+| Each cycle held out, all data | 50/50, AUC 1.00, 19 cycles | `docs/research/cost-and-forward.md` |
+| Forward in time | 46/46, AUC 1.00, worst real job 0.29 | same |
 | Cheapest setting catching all | 1.5 QPU s of Canary time (19 circuits x 250 shots) vs 9.7 s | same |
 | Real 250-shot runs on hardware | 12/12 called right (6 jobs + Twins, 2 days); billed 4 to 5 s each incl. about 2 s IBM overhead | same |
 | Null test (simulator vs simulator) | AUC 0.52, near chance: PASS | `python -m ghostqpu null-test` |
@@ -84,8 +84,16 @@ About 6 minutes, one chapter of the site at a time. Arrow keys move between chap
 
 ## Hard questions
 
-**"Your test set is tiny."** Yes. 20 real jobs in 17 cycles. With zero errors the 95% upper bound on the false-positive
-rate is still 0.14 to 0.16. The value is the method plus a pre-registered frozen test that holds across days and
+**"AUC 1.00 looks too good. Is it faked, or is your simulator just bad?"** It is real, and here is why it is 1.00:
+IBM's public calibration contains only average random error rates, so a simulator built from it (our Forger, the same
+way Qiskit's fake backends work) has no coherent over-rotation at all. Our Canaries amplify exactly that: after 128 X
+gates hardware is 30 to 90% wrong and the Forger 2 to 4%, so any threshold separates them. Proof it is not a pipeline
+artifact: simulator vs simulator scores 0.52 (chance), and it stayed perfect on two machines and on days it never saw.
+The honest catch: our stronger Forger, which learns those effects from one real job, fooled the original Detector
+(0.07 and 0.11); retrained, it catches it only weakly (0.64, 0.80). So say "1.00 against a public-data Forger".
+
+**"Your test set is tiny."** Yes. 23 real jobs in 18 cycles. With zero errors the 95% upper bound on the false-positive
+rate is still 0.12 to 0.15. The value is the method plus a pre-registered frozen test that holds across days and
 machines; the next step is one job per machine per day for weeks.
 
 **"Could a smarter Forger beat it?"** Yes, and we show it. Our stronger Forger fits over-rotation, crosstalk and
